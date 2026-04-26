@@ -1,883 +1,1284 @@
-:root {
-    --warm-bg: #20150f;
-    --warm-bg-2: #2f1e15;
-    --ink: #150f0b;
-    --paper: #fff5df;
-    --paper-soft: #f5e8cf;
-    --glass: rgba(25, 17, 12, 0.82);
-    --glass-strong: rgba(18, 12, 8, 0.94);
-    --accent: #d7a56f;
-    --accent-2: #f2c98d;
-    --sage: #9caf88;
-    --sage-deep: #20372a;
-    --sage-soft: #dce5c9;
-    --clay: #d96b4c;
-    --text-main: #fff1d4;
-    --text-muted: #d3dcc0;
-    --shadow: 0 24px 60px rgba(0, 0, 0, 0.42);
-    --radius-lg: 28px;
-    --radius-md: 18px;
-    --radius-sm: 12px;
-    --font-body: 'Crimson Text', Georgia, serif;
-    --font-ui: 'Nunito', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-}
+(() => {
+    'use strict';
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+    const CONFIG = {
+        adminEmail: 'chdrey@gmail.com',
+        adminUsername: 'PenPaleto',
+        supabaseUrl: 'https://lypndarukqjtkyhxygwe.supabase.co',
+        supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5cG5kYXJ1a3FqdGt5aHh5Z3dlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3Nzc2NzAsImV4cCI6MjA3OTM1MzY3MH0.NE5Q1BFVsBDyKSUxHO--aR-jbSHSLW8klha7C7_VbUA',
+        youtubeSrc: 'https://www.youtube.com/embed/hVFaaUEIpzE?start=103&autoplay=1&mute=0',
+        draftKey: 'story-nook:draft:v2',
+        guestNameKey: 'story-nook:guest-name:v2',
+        prompts: [
+            'A traveler finds a floating library where every unwritten story is waiting on a shelf.',
+            'At midnight, the fireplace starts whispering memories that do not belong to anyone in the room.',
+            'A tiny green door appears under an old desk, and only tired writers can see it.',
+            'Someone mails a letter to the moon and receives a reply written in pressed leaves.',
+            'The last train of the evening stops at a station that was erased from every map.',
+            'A character wakes up with a glowing bookmark tucked behind their ear.',
+            'Every time the kettle sings, a forgotten fairy tale changes its ending.'
+        ],
+        badges: [
+            { id: 1, name: 'The Bard', css: 'frame-wood' },
+            { id: 2, name: 'Talk of the Nook', css: 'frame-copper' },
+            { id: 3, name: 'The Ink Scribble', css: 'frame-stone' },
+            { id: 4, name: 'The Cliffhanger', css: 'frame-iron' },
+            { id: 5, name: 'The Golden Quill', css: 'frame-gold' },
+            { id: 6, name: 'The Trilogy Master', css: 'frame-diamond' }
+        ]
+    };
 
-html { scroll-behavior: smooth; }
+    const state = {
+        db: null,
+        currentUser: null,
+        currentProfile: null,
+        isAdmin: false,
+        activeStoryId: null,
+        activeStory: null,
+        isSignUp: false,
+        feedLimit: 30,
+        feedStories: [],
+        topStories: [],
+        initialized: false
+    };
 
-body {
-    min-height: 100vh;
-    font-family: var(--font-ui);
-    color: var(--text-main);
-    background:
-        radial-gradient(circle at 18% 10%, rgba(156, 175, 136, 0.22), transparent 34rem),
-        radial-gradient(circle at 84% 20%, rgba(215, 165, 111, 0.18), transparent 32rem),
-        linear-gradient(160deg, var(--warm-bg), var(--warm-bg-2) 46%, #17261d);
-    overflow-x: hidden;
-    -webkit-font-smoothing: antialiased;
-}
+    const $ = (selector, root = document) => root.querySelector(selector);
+    const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
-body.focus-mode .hero,
-body.focus-mode .stats-grid,
-body.focus-mode .leaderboard,
-body.focus-mode .feed,
-body.focus-mode footer { display: none; }
+    document.addEventListener('DOMContentLoaded', boot);
 
-body.focus-mode main { max-width: 880px; }
-body.focus-mode .writing-zone textarea { min-height: 62vh; }
-body.focus-mode #focusBtn::after { content: " on"; }
+    function boot() {
+        wireStaticEvents();
+        restoreDraft();
+        updateCharCounter();
+        setWeeklyPrompt(CONFIG.prompts[0]);
+        initializeSupabase();
+    }
 
-button, input, textarea, select { font: inherit; }
-button { cursor: pointer; }
-button:disabled { cursor: not-allowed; opacity: 0.64; }
+    function initializeSupabase() {
+        try {
+            if (!window.supabase) {
+                setOfflineMode('Supabase did not load. The page still works visually, but login and publishing need the Supabase CDN.');
+                return;
+            }
+            state.db = window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey);
+            initApp().catch((error) => {
+                console.error('App init failed:', error);
+                setOfflineMode('Could not connect to the story database. Check your Supabase project settings and RLS rules.');
+            });
+        } catch (error) {
+            console.error('Supabase init error:', error);
+            setOfflineMode('Supabase setup failed. Please check the project URL and anon key.');
+        }
+    }
 
-input, textarea, select {
-    width: 100%;
-    border: 1px solid rgba(215, 165, 111, 0.42);
-    border-radius: var(--radius-sm);
-    background: rgba(7, 5, 3, 0.28);
-    color: var(--text-main);
-    padding: 0.85rem 1rem;
-    outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-}
+    async function initApp() {
+        const { data: { session } } = await state.db.auth.getSession();
+        await handleUserSession(session, { skipFetch: true });
+        state.db.auth.onAuthStateChange(async (_event, session) => {
+            await handleUserSession(session);
+        });
+        await fetchStories();
+        state.initialized = true;
+    }
 
-input:focus, textarea:focus, select:focus {
-    border-color: var(--accent-2);
-    box-shadow: 0 0 0 4px rgba(215, 165, 111, 0.16);
-    background: rgba(7, 5, 3, 0.42);
-}
+    function wireStaticEvents() {
+        const nav = $('#mainNav');
+        window.addEventListener('scroll', () => nav?.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
 
-textarea { resize: vertical; }
-select option { color: #1f140e; }
+        $('#navLogo')?.addEventListener('click', scrollToTop);
+        $('#enterBtn')?.addEventListener('click', () => enterNook());
+        $('#browseBtn')?.addEventListener('click', () => enterNook('storyFeed'));
+        $('#navLoginBtn')?.addEventListener('click', () => openAuth('login'));
+        $('#navProfileBtn')?.addEventListener('click', () => {
+            openModal('profileModal');
+            resetProfileModalToMyView();
+        });
+        $('#infoBtn')?.addEventListener('click', () => openModal('aboutModal'));
+        $('#footerFeedbackBtn')?.addEventListener('click', openFeedback);
+        $$('[data-open]').forEach((button) => button.addEventListener('click', () => openModal(button.dataset.open)));
+        $$('[data-close]').forEach((button) => button.addEventListener('click', () => closeModal(button.dataset.close)));
 
-::placeholder { color: rgba(255, 241, 212, 0.52); }
+        $$('.modal').forEach((modal) => {
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) closeModal(modal.id);
+            });
+        });
 
-.sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                const openModalElement = $$('.modal:not(.hidden)').at(-1);
+                if (openModalElement) closeModal(openModalElement.id);
+            }
+        });
 
-.hidden { display: none !important; }
-.full-width { width: 100%; }
-.subtext { color: #7e6a55; font-style: italic; }
+        $('#loginTab')?.addEventListener('click', () => setAuthMode('login'));
+        $('#signupTab')?.addEventListener('click', () => setAuthMode('signup'));
+        $('#authSwitchBtn')?.addEventListener('click', () => setAuthMode(state.isSignUp ? 'login' : 'signup'));
+        $('#authForm')?.addEventListener('submit', handleAuthSubmit);
+        $('#forgotPasswordBtn')?.addEventListener('click', sendPasswordReset);
+        $('#logoutBtn')?.addEventListener('click', logout);
+        $('#changePasswordBtn')?.addEventListener('click', changePassword);
+        $('#deleteAccountBtn')?.addEventListener('click', deleteProfileData);
 
-.video-background, .overlay, .page-glow {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-}
+        $('#mainStoryInput')?.addEventListener('input', () => {
+            updateCharCounter();
+            saveDraft();
+        });
+        $('#guestPenName')?.addEventListener('input', saveGuestName);
+        $('#publishBtn')?.addEventListener('click', publishStory);
+        $('#clearDraftBtn')?.addEventListener('click', clearDraft);
+        $('#promptBtn')?.addEventListener('click', useRandomPrompt);
+        $('#focusBtn')?.addEventListener('click', toggleFocusMode);
+        $('#copyPromptBtn')?.addEventListener('click', copyPrompt);
 
-.video-background { z-index: -3; background: #140d09; }
-.video-background video { width: 100%; height: 100%; object-fit: cover; opacity: 0.18; filter: saturate(0.8) blur(1px); }
-.overlay { z-index: -2; background: rgba(15, 10, 6, 0.65); backdrop-filter: blur(2px); }
-.page-glow {
-    z-index: -1;
-    background:
-        radial-gradient(circle at 12% 8%, rgba(156, 175, 136, 0.22), transparent 28rem),
-        radial-gradient(circle at 82% 16%, rgba(242, 201, 141, 0.14), transparent 26rem);
-}
+        $('#storySearch')?.addEventListener('input', renderFeed);
+        $('#feedSort')?.addEventListener('change', () => fetchStories({ resetLimit: true }));
+        $('#refreshFeedBtn')?.addEventListener('click', () => fetchStories());
+        $('#loadMoreBtn')?.addEventListener('click', () => {
+            state.feedLimit += 30;
+            fetchStories();
+        });
 
-main {
-    max-width: 980px;
-    margin: 0 auto;
-    padding: 116px 20px 80px;
-    min-height: 80vh;
-}
+        $('#storyFeed')?.addEventListener('click', handleStoryAreaClick);
+        $('#topStories')?.addEventListener('click', handleStoryAreaClick);
+        $('#modalActionsRow')?.addEventListener('click', handleStoryActionClick);
+        $('#modalCommentsList')?.addEventListener('click', handleCommentActionClick);
+        $('#postCommentBtn')?.addEventListener('click', postComment);
+        $('#newCommentInput')?.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') postComment();
+        });
 
-.card {
-    background: linear-gradient(145deg, rgba(27, 19, 13, 0.88), rgba(18, 13, 9, 0.94));
-    border: 1px solid rgba(255, 241, 212, 0.12);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(16px);
-}
+        $('#profileAvatar')?.addEventListener('click', () => {
+            if (!state.currentUser) return openAuth('login');
+            if (!$('#profileModal')?.classList.contains('admin-view')) $('#avatarUploadInput')?.click();
+        });
+        $('#avatarUploadInput')?.addEventListener('change', uploadAvatar);
+        $('#passportInfoBtn')?.addEventListener('click', () => openModal('passportInfoModal'));
+        $('#adminDashboardBtn')?.addEventListener('click', () => {
+            openModal('adminModal');
+            loadAllUsers();
+        });
+        $('#adminUserSearch')?.addEventListener('input', debounce(loadAllUsers, 250));
+        $('#adminModal')?.addEventListener('click', handleAdminClick);
 
-.eyebrow {
-    color: var(--sage-soft);
-    font-size: 0.76rem;
-    font-weight: 800;
-    letter-spacing: 0.11em;
-    text-transform: uppercase;
-    margin-bottom: 0.45rem;
-}
+        $('#submitFeedbackBtn')?.addEventListener('click', submitFeedback);
 
-.eyebrow.dark { color: #738052; }
+        window.addEventListener('click', (event) => {
+            if (!event.target.closest('.action-column')) {
+                closeAllMenus();
+            }
+        });
+    }
 
-h1, h2, h3 { line-height: 1.1; }
-h1, h2 { font-weight: 800; }
+    async function handleUserSession(session, options = {}) {
+        if (session?.user) {
+            state.currentUser = session.user;
+            state.currentProfile = await fetchOrCreateProfile(session.user);
+            state.isAdmin = checkAdminStatus();
+        } else {
+            state.currentUser = null;
+            state.currentProfile = null;
+            state.isAdmin = false;
+        }
+        updateUI();
+        if (!options.skipFetch) await fetchStories();
+    }
 
-.btn-primary, .btn-secondary, .btn-ghost, .btn-delete, .btn-delete-final, .btn-tiny, .auth-tab, .tab-btn, .text-link {
-    border: 0;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
+    async function fetchOrCreateProfile(user) {
+        if (!state.db || !user) return null;
+        const existing = await getProfileById(user.id);
+        if (existing) return existing;
 
-.btn-primary {
-    color: #1d130d;
-    background: linear-gradient(135deg, var(--accent-2), var(--accent));
-    border: 1px solid rgba(255, 245, 223, 0.34);
-    border-radius: 999px;
-    padding: 0.85rem 1.25rem;
-    font-weight: 900;
-    box-shadow: 0 10px 24px rgba(215, 165, 111, 0.22);
-}
+        const preferredUsername = cleanUsername(user.user_metadata?.username || user.email?.split('@')[0] || 'Writer');
+        const username = await getAvailableUsername(preferredUsername);
+        const payload = { id: user.id, username };
 
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 16px 32px rgba(215, 165, 111, 0.28); }
-.btn-primary.large, .btn-ghost.large { padding: 0.95rem 1.45rem; font-size: 1.02rem; }
+        const { data, error } = await state.db
+            .from('profiles')
+            .insert(payload)
+            .select('*, flairs(css_class)')
+            .maybeSingle();
 
-.btn-secondary, .btn-ghost {
-    border-radius: 999px;
-    padding: 0.78rem 1.05rem;
-    font-weight: 800;
-}
+        if (error) {
+            console.warn('Profile auto-create failed. Using temporary profile display.', error);
+            return { id: user.id, username, avatar_url: null, selected_flair_id: null, flairs: null };
+        }
+        return data;
+    }
 
-.btn-secondary {
-    color: var(--accent-2);
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(215, 165, 111, 0.52);
-}
-.btn-secondary:hover { background: rgba(215, 165, 111, 0.11); border-color: var(--accent-2); }
+    async function getProfileById(userId) {
+        const { data, error } = await state.db
+            .from('profiles')
+            .select('*, flairs(css_class)')
+            .eq('id', userId)
+            .maybeSingle();
+        if (error) console.warn('Profile fetch warning:', error);
+        return data || null;
+    }
 
-.btn-ghost {
-    color: var(--text-muted);
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(220, 229, 201, 0.2);
-}
-.btn-ghost:hover { color: var(--text-main); background: rgba(156, 175, 136, 0.16); }
+    async function getAvailableUsername(base) {
+        const safeBase = cleanUsername(base) || 'Writer';
+        for (let attempt = 0; attempt < 8; attempt += 1) {
+            const candidate = attempt === 0 ? safeBase : `${safeBase}${Math.floor(100 + Math.random() * 900)}`;
+            const { data } = await state.db.from('profiles').select('id').eq('username', candidate).maybeSingle();
+            if (!data) return candidate;
+        }
+        return `Writer${Date.now().toString().slice(-5)}`;
+    }
 
-.btn-primary.small, .btn-secondary.small, .btn-delete.small { padding: 0.6rem 0.9rem; font-size: 0.88rem; }
+    function cleanUsername(value) {
+        return String(value || '')
+            .trim()
+            .replace(/[^a-zA-Z0-9_ -]/g, '')
+            .replace(/\s+/g, ' ')
+            .slice(0, 24);
+    }
 
-.btn-tiny {
-    white-space: nowrap;
-    padding: 0.44rem 0.7rem;
-    border-radius: 999px;
-    background: rgba(156, 175, 136, 0.18);
-    color: var(--sage-soft);
-    border: 1px solid rgba(220, 229, 201, 0.18);
-    font-size: 0.8rem;
-    font-weight: 800;
-}
-.btn-tiny:hover { background: rgba(156, 175, 136, 0.27); }
+    function checkAdminStatus() {
+        const email = state.currentUser?.email?.toLowerCase() || '';
+        const username = state.currentProfile?.username || '';
+        return email === CONFIG.adminEmail.toLowerCase() || username === CONFIG.adminUsername;
+    }
 
-.btn-delete, .btn-delete-final {
-    color: white;
-    background: #b84b38;
-    border-radius: 999px;
-    font-weight: 800;
-}
-.btn-delete { padding: 0.6rem 0.85rem; }
-.btn-delete-final { padding: 0.85rem 1rem; }
-.btn-delete:hover, .btn-delete-final:hover { background: #933827; }
+    function updateUI() {
+        const loggedOut = $('#loggedOutNav');
+        const loggedIn = $('#loggedInNav');
+        const guestInput = $('#guestPenName');
+        const commentGuestInput = $('#commentGuestName');
+        const adminButton = $('#adminDashboardBtn');
 
-.text-link {
-    background: none;
-    color: var(--accent-2);
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    font-weight: 800;
-}
+        if (state.currentUser && state.currentProfile) {
+            loggedOut?.classList.add('hidden');
+            loggedIn?.classList.remove('hidden');
+            guestInput?.classList.add('hidden');
+            commentGuestInput?.classList.add('hidden');
+            setText('#navUsername', state.currentProfile.username || 'Writer');
+            setText('#profileNameDisplay', state.currentProfile.username || 'Writer');
+            updateAvatars(state.currentProfile);
+        } else {
+            loggedOut?.classList.remove('hidden');
+            loggedIn?.classList.add('hidden');
+            guestInput?.classList.remove('hidden');
+            commentGuestInput?.classList.remove('hidden');
+            updateAvatars(null);
+        }
 
-/* Branding */
-.brand-lockup {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.7rem;
-    color: var(--accent-2);
-    font-weight: 900;
-    letter-spacing: -0.02em;
-}
+        adminButton?.classList.toggle('hidden', !state.isAdmin);
+        $('#feedbackEmail')?.classList.toggle('hidden', !!state.currentUser);
+    }
 
-.brand-lockup.big { flex-direction: column; gap: 1rem; font-size: clamp(2rem, 7vw, 4rem); color: var(--paper); }
-.brand-lockup.big .brand-mark { transform: scale(1.4); margin-bottom: 0.2rem; }
+    function updateAvatars(profile) {
+        const fallback = createAvatarDataUrl(profile?.username || 'Nook');
+        const avatarUrl = profile?.avatar_url || fallback;
+        const flairClass = profile?.flairs?.css_class || '';
 
-.brand-mark {
-    position: relative;
-    width: 38px;
-    height: 34px;
-    display: inline-block;
-    filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.28));
-}
-.brand-mark span {
-    position: absolute;
-    width: 23px;
-    height: 28px;
-    border-radius: 5px 6px 4px 5px;
-    border: 1px solid rgba(255, 255, 255, 0.45);
-}
-.brand-mark span:nth-child(1) { left: 1px; top: 4px; background: #f3c879; transform: rotate(-7deg); }
-.brand-mark span:nth-child(2) { left: 9px; top: 0; background: #9caf88; transform: rotate(4deg); }
-.brand-mark span:nth-child(3) { left: 16px; top: 7px; background: #b481d9; transform: rotate(8deg); }
+        const navAvatar = $('#navAvatar');
+        if (navAvatar) {
+            navAvatar.src = avatarUrl;
+            navAvatar.className = 'avatar-small';
+            if (flairClass) navAvatar.classList.add(flairClass);
+        }
 
-/* Navigation */
-.site-nav {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 20000;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    padding: 18px 42px;
-    background: linear-gradient(180deg, rgba(16, 11, 8, 0.92), rgba(16, 11, 8, 0.72));
-    border-bottom: 1px solid rgba(255, 241, 212, 0.1);
-    backdrop-filter: blur(18px);
-    transition: padding 0.25s ease, box-shadow 0.25s ease;
-}
+        const profileAvatar = $('#profileAvatar');
+        if (profileAvatar && !$('#profileModal')?.classList.contains('admin-view')) {
+            profileAvatar.src = avatarUrl;
+            profileAvatar.className = 'avatar-large profile-trigger-action';
+        }
+    }
 
-.site-nav.scrolled { padding-block: 10px; box-shadow: 0 14px 34px rgba(0, 0, 0, 0.3); }
-.nav-logo { background: none; border: 0; font-size: 1.32rem; }
-.nav-actions, .nav-group { display: flex; align-items: center; gap: 0.9rem; }
-.save-prompt { color: var(--sage-soft); font-size: 0.92rem; font-style: italic; white-space: nowrap; }
-.profile-trigger {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    padding: 0.3rem 0.35rem 0.3rem 0.85rem;
-    border-radius: 999px;
-    border: 1px solid rgba(215, 165, 111, 0.26);
-    background: rgba(255, 255, 255, 0.04);
-    color: var(--accent-2);
-    font-weight: 900;
-}
-.profile-trigger:hover { background: rgba(215, 165, 111, 0.11); }
-.avatar-small, .feed-avatar-img, .avatar-large {
-    object-fit: cover;
-    border-radius: 50%;
-    background: var(--sage-deep);
-}
-.avatar-small { width: 38px; height: 38px; border: 2px solid var(--accent); }
+    function createAvatarDataUrl(seed) {
+        const letter = encodeURIComponent(String(seed || 'N').charAt(0).toUpperCase());
+        const bg = '%239caf88';
+        const ink = '%2320150f';
+        return `data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'><rect width='96' height='96' rx='48' fill='${bg}'/><text x='50%' y='55%' text-anchor='middle' font-family='Arial' font-size='42' font-weight='700' fill='${ink}'>${letter}</text></svg>`;
+    }
 
-/* Welcome */
-.welcome-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 40000;
-    display: grid;
-    place-items: center;
-    padding: 1rem;
-    background:
-        radial-gradient(circle at top left, rgba(156, 175, 136, 0.24), transparent 27rem),
-        linear-gradient(150deg, #1b110c, #223629 62%, #160e0a);
-    transition: opacity 0.65s ease, visibility 0.65s ease;
-}
-.welcome-overlay.is-leaving { opacity: 0; visibility: hidden; }
-.welcome-card {
-    width: min(680px, 100%);
-    padding: clamp(2rem, 6vw, 4rem);
-    text-align: center;
-    background: rgba(15, 11, 8, 0.7);
-    border: 1px solid rgba(255, 241, 212, 0.16);
-    border-radius: 34px;
-    box-shadow: var(--shadow);
-    backdrop-filter: blur(20px);
-}
-.weekly-quote {
-    margin: 1.75rem auto;
-    max-width: 520px;
-    color: var(--text-muted);
-    font: italic 1.25rem/1.65 var(--font-body);
-}
-.weekly-quote footer { margin-top: 0.75rem; color: var(--accent); font: 800 0.9rem/1 var(--font-ui); }
-.welcome-actions { display: flex; justify-content: center; gap: 0.8rem; flex-wrap: wrap; }
+    function setOfflineMode(message) {
+        toast(message, 'error', 7000);
+        $('#storyFeed').innerHTML = '<div class="empty-state">Stories are unavailable until Supabase loads.</div>';
+        $('#topStories').innerHTML = '<div class="empty-state">Top stories will appear here once the database connects.</div>';
+        setText('#statStories', '—');
+        setText('#statVotes', '—');
+        setText('#statWriters', '—');
+    }
 
-/* Hero */
-.hero { padding: clamp(1rem, 3.6vw, 2rem); margin-bottom: 1.25rem; }
-.hero-copy, .section-heading.split {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 1rem;
-}
-.hero h1 { font-size: clamp(1.8rem, 5vw, 3rem); max-width: 640px; color: var(--paper); }
-.info-icon, .info-icon-small {
-    display: inline-grid;
-    place-items: center;
-    flex-shrink: 0;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 1px solid rgba(220, 229, 201, 0.45);
-    background: rgba(156, 175, 136, 0.12);
-    color: var(--sage-soft);
-    font-weight: 900;
-}
-.info-icon:hover, .info-icon-small:hover { background: rgba(156, 175, 136, 0.22); }
-.prompt-strip {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 0.8rem;
-    margin: 1.35rem 0;
-    padding: 0.9rem;
-    border-radius: 18px;
-    color: var(--sage-soft);
-    background: linear-gradient(135deg, rgba(32, 55, 42, 0.58), rgba(54, 37, 23, 0.5));
-    border: 1px solid rgba(220, 229, 201, 0.12);
-}
-.prompt-label { color: var(--accent-2); font-weight: 900; text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.74rem; }
-.prompt-strip p { font-family: var(--font-body); font-size: 1.1rem; }
-.video-wrapper {
-    position: relative;
-    width: 100%;
-    padding-bottom: 56.25%;
-    border-radius: 22px;
-    overflow: hidden;
-    background: rgba(0, 0, 0, 0.28);
-    border: 1px solid rgba(255, 241, 212, 0.1);
-}
-.video-wrapper iframe { position: absolute; inset: 0; width: 100%; height: 100%; }
+    function openModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) modal.classList.remove('hidden');
+    }
 
-/* Stats */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.85rem;
-    margin-bottom: 1.25rem;
-}
-.stat-card {
-    padding: 1.1rem;
-    border-radius: var(--radius-md);
-    background: rgba(32, 55, 42, 0.52);
-    border: 1px solid rgba(220, 229, 201, 0.12);
-    box-shadow: 0 12px 28px rgba(0,0,0,0.2);
-}
-.stat-card strong { display: block; font-size: clamp(1.6rem, 4vw, 2.2rem); color: var(--accent-2); }
-.stat-card span { color: var(--sage-soft); font-size: 0.9rem; }
+    function closeModal(id) {
+        const modal = document.getElementById(id);
+        if (!modal) return;
+        modal.classList.add('hidden');
+        if (id === 'profileModal') {
+            window.setTimeout(resetProfileModalToMyView, 200);
+        }
+    }
 
-/* Writing */
-.writing-zone { padding: clamp(1rem, 3.4vw, 2rem); margin-bottom: 1.25rem; }
-.section-heading { margin-bottom: 1.1rem; }
-.section-heading h2 { font-size: clamp(1.45rem, 3.5vw, 2.2rem); color: var(--paper); }
-.heading-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; justify-content: flex-end; }
-.writing-zone textarea {
-    min-height: 330px;
-    border: 1px solid rgba(255, 241, 212, 0.09);
-    background:
-        linear-gradient(rgba(255, 245, 223, 0.035), rgba(255, 245, 223, 0.035)),
-        rgba(0, 0, 0, 0.18);
-    color: var(--paper);
-    font: 1.35rem/1.7 var(--font-body);
-    border-radius: 22px;
-}
-.writer-tools, .action-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.85rem;
-    flex-wrap: wrap;
-    margin-top: 1rem;
-}
-.char-meter { display: flex; align-items: center; gap: 0.75rem; color: var(--text-muted); font-size: 0.9rem; }
-.char-track { width: min(230px, 48vw); height: 8px; border-radius: 999px; background: rgba(255, 241, 212, 0.12); overflow: hidden; }
-.char-track span { display: block; width: 0%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--sage), var(--accent)); transition: width 0.2s ease; }
-.draft-status { color: rgba(220, 229, 201, 0.76); font-size: 0.88rem; }
-#guestPenName { max-width: 220px; }
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 
-/* Stories */
-.leaderboard, .feed { padding: clamp(1rem, 3vw, 1.6rem); margin-bottom: 1.25rem; }
-.top-stories-container {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 0.85rem;
-}
-.feed-toolbar {
-    display: grid;
-    grid-template-columns: 1fr 180px;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-}
-.feed-list-container { display: grid; gap: 0.85rem; }
-.story-card {
-    position: relative;
-    padding: 1rem;
-    border-radius: var(--radius-md);
-    background: rgba(255, 241, 212, 0.055);
-    border: 1px solid rgba(255, 241, 212, 0.1);
-    transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
-}
-.story-card:hover { transform: translateY(-2px); background: rgba(255, 241, 212, 0.08); border-color: rgba(215, 165, 111, 0.35); }
-.story-card.is-mini { min-height: 170px; background: linear-gradient(145deg, rgba(32, 55, 42, 0.55), rgba(255, 241, 212, 0.05)); }
-.story-card.clickable { cursor: pointer; }
-.story-header-row { display: flex; align-items: center; gap: 0.72rem; margin-bottom: 0.7rem; }
-.feed-avatar-img, .feed-avatar-placeholder { width: 42px; height: 42px; flex: 0 0 42px; }
-.feed-avatar-img { border: 2px solid var(--accent); }
-.feed-avatar-placeholder {
-    display: inline-grid;
-    place-items: center;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--sage), var(--accent));
-    color: #1d130d;
-    font-weight: 900;
-    border: 2px solid rgba(255, 241, 212, 0.26);
-}
-.story-author { color: var(--accent-2); font-weight: 900; }
-.story-date { color: rgba(220, 229, 201, 0.65); font-size: 0.78rem; }
-.story-preview {
-    color: var(--paper);
-    font: 1.18rem/1.55 var(--font-body);
-    white-space: pre-wrap;
-}
-.story-card.is-mini .story-preview {
-    display: -webkit-box;
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    font-size: 1rem;
-}
-.story-actions-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.8rem;
-    margin-top: 0.95rem;
-    padding-top: 0.8rem;
-    border-top: 1px solid rgba(255, 241, 212, 0.1);
-}
-.actions-left { display: flex; align-items: center; gap: 0.55rem; flex-wrap: wrap; }
-.btn-action-icon {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    border: 0;
-    background: rgba(255,255,255,0.04);
-    color: var(--text-muted);
-    border-radius: 999px;
-    padding: 0.48rem 0.7rem;
-    font-weight: 800;
-    font-size: 0.88rem;
-}
-.btn-action-icon:hover { color: var(--accent-2); background: rgba(215, 165, 111, 0.1); }
-.action-column { position: relative; }
-.menu-trigger {
-    width: 34px;
-    height: 34px;
-    border: 1px solid rgba(255, 241, 212, 0.1);
-    border-radius: 50%;
-    background: rgba(255,255,255,0.035);
-    color: var(--text-muted);
-    font-size: 1.35rem;
-    line-height: 1;
-}
-.menu-trigger:hover { color: var(--accent-2); }
-.menu-dropdown {
-    position: absolute;
-    right: 0;
-    bottom: calc(100% + 8px);
-    z-index: 5;
-    min-width: 150px;
-    overflow: hidden;
-    border-radius: 12px;
-    border: 1px solid rgba(215, 165, 111, 0.3);
-    background: var(--glass-strong);
-    box-shadow: 0 12px 32px rgba(0,0,0,0.35);
-    display: none;
-}
-.menu-dropdown.show { display: block; }
-.menu-dropdown button {
-    width: 100%;
-    padding: 0.75rem 0.85rem;
-    border: 0;
-    background: none;
-    color: var(--text-main);
-    text-align: left;
-}
-.menu-dropdown button:hover { background: rgba(215, 165, 111, 0.12); }
-.text-red { color: #ffb1a1 !important; }
-.load-more { margin-top: 1rem; }
-.empty-state, .loading-state {
-    padding: 2rem 1rem;
-    text-align: center;
-    color: var(--text-muted);
-    border: 1px dashed rgba(220, 229, 201, 0.24);
-    border-radius: var(--radius-md);
-    background: rgba(255,255,255,0.025);
-}
+    function enterNook(targetId = 'writingZoneSection') {
+        const overlay = $('#welcomeOverlay');
+        overlay?.classList.add('is-leaving');
+        window.setTimeout(() => overlay?.classList.add('hidden'), 650);
 
-/* Modals */
-.modal {
-    position: fixed;
-    inset: 0;
-    z-index: 30000;
-    display: grid;
-    place-items: center;
-    padding: 1rem;
-    background: rgba(10, 7, 5, 0.78);
-    backdrop-filter: blur(8px);
-}
-.modal-content {
-    position: relative;
-    width: min(92vw, 720px);
-    max-height: min(86vh, 900px);
-    overflow-y: auto;
-    box-shadow: var(--shadow);
-}
-.modal-content.narrow {
-    width: min(92vw, 430px);
-    padding: 2rem;
-    border-radius: 28px;
-    text-align: center;
-}
-.cozy-panel {
-    color: var(--text-main);
-    background: linear-gradient(145deg, rgba(32, 55, 42, 0.96), rgba(45, 30, 20, 0.96));
-    border: 1px solid rgba(255, 241, 212, 0.16);
-}
-.modal-brand { justify-content: center; margin-bottom: 0.8rem; }
-.close-modal {
-    position: absolute;
-    top: 0.8rem;
-    right: 1rem;
-    width: 34px;
-    height: 34px;
-    display: grid;
-    place-items: center;
-    border: 0;
-    background: rgba(0,0,0,0.08);
-    border-radius: 50%;
-    color: inherit;
-    font-size: 1.7rem;
-    line-height: 1;
-}
-.close-modal:hover { background: rgba(0,0,0,0.16); }
-.auth-tabs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.45rem;
-    padding: 0.35rem;
-    margin: 1rem 0;
-    border-radius: 999px;
-    background: rgba(0,0,0,0.18);
-}
-.auth-tab {
-    padding: 0.65rem 0.85rem;
-    border-radius: 999px;
-    background: transparent;
-    color: var(--text-muted);
-    font-weight: 900;
-}
-.auth-tab.active { background: var(--accent); color: #20150f; }
-.auth-form-container { display: grid; gap: 0.78rem; }
-.auth-helper-row { display: flex; justify-content: space-between; gap: 0.8rem; margin-top: 1rem; font-size: 0.9rem; }
-.error-text { min-height: 1.2rem; color: #ffb1a1; font-weight: 800; }
-.modal-intro { color: var(--text-muted); line-height: 1.5; margin-bottom: 1rem; }
+        const bgVideo = $('#bgVideo');
+        if (bgVideo) {
+            bgVideo.muted = true;
+            bgVideo.play().catch(() => undefined);
+        }
+        const player = $('#youtubePlayer');
+        if (player && !player.src) player.src = CONFIG.youtubeSrc;
 
-.book-style, .passport-guide-style {
-    color: var(--ink);
-    background:
-        radial-gradient(circle at 10% 0%, rgba(215, 165, 111, 0.18), transparent 16rem),
-        linear-gradient(135deg, #fff6df, #f3e3c5);
-    border: 1px solid rgba(139, 94, 60, 0.28);
-    border-radius: 28px;
-    padding: clamp(1.2rem, 4vw, 2.4rem);
-    font-family: var(--font-ui);
-}
-.book-style h2, .book-style h3, .passport-guide-style h2, .passport-guide-style h3 { color: #5c3d25; }
-.book-style input, .book-style textarea, .book-style select,
-.passport-guide-style input, .passport-guide-style textarea, .passport-guide-style select {
-    color: var(--ink);
-    background: rgba(255, 255, 255, 0.56);
-    border-color: rgba(139, 94, 60, 0.28);
-}
-.book-style ::placeholder { color: rgba(65, 44, 28, 0.54); }
-.profile-header {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-    margin-bottom: 1.25rem;
-}
-.avatar-wrapper { position: relative; width: 96px; height: 96px; flex: 0 0 96px; }
-.avatar-large { width: 100%; height: 100%; border: 4px solid var(--accent); }
-.avatar-edit-hint {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-items: center;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.46);
-    color: white;
-    opacity: 0;
-    transition: opacity 0.18s ease;
-    pointer-events: none;
-    font-size: 1.45rem;
-}
-.avatar-wrapper:hover .avatar-edit-hint { opacity: 1; }
-.avatar-wrapper.no-click:hover .avatar-edit-hint { opacity: 0; }
-.profile-info h2 { font-size: 2rem; }
-.passport-section, .settings-section, .delete-section {
-    margin: 1rem 0;
-    padding: 1rem;
-    border-radius: 18px;
-    background: rgba(255,255,255,0.35);
-    border: 1px dashed rgba(139, 94, 60, 0.28);
-}
-.passport-header-row, .settings-grid { display: flex; align-items: center; gap: 0.8rem; }
-.passport-header-row { justify-content: space-between; }
-.settings-grid { margin-top: 0.8rem; flex-wrap: wrap; }
-.settings-grid input { flex: 1 1 210px; }
-.flair-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
-    gap: 1rem;
-    margin-top: 1rem;
-    min-height: 100px;
-}
-.flair-item {
-    position: relative;
-    border: 0;
-    background: transparent;
-    font-family: var(--font-ui);
-    display: grid;
-    justify-items: center;
-    gap: 0.42rem;
-    text-align: center;
-    color: #6a533d;
-    font-size: 0.78rem;
-    font-weight: 900;
-}
-.flair-item.unlocked { cursor: pointer; }
-.flair-item.locked { opacity: 0.42; filter: grayscale(1); }
-.flair-preview, .guide-badge, .admin-badge-btn {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    flex-shrink: 0;
-}
-.flair-item.selected .flair-preview { outline: 4px solid rgba(156, 175, 136, 0.55); transform: scale(1.05); }
-.my-badge-tooltip {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%) translateY(-8px);
-    padding: 0.4rem 0.58rem;
-    border-radius: 8px;
-    background: #2c1e16;
-    color: var(--text-main);
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s ease;
-    font-size: 0.72rem;
-}
-.flair-item:hover .my-badge-tooltip { opacity: 1; }
-.frame-locked { border: 2px dashed #af9d88; background: rgba(0,0,0,0.04); }
-.frame-wood { border: 4px solid #8b5a2b; background: repeating-linear-gradient(45deg, #8b5a2b, #6d4320 10px); box-shadow: inset 0 0 10px #3e230b; }
-.frame-copper { border: 4px solid #b87333; background: radial-gradient(circle at 30% 30%, #cd7f32, #8b4513); box-shadow: inset 0 0 5px #5e3b1f; }
-.frame-stone { border: 4px solid #7a7a7a; background: #9e9e9e; box-shadow: inset 0 0 5px #333, 0 2px 5px rgba(0,0,0,0.5); }
-.frame-iron { border: 4px solid #4a4a4a; background: linear-gradient(145deg, #5a5a5a, #2a2a2a); box-shadow: inset 0 0 5px #000, 0 0 5px #4a4a4a; }
-.frame-gold { border: 4px solid #ffd700; background: radial-gradient(circle, #fff8dc, #daa520); box-shadow: inset 0 0 10px #daa520; }
-.frame-diamond { border: 4px solid #b9f2ff; background: radial-gradient(circle, #e0ffff, #00ced1); box-shadow: inset 0 0 10px #fff; }
+        window.setTimeout(() => document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
+    }
 
-.my-stories-container {
-    max-height: 310px;
-    overflow-y: auto;
-    padding: 0.8rem;
-    border: 1px solid rgba(139, 94, 60, 0.28);
-    border-radius: 18px;
-    background: rgba(255,255,255,0.4);
-}
-.story-accordion {
-    overflow: hidden;
-    margin-bottom: 0.65rem;
-    border: 1px solid rgba(139,94,60,0.16);
-    border-radius: 14px;
-    background: rgba(255,255,255,0.68);
-}
-.story-summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.8rem;
-    padding: 0.85rem;
-    list-style: none;
-    cursor: pointer;
-    font-weight: 900;
-}
-.story-summary::-webkit-details-marker { display: none; }
-.story-content-preview {
-    padding: 0.95rem;
-    border-top: 1px dashed rgba(139,94,60,0.22);
-    font-family: var(--font-body);
-    font-size: 1.05rem;
-    white-space: pre-wrap;
-}
-.btn-delete-small {
-    width: 28px;
-    height: 28px;
-    display: inline-grid;
-    place-items: center;
-    border: 0;
-    border-radius: 50%;
-    background: #b84b38;
-    color: white;
-    font-weight: 900;
-    flex: 0 0 28px;
-}
+    function setAuthMode(mode) {
+        state.isSignUp = mode === 'signup';
+        $('#loginTab')?.classList.toggle('active', !state.isSignUp);
+        $('#signupTab')?.classList.toggle('active', state.isSignUp);
+        $('#usernameInput')?.classList.toggle('hidden', !state.isSignUp);
+        $('#usernameInput')?.toggleAttribute('required', state.isSignUp);
+        $('#passwordInput')?.setAttribute('autocomplete', state.isSignUp ? 'new-password' : 'current-password');
+        setText('#authTitle', state.isSignUp ? 'Create your pen name' : 'Welcome back');
+        setText('#authActionBtn', state.isSignUp ? 'Create Account' : 'Log In');
+        setText('#authSwitchBtn', state.isSignUp ? 'Already have an account?' : 'Need an account?');
+        setText('#authError', '');
+    }
 
-.passport-guide-style { width: min(92vw, 560px); }
-.guide-title, .guide-desc { text-align: center; }
-.guide-desc { color: #806a50; margin: 0.4rem 0 1.2rem; }
-.badge-guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.85rem; }
-.guide-item { display: flex; align-items: center; gap: 0.8rem; font-size: 0.9rem; }
-.guide-item .guide-badge { width: 50px; height: 50px; }
-.guide-item small { color: #806a50; }
+    function openAuth(mode = 'login') {
+        setAuthMode(mode);
+        openModal('authModal');
+        window.setTimeout(() => $('#emailInput')?.focus(), 50);
+    }
 
-/* Admin */
-.admin-title { text-align: center; margin-bottom: 1rem; color: #88402d !important; }
-.admin-tabs { display: flex; gap: 0.6rem; border-bottom: 1px solid rgba(139,94,60,0.2); padding-bottom: 0.75rem; margin-bottom: 1rem; }
-.tab-btn { padding: 0.6rem 0.8rem; border-radius: 999px; background: transparent; color: #6a533d; font-weight: 900; }
-.tab-btn.active { color: #1d130d; background: rgba(156,175,136,0.32); }
-.admin-user-list { display: grid; gap: 0.75rem; margin-top: 0.9rem; max-height: 450px; overflow-y: auto; }
-.admin-user-card { padding: 0.9rem; border-radius: 16px; background: rgba(255,255,255,0.52); border: 1px solid rgba(139,94,60,0.18); }
-.admin-user-header { display: flex; justify-content: space-between; align-items: center; gap: 0.8rem; }
-.admin-badge-controls { display: flex; gap: 0.55rem; flex-wrap: wrap; padding-top: 0.75rem; margin-top: 0.75rem; border-top: 1px dashed rgba(139,94,60,0.18); }
-.admin-badge-btn { width: 38px; height: 38px; border-width: 3px; opacity: 0.36; }
-.admin-badge-btn.owned { opacity: 1; outline: 3px solid rgba(32,55,42,0.38); }
-.winner-input-group { padding: 0.9rem; margin-bottom: 0.85rem; border-radius: 16px; background: rgba(255,255,255,0.48); }
-.winner-input-group label { display: block; font-weight: 900; margin-bottom: 0.55rem; }
-.winner-input-group div { display: flex; gap: 0.55rem; }
+    async function handleAuthSubmit(event) {
+        event.preventDefault();
+        if (!state.db) return setAuthError('Supabase is not available yet.');
 
-/* Read modal */
-.read-modal-layout { display: flex; flex-direction: column; }
-.read-header { display: flex; align-items: center; gap: 1rem; padding-bottom: 1rem; border-bottom: 2px solid rgba(139,94,60,0.3); }
-.read-icon { font-size: 2rem; }
-.story-text-styled {
-    margin: 1.3rem 0;
-    color: #2c1e16;
-    font: 1.3rem/1.8 var(--font-body);
-    white-space: pre-wrap;
-}
-.modal-actions { border-top-color: rgba(139,94,60,0.18); }
-.modal-actions .btn-action-icon { background: rgba(139,94,60,0.08); color: #5c3d25; }
-.comments-section-wrapper {
-    margin-top: 1rem;
-    padding: 1rem;
-    border-radius: 18px;
-    border: 1px dashed rgba(139,94,60,0.28);
-    background: rgba(255,255,255,0.4);
-}
-.comments-section-wrapper h3 { margin-bottom: 0.85rem; }
-.comments-list { display: grid; gap: 0.65rem; max-height: 370px; overflow-y: auto; }
-.comment-item {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.8rem;
-    padding: 0.85rem;
-    border-radius: 14px;
-    background: rgba(255,255,255,0.75);
-    border: 1px solid rgba(139,94,60,0.12);
-}
-.comment-item .comment-copy { flex: 1; }
-.comment-item strong { color: #5c3d25; }
-.comment-input-area { display: flex; gap: 0.65rem; margin-top: 0.9rem; flex-wrap: wrap; }
-.input-compact { flex: 0 0 150px; }
-.input-wide { flex: 1 1 230px; }
+        const email = $('#emailInput')?.value.trim();
+        const password = $('#passwordInput')?.value;
+        const username = cleanUsername($('#usernameInput')?.value);
 
-/* Toast */
-.toast-region {
-    position: fixed;
-    right: 1rem;
-    bottom: 1rem;
-    z-index: 50000;
-    display: grid;
-    gap: 0.6rem;
-    width: min(360px, calc(100vw - 2rem));
-}
-.toast {
-    padding: 0.85rem 1rem;
-    border-radius: 16px;
-    color: var(--text-main);
-    background: rgba(32, 55, 42, 0.96);
-    border: 1px solid rgba(220, 229, 201, 0.2);
-    box-shadow: 0 18px 38px rgba(0,0,0,0.34);
-    animation: toastIn 0.18s ease both;
-}
-.toast.error { background: rgba(91, 37, 28, 0.96); }
-@keyframes toastIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        setAuthError('');
+        if (!email || !password) return setAuthError('Email and password are required.');
+        if (state.isSignUp && username.length < 3) return setAuthError('Pen Name must be at least 3 characters.');
 
-/* Footer */
-footer {
-    padding: 1.2rem 20px 2rem;
-    background: rgba(18, 12, 8, 0.74);
-    border-top: 1px solid rgba(255, 241, 212, 0.1);
-}
-.footer-content {
-    max-width: 980px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    flex-wrap: wrap;
-    color: var(--text-muted);
-}
-.footer-brand { color: var(--accent-2); }
-.footer-links { display: flex; gap: 0.8rem; flex-wrap: wrap; }
-.footer-links button { background: none; border: 0; color: var(--text-muted); font-weight: 800; }
-.footer-links button:hover { color: var(--accent-2); }
+        setButtonLoading('#authActionBtn', true, state.isSignUp ? 'Creating...' : 'Logging in...');
+        try {
+            if (state.isSignUp) {
+                const { data: existing } = await state.db.from('profiles').select('id').eq('username', username).maybeSingle();
+                if (existing) throw new Error('This Pen Name is already taken. Try a small twist.');
 
-/* Mobile */
-@media (max-width: 760px) {
-    main { padding: 96px 14px 64px; }
-    .site-nav { padding: 14px 16px; }
-    .site-nav.scrolled { padding-block: 10px; }
-    .nav-logo { font-size: 1.05rem; }
-    .brand-mark { width: 32px; height: 30px; }
-    .brand-mark span { width: 20px; height: 25px; }
-    .save-prompt, #navUsername { display: none; }
-    .hero-copy, .section-heading.split { flex-direction: column; align-items: stretch; }
-    .heading-actions { justify-content: stretch; }
-    .heading-actions > button { flex: 1 1 140px; }
-    .prompt-strip { grid-template-columns: 1fr; text-align: left; }
-    .stats-grid, .top-stories-container { grid-template-columns: 1fr; }
-    .feed-toolbar { grid-template-columns: 1fr; }
-    .writing-zone textarea { min-height: 300px; font-size: 1.2rem; }
-    .action-bar > * { width: 100%; max-width: none !important; }
-    .writer-tools { align-items: flex-start; }
-    .char-meter { width: 100%; justify-content: space-between; }
-    .char-track { width: 58vw; }
-    .modal { padding: 0.8rem; align-items: start; overflow-y: auto; }
-    .modal-content { max-height: none; margin: 1rem 0; }
-    .profile-header { flex-direction: column; text-align: center; }
-    .badge-guide-grid { grid-template-columns: 1fr; }
-    .comment-input-area > * { flex-basis: 100%; }
-    .winner-input-group div { flex-wrap: wrap; }
-    .winner-input-group input { flex-basis: 100%; }
-    .footer-content { justify-content: center; text-align: center; }
-}
+                const { data, error } = await state.db.auth.signUp({
+                    email,
+                    password,
+                    options: { data: { username } }
+                });
+                if (error) throw error;
 
-@media (max-width: 420px) {
-    .btn-primary, .btn-secondary, .btn-ghost { padding-inline: 0.9rem; }
-    .nav-logo span:last-child { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .modal-content.narrow { padding: 1.5rem 1rem; }
-    .auth-helper-row { flex-direction: column; align-items: center; }
-}
+                if (data.session) {
+                    await handleUserSession(data.session);
+                    closeModal('authModal');
+                    toast(`Welcome to the Nook, ${username}.`);
+                } else {
+                    closeModal('authModal');
+                    toast('Account created. Check your email to confirm your login.');
+                }
+            } else {
+                const { data, error } = await state.db.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+                await handleUserSession(data.session);
+                closeModal('authModal');
+                toast('You are logged in. Your writing chair is warm.');
+            }
+            $('#authForm')?.reset();
+            setAuthMode('login');
+        } catch (error) {
+            console.error('Auth error:', error);
+            setAuthError(friendlyAuthError(error));
+        } finally {
+            setButtonLoading('#authActionBtn', false);
+        }
+    }
+
+    async function sendPasswordReset() {
+        if (!state.db) return setAuthError('Supabase is not available yet.');
+        const email = $('#emailInput')?.value.trim();
+        if (!email) return setAuthError('Enter your email first, then tap forgot password.');
+
+        try {
+            const { error } = await state.db.auth.resetPasswordForEmail(email, {
+                redirectTo: window.location.href.split('#')[0]
+            });
+            if (error) throw error;
+            toast('Password reset email sent.');
+        } catch (error) {
+            setAuthError(friendlyAuthError(error));
+        }
+    }
+
+    function friendlyAuthError(error) {
+        const message = error?.message || String(error);
+        if (/invalid login/i.test(message)) return 'That email or password does not match. Try again.';
+        if (/email not confirmed/i.test(message)) return 'Please confirm your email before logging in.';
+        if (/password/i.test(message) && /six|6/i.test(message)) return 'Password should be at least 6 characters.';
+        return message;
+    }
+
+    function setAuthError(message) {
+        setText('#authError', message || '');
+    }
+
+    async function logout() {
+        if (!state.db) return;
+        await state.db.auth.signOut();
+        state.currentUser = null;
+        state.currentProfile = null;
+        state.isAdmin = false;
+        updateUI();
+        closeModal('profileModal');
+        toast('Logged out. See you by the fire soon.');
+        await fetchStories();
+    }
+
+    async function changePassword() {
+        if (!state.db || !state.currentUser) return openAuth('login');
+        const newPassword = $('#newPasswordInput')?.value;
+        if (!newPassword || newPassword.length < 6) return toast('Password needs at least 6 characters.', 'error');
+        const { error } = await state.db.auth.updateUser({ password: newPassword });
+        if (error) return toast(friendlyAuthError(error), 'error');
+        $('#newPasswordInput').value = '';
+        toast('Password updated.');
+    }
+
+    async function deleteProfileData() {
+        if (!state.db || !state.currentUser) return openAuth('login');
+        const confirmed = window.confirm('Delete your profile row and hide your account details from the Nook? Your Supabase Auth user may still exist unless removed server-side.');
+        if (!confirmed) return;
+        const { error } = await state.db.from('profiles').delete().eq('id', state.currentUser.id);
+        if (error) return toast(`Could not delete profile: ${error.message}`, 'error');
+        await logout();
+        toast('Profile data deleted.');
+    }
+
+    async function fetchStories(options = {}) {
+        if (!state.db) return;
+        if (options.resetLimit) state.feedLimit = 30;
+
+        const feed = $('#storyFeed');
+        const top = $('#topStories');
+        if (feed) feed.innerHTML = '<div class="loading-state">Gathering fresh pages...</div>';
+        if (top) top.innerHTML = '<div class="loading-state">Counting hearts...</div>';
+
+        try {
+            const storySelect = '*, profiles(username, avatar_url, selected_flair_id), comments(count)';
+
+            const [{ data: topStories, error: topError }, { data: feedStories, error: feedError }] = await Promise.all([
+                state.db
+                    .from('stories')
+                    .select(storySelect)
+                    .is('deleted_at', null)
+                    .gt('votes', 0)
+                    .order('votes', { ascending: false })
+                    .limit(3),
+                state.db
+                    .from('stories')
+                    .select(storySelect)
+                    .is('deleted_at', null)
+                    .order($('#feedSort')?.value === 'votes' ? 'votes' : 'created_at', { ascending: false })
+                    .limit(state.feedLimit)
+            ]);
+
+            if (topError) throw topError;
+            if (feedError) throw feedError;
+
+            state.topStories = topStories || [];
+            state.feedStories = feedStories || [];
+            renderTopStories();
+            renderFeed();
+            updateStats();
+        } catch (error) {
+            console.error('Story fetch error:', error);
+            if (feed) feed.innerHTML = '<div class="empty-state">The ink has dried up for a moment. Check Supabase policies or try again.</div>';
+            if (top) top.innerHTML = '<div class="empty-state">Top stories are unavailable right now.</div>';
+            toast(error.message || 'Error loading stories.', 'error');
+        }
+    }
+
+    function renderTopStories() {
+        const container = $('#topStories');
+        if (!container) return;
+        container.innerHTML = '';
+        if (!state.topStories.length) {
+            container.innerHTML = '<div class="empty-state">No top stories yet. Heart a favorite to light this shelf.</div>';
+            return;
+        }
+        state.topStories.forEach((story, index) => container.insertAdjacentHTML('beforeend', storyCardHTML(story, { mini: true, rank: index + 1 })));
+    }
+
+    function renderFeed() {
+        const container = $('#storyFeed');
+        if (!container) return;
+        const query = ($('#storySearch')?.value || '').trim().toLowerCase();
+        const stories = state.feedStories.filter((story) => {
+            if (!query) return true;
+            return story.content?.toLowerCase().includes(query) || getAuthorName(story).toLowerCase().includes(query);
+        });
+
+        container.innerHTML = '';
+        if (!stories.length) {
+            container.innerHTML = '<div class="empty-state">No matching stories yet. Maybe the next one is yours?</div>';
+            return;
+        }
+        stories.forEach((story) => container.insertAdjacentHTML('beforeend', storyCardHTML(story)));
+    }
+
+    function storyCardHTML(story, options = {}) {
+        const authorName = getAuthorName(story);
+        const avatarHTML = getAvatarHTML(story, authorName);
+        const commentCount = getCommentCount(story);
+        const preview = truncate(story.content || '', options.mini ? 260 : 320);
+        const rank = options.rank ? `<span class="btn-tiny">#${options.rank}</span>` : '';
+        const actions = options.mini ? '' : `
+            <div class="story-actions-row">
+                <div class="actions-left">
+                    <button class="btn-action-icon" type="button" data-action="like" data-story-id="${story.id}" data-votes="${story.votes || 0}">❤️ ${story.votes || 0}</button>
+                    <button class="btn-action-icon" type="button" data-action="comment" data-story-id="${story.id}">💬 ${commentCount}</button>
+                    <button class="btn-action-icon" type="button" data-action="copy" data-story-id="${story.id}">📋 Copy</button>
+                </div>
+                <div class="action-column">
+                    <button class="menu-trigger" type="button" data-action="menu" aria-label="Story menu">⋮</button>
+                    <div class="menu-dropdown">
+                        <button type="button" data-action="report" data-story-id="${story.id}">⚠️ Report</button>
+                        ${canEditStory(story) ? `<button type="button" class="text-red" data-action="delete" data-story-id="${story.id}">🗑️ Delete</button>` : ''}
+                    </div>
+                </div>
+            </div>`;
+
+        return `
+            <article class="story-card clickable ${options.mini ? 'is-mini' : ''}" data-story-id="${story.id}">
+                <div class="story-header-row">
+                    ${avatarHTML}
+                    <div>
+                        <div class="story-author">${rank} @${escapeHtml(authorName)}</div>
+                        <div class="story-date">${formatDate(story.created_at)}</div>
+                    </div>
+                </div>
+                <p class="story-preview">${escapeHtml(preview)}</p>
+                ${actions}
+            </article>`;
+    }
+
+    function handleStoryAreaClick(event) {
+        const actionButton = event.target.closest('[data-action]');
+        if (actionButton) {
+            event.stopPropagation();
+            handleStoryAction(actionButton);
+            return;
+        }
+        const card = event.target.closest('.story-card[data-story-id]');
+        if (card) openReadModal(Number(card.dataset.storyId));
+    }
+
+    function handleStoryActionClick(event) {
+        const actionButton = event.target.closest('[data-action]');
+        if (!actionButton) return;
+        event.stopPropagation();
+        handleStoryAction(actionButton);
+    }
+
+    function handleStoryAction(button) {
+        const action = button.dataset.action;
+        const storyId = Number(button.dataset.storyId || state.activeStoryId);
+        if (action === 'menu') return toggleMenu(button);
+        if (action === 'like') return voteStory(storyId, Number(button.dataset.votes || 0));
+        if (action === 'comment') return openReadModal(storyId);
+        if (action === 'copy') return copyStory(storyId);
+        if (action === 'report') return reportContent('story', storyId);
+        if (action === 'delete') return deleteStory(storyId);
+    }
+
+    async function publishStory() {
+        if (!state.db) return toast('Publishing needs Supabase to be connected.', 'error');
+        const textArea = $('#mainStoryInput');
+        const content = textArea?.value.trim();
+        if (!content) return toast('Write a story first.', 'error');
+
+        const payload = { content, votes: 0 };
+        if (state.currentUser) {
+            payload.user_id = state.currentUser.id;
+        } else {
+            const penName = cleanUsername($('#guestPenName')?.value);
+            if (!penName) return toast('Add a guest pen name, or log in to publish.', 'error');
+            payload.guest_name = penName;
+        }
+
+        setButtonLoading('#publishBtn', true, 'Publishing...');
+        const { error } = await state.db.from('stories').insert(payload);
+        setButtonLoading('#publishBtn', false);
+
+        if (error) return toast(`Error publishing: ${error.message}`, 'error');
+        textArea.value = '';
+        localStorage.removeItem(CONFIG.draftKey);
+        updateCharCounter();
+        setText('#draftStatus', 'Published and draft cleared');
+        toast('Story published. The shelf just got warmer.');
+        await fetchStories({ resetLimit: true });
+    }
+
+    async function voteStory(storyId, currentVotes = 0) {
+        if (!state.db) return toast('Voting needs Supabase to be connected.', 'error');
+        if (!state.currentUser) {
+            openAuth('login');
+            return toast('Log in to vote on stories.', 'error');
+        }
+        const newVotes = (currentVotes || 0) + 1;
+        const { error } = await state.db.from('stories').update({ votes: newVotes }).eq('id', storyId);
+        if (error) return toast(`Could not vote: ${error.message}`, 'error');
+        toast('Heart added.');
+        if (state.activeStoryId === storyId && state.activeStory) state.activeStory.votes = newVotes;
+        await fetchStories();
+        if (state.activeStoryId === storyId) renderReadActions(state.activeStory);
+    }
+
+    async function deleteStory(storyId) {
+        if (!state.db) return;
+        const story = getCachedStory(storyId) || state.activeStory;
+        if (story && !canEditStory(story)) return toast('Only the author or admin can delete this story.', 'error');
+        if (!window.confirm('Delete this story from the public feed?')) return;
+        closeAllMenus();
+        const { error } = await state.db.from('stories').update({ deleted_at: new Date().toISOString() }).eq('id', storyId);
+        if (error) return toast(`Could not delete story: ${error.message}`, 'error');
+        if (state.activeStoryId === storyId) closeModal('readModal');
+        toast('Story deleted.');
+        await fetchStories();
+        if (state.currentUser) loadStoriesForUser(state.currentUser.id);
+    }
+
+    async function openReadModal(storyId) {
+        if (!state.db) return toast('Reading stories needs Supabase to be connected.', 'error');
+        const { data: story, error } = await state.db
+            .from('stories')
+            .select('*, profiles(username, avatar_url)')
+            .eq('id', storyId)
+            .maybeSingle();
+        if (error || !story) return toast('Could not open that story.', 'error');
+
+        state.activeStoryId = story.id;
+        state.activeStory = story;
+        setText('#readModalAuthor', `By @${getAuthorName(story)}`);
+        setText('#readModalText', story.content || '');
+        renderReadActions(story);
+        openModal('readModal');
+        await fetchComments(story.id);
+    }
+
+    function renderReadActions(story) {
+        const row = $('#modalActionsRow');
+        if (!row || !story) return;
+        row.innerHTML = `
+            <div class="actions-left">
+                <button class="btn-action-icon" type="button" data-action="like" data-story-id="${story.id}" data-votes="${story.votes || 0}">❤️ Like (${story.votes || 0})</button>
+                <button class="btn-action-icon" type="button" data-action="copy" data-story-id="${story.id}">📋 Copy story</button>
+                <button class="btn-action-icon" type="button" data-action="report" data-story-id="${story.id}">⚠️ Report</button>
+            </div>
+            ${canEditStory(story) ? `<button class="btn-delete" type="button" data-action="delete" data-story-id="${story.id}">Delete</button>` : ''}`;
+    }
+
+    async function fetchComments(storyId) {
+        const list = $('#modalCommentsList');
+        if (!list) return;
+        list.innerHTML = '<div class="loading-state">Listening for whispers...</div>';
+        const { data: comments, error } = await state.db
+            .from('comments')
+            .select('*, profiles(username, avatar_url)')
+            .eq('story_id', storyId)
+            .is('deleted_at', null)
+            .order('created_at', { ascending: true });
+
+        if (error) {
+            list.innerHTML = '<div class="empty-state">Comments could not be loaded.</div>';
+            return;
+        }
+        list.innerHTML = '';
+        if (!comments?.length) {
+            list.innerHTML = '<div class="empty-state">No comments yet. Leave the first little lantern.</div>';
+            return;
+        }
+        comments.forEach((comment) => list.insertAdjacentHTML('beforeend', commentHTML(comment)));
+    }
+
+    function commentHTML(comment) {
+        const author = comment.profiles?.username || comment.guest_name || 'Guest';
+        const avatar = comment.profiles?.avatar_url || createAvatarDataUrl(author);
+        return `
+            <div class="comment-item" data-comment-id="${comment.id}">
+                <img src="${escapeAttr(avatar)}" class="feed-avatar-img" alt="">
+                <div class="comment-copy">
+                    <strong>@${escapeHtml(author)}</strong>
+                    <p>${escapeHtml(comment.content || '')}</p>
+                </div>
+                <div class="action-column">
+                    <button class="menu-trigger" type="button" data-comment-action="menu" aria-label="Comment menu">⋮</button>
+                    <div class="menu-dropdown">
+                        <button type="button" data-comment-action="report" data-comment-id="${comment.id}">⚠️ Report</button>
+                        ${canEditComment(comment) ? `<button type="button" class="text-red" data-comment-action="delete" data-comment-id="${comment.id}">🗑️ Delete</button>` : ''}
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    function handleCommentActionClick(event) {
+        const button = event.target.closest('[data-comment-action]');
+        if (!button) return;
+        event.stopPropagation();
+        const action = button.dataset.commentAction;
+        const commentId = Number(button.dataset.commentId || button.closest('[data-comment-id]')?.dataset.commentId);
+        if (action === 'menu') return toggleMenu(button);
+        if (action === 'report') return reportContent('comment', commentId);
+        if (action === 'delete') return deleteComment(commentId);
+    }
+
+    async function postComment() {
+        if (!state.db) return toast('Commenting needs Supabase to be connected.', 'error');
+        if (!state.activeStoryId) return;
+        const input = $('#newCommentInput');
+        const content = input?.value.trim();
+        if (!content) return;
+
+        const payload = { story_id: state.activeStoryId, content };
+        if (state.currentUser) {
+            payload.user_id = state.currentUser.id;
+        } else {
+            const guestName = cleanUsername($('#commentGuestName')?.value);
+            if (!guestName) return toast('Add your name to comment as a guest.', 'error');
+            payload.guest_name = guestName;
+        }
+
+        const { error } = await state.db.from('comments').insert(payload);
+        if (error) return toast(`Could not post comment: ${error.message}`, 'error');
+        input.value = '';
+        toast('Comment posted.');
+        await fetchComments(state.activeStoryId);
+        await fetchStories();
+    }
+
+    async function deleteComment(commentId) {
+        if (!state.db || !window.confirm('Delete this comment?')) return;
+        closeAllMenus();
+        const { error } = await state.db.from('comments').update({ deleted_at: new Date().toISOString() }).eq('id', commentId);
+        if (error) return toast(`Could not delete comment: ${error.message}`, 'error');
+        toast('Comment deleted.');
+        await fetchComments(state.activeStoryId);
+        await fetchStories();
+    }
+
+    function reportContent(type, id) {
+        closeAllMenus();
+        console.info(`Reported ${type}:`, id);
+        toast(`Thanks for reporting this ${type}. An admin can review it.`);
+    }
+
+    async function copyStory(storyId) {
+        const story = getCachedStory(storyId) || (state.activeStoryId === storyId ? state.activeStory : null);
+        if (!story) return;
+        try {
+            await navigator.clipboard.writeText(story.content || '');
+            toast('Story copied to clipboard.');
+        } catch {
+            toast('Could not access clipboard in this browser.', 'error');
+        }
+    }
+
+    function updateStats() {
+        const stories = state.feedStories;
+        const uniqueWriters = new Set(stories.map((story) => story.user_id || story.guest_name || getAuthorName(story))).size;
+        const votes = stories.reduce((sum, story) => sum + Number(story.votes || 0), 0);
+        setText('#statStories', stories.length.toString());
+        setText('#statVotes', votes.toString());
+        setText('#statWriters', uniqueWriters.toString());
+    }
+
+    async function loadAllUsers() {
+        if (!state.db || !state.isAdmin) return;
+        const list = $('#adminUserList');
+        if (!list) return;
+        list.innerHTML = '<div class="loading-state">Loading users...</div>';
+
+        const term = ($('#adminUserSearch')?.value || '').trim();
+        let query = state.db.from('profiles').select('*, user_flairs(flair_id)').order('username').limit(60);
+        if (term) query = query.ilike('username', `%${term}%`);
+        const { data: users, error } = await query;
+
+        if (error) {
+            list.innerHTML = '<div class="empty-state">Could not load users.</div>';
+            return;
+        }
+        list.innerHTML = '';
+        if (!users?.length) {
+            list.innerHTML = '<div class="empty-state">No users found.</div>';
+            return;
+        }
+        users.forEach((user) => list.insertAdjacentHTML('beforeend', adminUserCardHTML(user)));
+    }
+
+    function adminUserCardHTML(user) {
+        const earned = new Set((user.user_flairs || []).map((flair) => flair.flair_id));
+        const badgeButtons = CONFIG.badges.map((badge) => {
+            const has = earned.has(badge.id);
+            return `<button type="button" class="admin-badge-btn ${badge.css} ${has ? 'owned' : ''}" title="Toggle ${badge.name}" data-toggle-badge="${badge.id}" data-user-id="${user.id}" data-has-badge="${has}"></button>`;
+        }).join('');
+        return `
+            <div class="admin-user-card">
+                <div class="admin-user-header">
+                    <button class="text-link" type="button" data-view-user="${user.id}">@${escapeHtml(user.username || 'Unnamed')}</button>
+                    <button class="btn-delete small" type="button" data-ban-user="${user.id}">BAN</button>
+                </div>
+                <div class="admin-badge-controls">${badgeButtons}</div>
+            </div>`;
+    }
+
+    function handleAdminClick(event) {
+        const tab = event.target.closest('[data-admin-tab]');
+        if (tab) return switchAdminTab(tab.dataset.adminTab);
+
+        const award = event.target.closest('[data-award]');
+        if (award) return adminAwardBadge(Number(award.dataset.award));
+
+        const revoke = event.target.closest('[data-revoke]');
+        if (revoke) return adminRevokeBadge(Number(revoke.dataset.revoke));
+
+        const view = event.target.closest('[data-view-user]');
+        if (view) return viewUserProfile(view.dataset.viewUser);
+
+        const ban = event.target.closest('[data-ban-user]');
+        if (ban) return adminBanUser(ban.dataset.banUser);
+
+        const toggle = event.target.closest('[data-toggle-badge]');
+        if (toggle) return toggleUserBadge(toggle.dataset.userId, Number(toggle.dataset.toggleBadge), toggle.dataset.hasBadge === 'true', toggle);
+    }
+
+    function switchAdminTab(tabName) {
+        $$('.admin-tab-content').forEach((panel) => panel.classList.add('hidden'));
+        $$('.tab-btn').forEach((button) => button.classList.toggle('active', button.dataset.adminTab === tabName));
+        $(`#adminTab${capitalize(tabName)}`)?.classList.remove('hidden');
+    }
+
+    async function viewUserProfile(userId) {
+        if (!state.db || !state.isAdmin) return;
+        const modal = $('#profileModal');
+        modal?.classList.add('admin-view');
+        $('.avatar-wrapper')?.classList.add('no-click');
+        $('#settingsSection')?.classList.add('hidden');
+        $('#deleteSection')?.classList.add('hidden');
+        $('#adminDashboardBtn')?.classList.add('hidden');
+        openModal('profileModal');
+
+        const { data: targetUser, error } = await state.db.from('profiles').select('*').eq('id', userId).maybeSingle();
+        if (error || !targetUser) return toast('User data missing.', 'error');
+        setText('#profileNameDisplay', targetUser.username || 'Unnamed');
+        $('#profileAvatar').src = targetUser.avatar_url || createAvatarDataUrl(targetUser.username);
+        await loadPassportForUser(userId);
+        await loadStoriesForUser(userId);
+    }
+
+    function resetProfileModalToMyView() {
+        const modal = $('#profileModal');
+        modal?.classList.remove('admin-view');
+        $('.avatar-wrapper')?.classList.remove('no-click');
+        $('#settingsSection')?.classList.remove('hidden');
+        $('#deleteSection')?.classList.remove('hidden');
+        $('#adminDashboardBtn')?.classList.toggle('hidden', !state.isAdmin);
+
+        if (!state.currentUser || !state.currentProfile) return;
+        setText('#profileNameDisplay', state.currentProfile.username || 'Writer');
+        $('#profileAvatar').src = state.currentProfile.avatar_url || createAvatarDataUrl(state.currentProfile.username);
+        loadPassportForUser(state.currentUser.id);
+        loadStoriesForUser(state.currentUser.id);
+    }
+
+    async function toggleUserBadge(userId, badgeId, hasBadge, button) {
+        if (!state.db || !state.isAdmin) return;
+        const confirmed = window.confirm(hasBadge ? 'Remove this badge?' : 'Award this badge?');
+        if (!confirmed) return;
+        const query = state.db.from('user_flairs');
+        const { error } = hasBadge
+            ? await query.delete().eq('user_id', userId).eq('flair_id', badgeId)
+            : await query.insert({ user_id: userId, flair_id: badgeId });
+        if (error) return toast(`Badge update failed: ${error.message}`, 'error');
+        button.classList.toggle('owned', !hasBadge);
+        button.dataset.hasBadge = String(!hasBadge);
+        toast(hasBadge ? 'Badge removed.' : 'Badge awarded.');
+    }
+
+    async function adminBanUser(userId) {
+        if (!state.db || !state.isAdmin) return;
+        if (!window.confirm('Remove this user profile row? Supabase Auth deletion still requires a server/admin function.')) return;
+        const { error } = await state.db.from('profiles').delete().eq('id', userId);
+        if (error) return toast(`Could not remove user: ${error.message}`, 'error');
+        toast('User profile removed.');
+        loadAllUsers();
+    }
+
+    async function adminAwardBadge(badgeId) {
+        await setManualBadge(badgeId, 'award');
+    }
+
+    async function adminRevokeBadge(badgeId) {
+        await setManualBadge(badgeId, 'revoke');
+    }
+
+    async function setManualBadge(badgeId, mode) {
+        if (!state.db || !state.isAdmin) return;
+        const input = $(`#badgeInput_${badgeId}`);
+        const username = input?.value.trim();
+        if (!username) return toast('Enter a username first.', 'error');
+        const { data: user, error: userError } = await state.db.from('profiles').select('id').eq('username', username).maybeSingle();
+        if (userError || !user) return toast('User not found.', 'error');
+
+        const { error } = mode === 'award'
+            ? await state.db.from('user_flairs').insert({ user_id: user.id, flair_id: badgeId })
+            : await state.db.from('user_flairs').delete().eq('user_id', user.id).eq('flair_id', badgeId);
+        if (error) return toast(`Badge ${mode} failed: ${error.message}`, 'error');
+        input.value = '';
+        toast(mode === 'award' ? 'Badge awarded.' : 'Badge revoked.');
+        loadAllUsers();
+    }
+
+    async function loadPassportForUser(targetId) {
+        if (!state.db) return;
+        const grid = $('#flairGrid');
+        if (!grid) return;
+        grid.innerHTML = '<div class="loading-state">Loading badges...</div>';
+
+        const [{ data: userFlairs, error }, { data: targetProfile }] = await Promise.all([
+            state.db.from('user_flairs').select('flair_id').eq('user_id', targetId),
+            state.db.from('profiles').select('selected_flair_id').eq('id', targetId).maybeSingle()
+        ]);
+        if (error) {
+            grid.innerHTML = '<div class="empty-state">Error loading badges.</div>';
+            return;
+        }
+
+        const counts = {};
+        (userFlairs || []).forEach((flair) => { counts[flair.flair_id] = (counts[flair.flair_id] || 0) + 1; });
+        const earnedIds = new Set((userFlairs || []).map((flair) => flair.flair_id));
+        const selectedId = targetProfile?.selected_flair_id || null;
+        grid.innerHTML = '';
+
+        CONFIG.badges.forEach((badge) => {
+            const isUnlocked = earnedIds.has(badge.id);
+            const item = document.createElement('button');
+            item.type = 'button';
+            item.className = `flair-item ${isUnlocked ? 'unlocked' : 'locked'} ${selectedId === badge.id ? 'selected' : ''}`;
+            item.disabled = !(isUnlocked && targetId === state.currentUser?.id);
+            item.innerHTML = `
+                <div class="flair-preview ${isUnlocked ? badge.css : 'frame-locked'}"></div>
+                <span>${escapeHtml(badge.name)}</span>
+                <div class="my-badge-tooltip">Times earned: ${counts[badge.id] || 0}</div>`;
+            if (isUnlocked && targetId === state.currentUser?.id) item.addEventListener('click', () => equipFlair(badge.id));
+            grid.appendChild(item);
+        });
+    }
+
+    async function equipFlair(badgeId) {
+        if (!state.db || !state.currentUser) return;
+        const { error } = await state.db.from('profiles').update({ selected_flair_id: badgeId }).eq('id', state.currentUser.id);
+        if (error) return toast(`Could not equip badge: ${error.message}`, 'error');
+        state.currentProfile = await getProfileById(state.currentUser.id);
+        updateUI();
+        loadPassportForUser(state.currentUser.id);
+        toast('Profile frame equipped.');
+    }
+
+    async function loadStoriesForUser(targetId) {
+        if (!state.db) return;
+        const list = $('#myStoriesList');
+        if (!list) return;
+        list.innerHTML = '<div class="loading-state">Loading stories...</div>';
+        const { data: stories, error } = await state.db
+            .from('stories')
+            .select('*')
+            .eq('user_id', targetId)
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false });
+
+        if (error) {
+            list.innerHTML = '<div class="empty-state">Could not load stories.</div>';
+            return;
+        }
+        list.innerHTML = '';
+        if (!stories?.length) {
+            list.innerHTML = '<p class="subtext" style="text-align:center; padding:1rem;">No stories yet.</p>';
+            return;
+        }
+        stories.forEach((story) => {
+            const details = document.createElement('details');
+            details.className = 'story-accordion';
+            const summary = document.createElement('summary');
+            summary.className = 'story-summary';
+            const text = document.createElement('span');
+            text.textContent = truncate(story.content || '', 56);
+            summary.appendChild(text);
+
+            if (targetId === state.currentUser?.id || state.isAdmin) {
+                const del = document.createElement('button');
+                del.type = 'button';
+                del.textContent = '×';
+                del.className = 'btn-delete-small';
+                del.title = 'Delete story';
+                del.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    deleteStory(story.id);
+                });
+                summary.appendChild(del);
+            }
+
+            const content = document.createElement('div');
+            content.className = 'story-content-preview';
+            content.textContent = story.content || '';
+            details.append(summary, content);
+            list.appendChild(details);
+        });
+    }
+
+    async function uploadAvatar(event) {
+        if (!state.db || !state.currentUser) return openAuth('login');
+        const file = event.target.files?.[0];
+        if (!file) return;
+        if (file.size > 2_000_000) return toast('Avatar is too large. Please use an image under 2MB.', 'error');
+        if (!file.type.startsWith('image/')) return toast('Please choose an image file.', 'error');
+
+        const overlay = $('#avatarEditOverlay');
+        if (overlay) overlay.textContent = '⏳';
+        const extension = file.name.split('.').pop()?.toLowerCase() || 'png';
+        const fileName = `${state.currentUser.id}/${Date.now()}.${extension}`;
+
+        try {
+            const { error: uploadError } = await state.db.storage.from('avatars').upload(fileName, file, { cacheControl: '3600', upsert: true });
+            if (uploadError) throw uploadError;
+            const { data: { publicUrl } } = state.db.storage.from('avatars').getPublicUrl(fileName);
+            const { error: dbError } = await state.db.from('profiles').update({ avatar_url: publicUrl }).eq('id', state.currentUser.id);
+            if (dbError) throw dbError;
+            state.currentProfile = await getProfileById(state.currentUser.id);
+            updateUI();
+            toast('Avatar updated.');
+        } catch (error) {
+            console.error('Avatar upload failed:', error);
+            toast('Upload failed. Make sure the avatars bucket exists and allows uploads.', 'error');
+        } finally {
+            if (overlay) overlay.textContent = '📷';
+            event.target.value = '';
+        }
+    }
+
+    function submitFeedback() {
+        const text = $('#feedbackText')?.value.trim();
+        if (!text) return toast('Write a little note first.', 'error');
+        $('#feedbackText').value = '';
+        closeModal('feedbackModal');
+        toast('🦉 Owl dispatched. Hook this up to a feedback table when ready.');
+    }
+
+    function openFeedback() {
+        $('#feedbackEmail')?.classList.toggle('hidden', !!state.currentUser);
+        openModal('feedbackModal');
+    }
+
+    function restoreDraft() {
+        const draft = localStorage.getItem(CONFIG.draftKey);
+        const guestName = localStorage.getItem(CONFIG.guestNameKey);
+        if (draft && $('#mainStoryInput')) $('#mainStoryInput').value = draft;
+        if (guestName && $('#guestPenName')) $('#guestPenName').value = guestName;
+    }
+
+    function saveDraft() {
+        const value = $('#mainStoryInput')?.value || '';
+        localStorage.setItem(CONFIG.draftKey, value);
+        setText('#draftStatus', value ? 'Draft saved locally' : 'Draft is empty');
+    }
+
+    function saveGuestName() {
+        localStorage.setItem(CONFIG.guestNameKey, $('#guestPenName')?.value || '');
+    }
+
+    function clearDraft() {
+        if (!$('#mainStoryInput')?.value && !localStorage.getItem(CONFIG.draftKey)) return;
+        if (!window.confirm('Clear your local draft?')) return;
+        $('#mainStoryInput').value = '';
+        localStorage.removeItem(CONFIG.draftKey);
+        updateCharCounter();
+        setText('#draftStatus', 'Draft cleared');
+    }
+
+    function updateCharCounter() {
+        const value = $('#mainStoryInput')?.value || '';
+        const count = value.length;
+        setText('#charCount', String(count));
+        const percent = Math.min(100, (count / 2000) * 100);
+        const bar = $('#charBar');
+        if (bar) bar.style.width = `${percent}%`;
+    }
+
+    function useRandomPrompt() {
+        const prompt = CONFIG.prompts[Math.floor(Math.random() * CONFIG.prompts.length)];
+        setWeeklyPrompt(prompt);
+        const textArea = $('#mainStoryInput');
+        if (!textArea) return;
+        const prefix = `Prompt: ${prompt}\n\n`;
+        if (!textArea.value.trim()) {
+            textArea.value = prefix;
+        } else {
+            textArea.value = `${textArea.value.trim()}\n\n${prefix}`;
+        }
+        textArea.focus();
+        updateCharCounter();
+        saveDraft();
+    }
+
+    function setWeeklyPrompt(prompt) {
+        setText('#weeklyPromptText', prompt);
+    }
+
+    async function copyPrompt() {
+        try {
+            await navigator.clipboard.writeText($('#weeklyPromptText')?.textContent || '');
+            toast('Prompt copied.');
+        } catch {
+            toast('Could not access clipboard in this browser.', 'error');
+        }
+    }
+
+    function toggleFocusMode() {
+        document.body.classList.toggle('focus-mode');
+        $('#writingZoneSection')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function toggleMenu(button) {
+        const dropdown = button.closest('.action-column')?.querySelector('.menu-dropdown');
+        if (!dropdown) return;
+        const shouldOpen = !dropdown.classList.contains('show');
+        closeAllMenus();
+        dropdown.classList.toggle('show', shouldOpen);
+    }
+
+    function closeAllMenus() {
+        $$('.menu-dropdown.show').forEach((menu) => menu.classList.remove('show'));
+    }
+
+    function getCachedStory(storyId) {
+        return [...state.feedStories, ...state.topStories].find((story) => Number(story.id) === Number(storyId));
+    }
+
+    function getAuthorName(story) {
+        return story?.guest_name || story?.profiles?.username || 'Anonymous';
+    }
+
+    function getAvatarHTML(story, authorName) {
+        const avatar = story?.profiles?.avatar_url;
+        if (avatar) return `<img src="${escapeAttr(avatar)}" class="feed-avatar-img" alt="${escapeAttr(authorName)} avatar">`;
+        return `<div class="feed-avatar-placeholder" aria-hidden="true">${escapeHtml(authorName.charAt(0).toUpperCase() || 'A')}</div>`;
+    }
+
+    function getCommentCount(story) {
+        const raw = story?.comments;
+        if (Array.isArray(raw) && raw[0] && typeof raw[0].count !== 'undefined') return Number(raw[0].count || 0);
+        if (typeof raw === 'number') return raw;
+        return 0;
+    }
+
+    function canEditStory(story) {
+        return !!(state.isAdmin || (state.currentUser && story?.user_id === state.currentUser.id));
+    }
+
+    function canEditComment(comment) {
+        return !!(state.isAdmin || (state.currentUser && comment?.user_id === state.currentUser.id));
+    }
+
+    function formatDate(value) {
+        if (!value) return '';
+        try {
+            return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(value));
+        } catch {
+            return '';
+        }
+    }
+
+    function truncate(text, length) {
+        const clean = String(text || '').trim();
+        return clean.length > length ? `${clean.slice(0, length).trim()}…` : clean;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function escapeAttr(value) {
+        return escapeHtml(value).replace(/`/g, '&#096;');
+    }
+
+    function setText(selector, value) {
+        const element = $(selector);
+        if (element) element.textContent = value;
+    }
+
+    function setButtonLoading(selector, isLoading, loadingLabel = 'Working...') {
+        const button = $(selector);
+        if (!button) return;
+        if (isLoading) {
+            button.dataset.originalText = button.textContent;
+            button.textContent = loadingLabel;
+            button.disabled = true;
+        } else {
+            button.textContent = button.dataset.originalText || button.textContent;
+            button.disabled = false;
+            delete button.dataset.originalText;
+        }
+    }
+
+    function toast(message, type = 'success', timeout = 4200) {
+        const region = $('#toastRegion');
+        if (!region) return;
+        const note = document.createElement('div');
+        note.className = `toast ${type === 'error' ? 'error' : ''}`;
+        note.textContent = message;
+        region.appendChild(note);
+        window.setTimeout(() => {
+            note.style.opacity = '0';
+            note.style.transform = 'translateY(8px)';
+            window.setTimeout(() => note.remove(), 180);
+        }, timeout);
+    }
+
+    function debounce(fn, wait = 200) {
+        let timer;
+        return (...args) => {
+            window.clearTimeout(timer);
+            timer = window.setTimeout(() => fn(...args), wait);
+        };
+    }
+
+    function capitalize(value) {
+        return String(value || '').charAt(0).toUpperCase() + String(value || '').slice(1);
+    }
+
+    window.closeModal = closeModal;
+    window.openFeedback = openFeedback;
+    window.scrollToTop = scrollToTop;
+    window.enterNook = enterNook;
+    window.resetProfileModalToMyView = resetProfileModalToMyView;
+    window.switchAdminTab = switchAdminTab;
+    window.adminAwardBadge = adminAwardBadge;
+    window.adminRevokeBadge = adminRevokeBadge;
+})();
