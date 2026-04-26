@@ -35,6 +35,9 @@
         isAdmin: false,
         activeStoryId: null,
         activeStory: null,
+        editingStoryId: null,
+        currentPrompt: '',
+        currentVideoUrl: '',
         isSignUp: false,
         feedLimit: 30,
         feedStories: [],
@@ -81,6 +84,7 @@
         state.db.auth.onAuthStateChange(async (_event, session) => {
             await handleUserSession(session);
         });
+        await loadSiteSettings();
         await fetchStories();
         state.initialized = true;
     }
@@ -98,7 +102,6 @@
             openModal('profileModal');
             resetProfileModalToMyView();
         });
-        $('#infoBtn')?.addEventListener('click', () => openModal('aboutModal'));
         $('#footerFeedbackBtn')?.addEventListener('click', openFeedback);
         $$('[data-open]').forEach((button) => button.addEventListener('click', () => openModal(button.dataset.open)));
         $$('[data-close]').forEach((button) => button.addEventListener('click', () => closeModal(button.dataset.close)));
@@ -136,8 +139,9 @@
         $('#clearDraftBtn')?.addEventListener('click', clearDraft);
         $('#copyPromptBtn')?.addEventListener('click', copyPrompt);
         $('#candleBtn')?.addEventListener('click', toggleCandleMode);
-        $('#silenceBtn')?.addEventListener('click', toggleQuietRoom);
         $('#exitFocusBtn')?.addEventListener('click', exitFocusMode);
+        $('#saveStoryEditBtn')?.addEventListener('click', saveStoryEdit);
+        $('#saveSiteSettingsBtn')?.addEventListener('click', saveSiteSettings);
 
         $('#storySearch')?.addEventListener('input', renderFeed);
         $('#feedSort')?.addEventListener('change', () => fetchStories({ resetLimit: true }));
@@ -332,37 +336,19 @@
     }
 
     function enterNook(targetId = 'writingZoneSection') {
-        playBackgroundVideo();
-        loadYouTubePlayer();
-        window.setTimeout(() => document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
-    }
+        const overlay = $('#welcomeOverlay');
+        overlay?.classList.add('is-leaving');
+        window.setTimeout(() => overlay?.classList.add('hidden'), 650);
 
-    function loadYouTubePlayer() {
-        const player = $('#youtubePlayer');
-        if (!player) return;
-        if (!player.src || !player.src.includes('youtube.com/embed')) {
-            player.src = CONFIG.youtubeSrc;
-        }
-    }
-
-    function playBackgroundVideo() {
         const bgVideo = $('#bgVideo');
-        if (!bgVideo) return;
-        bgVideo.muted = true;
-        bgVideo.playsInline = true;
-        const playAttempt = bgVideo.play();
-        if (playAttempt && typeof playAttempt.catch === 'function') {
-            playAttempt.catch(() => {
-                // Browsers may still block background video until the first user gesture.
-                const startAfterGesture = () => {
-                    bgVideo.play().catch(() => undefined);
-                    window.removeEventListener('pointerdown', startAfterGesture);
-                    window.removeEventListener('keydown', startAfterGesture);
-                };
-                window.addEventListener('pointerdown', startAfterGesture, { once: true });
-                window.addEventListener('keydown', startAfterGesture, { once: true });
-            });
+        if (bgVideo) {
+            bgVideo.muted = true;
+            bgVideo.play().catch(() => undefined);
         }
+        const player = $('#youtubePlayer');
+        if (player && !player.src) player.src = CONFIG.youtubeSrc;
+
+        window.setTimeout(() => document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 250);
     }
 
     function setAuthMode(mode) {
@@ -486,12 +472,7 @@
 
     async function deleteProfileData() {
         if (!state.db || !state.currentUser) return openAuth('login');
-        const confirmed = await owlConfirm({
-            title: 'Delete profile data?',
-            message: 'This hides your profile details from the Nook. Your Supabase Auth user may still exist unless removed server-side.',
-            confirmText: 'Delete profile',
-            danger: true
-        });
+        const confirmed = window.confirm('Delete your profile row and hide your account details from the Nook? Your Supabase Auth user may still exist unless removed server-side.');
         if (!confirmed) return;
         const { error } = await state.db.from('profiles').delete().eq('id', state.currentUser.id);
         if (error) return toast(`Could not delete profile: ${error.message}`, 'error');
@@ -588,7 +569,7 @@
                     <button class="menu-trigger" type="button" data-action="menu" aria-label="Story menu">⋮</button>
                     <div class="menu-dropdown">
                         <button type="button" data-action="report" data-story-id="${story.id}">⚠️ Report</button>
-                        ${canEditStory(story) ? `<button type="button" class="text-red" data-action="delete" data-story-id="${story.id}">🗑️ Delete</button>` : ''}
+                        ${canEditStory(story) ? `<button type="button" data-action="edit" data-story-id="${story.id}">✎ Edit</button><button type="button" class="text-red" data-action="delete" data-story-id="${story.id}">🗑️ Delete</button>` : ''}
                     </div>
                 </div>
             </div>`;
@@ -633,6 +614,7 @@
         if (action === 'comment') return openReadModal(storyId);
         if (action === 'copy') return copyStory(storyId);
         if (action === 'report') return reportContent('story', storyId);
+        if (action === 'edit') return editStory(storyId);
         if (action === 'delete') return deleteStory(storyId);
     }
 
@@ -652,21 +634,16 @@
         }
 
         setButtonLoading('#publishBtn', true, 'Publishing...');
-        try {
-            const { error } = await state.db.from('stories').insert(payload);
-            if (error) return toast(`Error publishing: ${friendlyDbError(error)}`, 'error', 7000);
+        const { error } = await state.db.from('stories').insert(payload);
+        setButtonLoading('#publishBtn', false);
 
-            textArea.value = '';
-            localStorage.removeItem(CONFIG.draftKey);
-            updateCharCounter();
-            toast('Story published. Added to the shelf.');
-            await fetchStories({ resetLimit: true });
-        } catch (error) {
-            console.error('Publish failed:', error);
-            toast(`Error publishing: ${friendlyDbError(error)}`, 'error', 7000);
-        } finally {
-            setButtonLoading('#publishBtn', false);
-        }
+        if (error) return toast(`Error publishing: ${error.message}`, 'error');
+        textArea.value = '';
+        localStorage.removeItem(CONFIG.draftKey);
+        updateCharCounter();
+        setText('#draftStatus', 'Published and draft cleared');
+        toast('Story published. The shelf just got warmer.');
+        await fetchStories({ resetLimit: true });
     }
 
     async function voteStory(storyId, currentVotes = 0) {
@@ -688,13 +665,7 @@
         if (!state.db) return;
         const story = getCachedStory(storyId) || state.activeStory;
         if (story && !canEditStory(story)) return toast('Only the author or admin can delete this story.', 'error');
-        const confirmed = await owlConfirm({
-            title: 'Delete this story?',
-            message: 'This removes the story from the public feed.',
-            confirmText: 'Delete story',
-            danger: true
-        });
-        if (!confirmed) return;
+        if (!window.confirm('Delete this story from the public feed?')) return;
         closeAllMenus();
         const { error } = await state.db.from('stories').update({ deleted_at: new Date().toISOString() }).eq('id', storyId);
         if (error) return toast(`Could not delete story: ${error.message}`, 'error');
@@ -702,6 +673,52 @@
         toast('Story deleted.');
         await fetchStories();
         if (state.currentUser) loadStoriesForUser(state.currentUser.id);
+    }
+
+    async function editStory(storyId) {
+        const story = getCachedStory(storyId) || state.activeStory;
+        if (!story || !canEditStory(story)) return toast('Only the author or admin can edit this story.', 'error');
+        state.editingStoryId = storyId;
+        const input = $('#editStoryInput');
+        if (input) input.value = story.content || '';
+        closeAllMenus();
+        openModal('editStoryModal');
+        window.setTimeout(() => input?.focus(), 50);
+    }
+
+    async function saveStoryEdit() {
+        if (!state.db) return toast('Editing needs Supabase to be connected.', 'error');
+        const storyId = state.editingStoryId;
+        const input = $('#editStoryInput');
+        const content = input?.value.trim();
+        if (!storyId) return toast('No story selected.', 'error');
+        if (!content) return toast('The story cannot be empty.', 'error');
+
+        const story = getCachedStory(storyId) || state.activeStory;
+        if (story && !canEditStory(story)) return toast('Only the author or admin can edit this story.', 'error');
+
+        setButtonLoading('#saveStoryEditBtn', true, 'Saving...');
+        try {
+            const { error } = await state.db
+                .from('stories')
+                .update({ content, updated_at: new Date().toISOString() })
+                .eq('id', storyId);
+            if (error) return toast(`Could not save edit: ${friendlyDbError(error)}`, 'error', 7000);
+
+            closeModal('editStoryModal');
+            if (state.activeStoryId === storyId) {
+                state.activeStory = { ...(state.activeStory || {}), content };
+                setText('#readModalText', content);
+            }
+            toast('Story updated.');
+            await fetchStories();
+            if (state.currentUser) loadStoriesForUser(state.currentUser.id);
+        } catch (error) {
+            console.error('Edit failed:', error);
+            toast(`Could not save edit: ${friendlyDbError(error)}`, 'error', 7000);
+        } finally {
+            setButtonLoading('#saveStoryEditBtn', false);
+        }
     }
 
     async function openReadModal(storyId) {
@@ -731,7 +748,7 @@
                 <button class="btn-action-icon" type="button" data-action="copy" data-story-id="${story.id}">📋 Copy story</button>
                 <button class="btn-action-icon" type="button" data-action="report" data-story-id="${story.id}">⚠️ Report</button>
             </div>
-            ${canEditStory(story) ? `<button class="btn-delete" type="button" data-action="delete" data-story-id="${story.id}">Delete</button>` : ''}`;
+            ${canEditStory(story) ? `<div class="actions-right"><button class="btn-secondary small" type="button" data-action="edit" data-story-id="${story.id}">Edit</button><button class="btn-delete" type="button" data-action="delete" data-story-id="${story.id}">Delete</button></div>` : ''}`;
     }
 
     async function fetchComments(storyId) {
@@ -804,32 +821,16 @@
             payload.guest_name = guestName;
         }
 
-        setButtonLoading('#postCommentBtn', true, 'Posting...');
-        try {
-            const { error } = await state.db.from('comments').insert(payload);
-            if (error) return toast(`Could not post comment: ${friendlyDbError(error)}`, 'error', 7000);
-
-            input.value = '';
-            toast('Comment posted.');
-            await fetchComments(state.activeStoryId);
-            await fetchStories();
-        } catch (error) {
-            console.error('Comment failed:', error);
-            toast(`Could not post comment: ${friendlyDbError(error)}`, 'error', 7000);
-        } finally {
-            setButtonLoading('#postCommentBtn', false);
-        }
+        const { error } = await state.db.from('comments').insert(payload);
+        if (error) return toast(`Could not post comment: ${error.message}`, 'error');
+        input.value = '';
+        toast('Comment posted.');
+        await fetchComments(state.activeStoryId);
+        await fetchStories();
     }
 
     async function deleteComment(commentId) {
-        if (!state.db) return;
-        const confirmed = await owlConfirm({
-            title: 'Delete this comment?',
-            message: 'This removes the comment from the discussion.',
-            confirmText: 'Delete comment',
-            danger: true
-        });
-        if (!confirmed) return;
+        if (!state.db || !window.confirm('Delete this comment?')) return;
         closeAllMenus();
         const { error } = await state.db.from('comments').update({ deleted_at: new Date().toISOString() }).eq('id', commentId);
         if (error) return toast(`Could not delete comment: ${error.message}`, 'error');
@@ -927,6 +928,7 @@
         $$('.admin-tab-content').forEach((panel) => panel.classList.add('hidden'));
         $$('.tab-btn').forEach((button) => button.classList.toggle('active', button.dataset.adminTab === tabName));
         $(`#adminTab${capitalize(tabName)}`)?.classList.remove('hidden');
+        if (tabName === 'settings') populateSiteSettingsForm();
     }
 
     async function viewUserProfile(userId) {
@@ -964,11 +966,7 @@
 
     async function toggleUserBadge(userId, badgeId, hasBadge, button) {
         if (!state.db || !state.isAdmin) return;
-        const confirmed = await owlConfirm({
-            title: hasBadge ? 'Remove badge?' : 'Award badge?',
-            message: hasBadge ? 'This will remove the selected badge from the profile.' : 'This will add the selected badge to the profile.',
-            confirmText: hasBadge ? 'Remove badge' : 'Award badge'
-        });
+        const confirmed = window.confirm(hasBadge ? 'Remove this badge?' : 'Award this badge?');
         if (!confirmed) return;
         const query = state.db.from('user_flairs');
         const { error } = hasBadge
@@ -982,13 +980,7 @@
 
     async function adminBanUser(userId) {
         if (!state.db || !state.isAdmin) return;
-        const confirmed = await owlConfirm({
-            title: 'Remove user profile?',
-            message: 'This removes the profile row. Supabase Auth deletion still requires a server/admin function.',
-            confirmText: 'Remove profile',
-            danger: true
-        });
-        if (!confirmed) return;
+        if (!window.confirm('Remove this user profile row? Supabase Auth deletion still requires a server/admin function.')) return;
         const { error } = await state.db.from('profiles').delete().eq('id', userId);
         if (error) return toast(`Could not remove user: ${error.message}`, 'error');
         toast('User profile removed.');
@@ -1171,24 +1163,20 @@
     function saveDraft() {
         const value = $('#mainStoryInput')?.value || '';
         localStorage.setItem(CONFIG.draftKey, value);
+        setText('#draftStatus', value ? 'Draft saved locally' : 'Draft is empty');
     }
 
     function saveGuestName() {
         localStorage.setItem(CONFIG.guestNameKey, $('#guestPenName')?.value || '');
     }
 
-    async function clearDraft() {
+    function clearDraft() {
         if (!$('#mainStoryInput')?.value && !localStorage.getItem(CONFIG.draftKey)) return;
-        const confirmed = await owlConfirm({
-            title: 'Clear draft?',
-            message: 'Your locally saved draft will be erased from this browser.',
-            confirmText: 'Clear draft'
-        });
-        if (!confirmed) return;
+        if (!window.confirm('Clear your local draft?')) return;
         $('#mainStoryInput').value = '';
         localStorage.removeItem(CONFIG.draftKey);
         updateCharCounter();
-        toast('Draft cleared.');
+        setText('#draftStatus', 'Draft cleared');
     }
 
     function updateCharCounter() {
@@ -1198,6 +1186,72 @@
         const percent = Math.min(100, (count / 2000) * 100);
         const bar = $('#charBar');
         if (bar) bar.style.width = `${percent}%`;
+    }
+
+    async function loadSiteSettings() {
+        if (!state.db) return;
+        try {
+            const { data, error } = await state.db.from('site_settings').select('key,value').in('key', ['weekly_prompt', 'youtube_url']);
+            if (error || !Array.isArray(data)) return;
+            const settings = Object.fromEntries(data.map((row) => [row.key, row.value]));
+            if (settings.weekly_prompt) setWeeklyPrompt(settings.weekly_prompt);
+            if (settings.youtube_url) loadYouTubePlayer(toYouTubeEmbedUrl(settings.youtube_url));
+        } catch (error) {
+            // Optional table: ignore when it has not been created yet.
+            console.info('Site settings table is optional and not currently available.');
+        }
+    }
+
+    function populateSiteSettingsForm() {
+        const promptInput = $('#adminPromptInput');
+        const videoInput = $('#adminVideoInput');
+        if (promptInput) promptInput.value = state.currentPrompt || CONFIG.prompts[0];
+        if (videoInput) videoInput.value = state.currentVideoUrl || CONFIG.youtubeSrc;
+    }
+
+    async function saveSiteSettings() {
+        if (!state.db || !state.isAdmin) return toast('Only the admin account can save site settings.', 'error');
+        const prompt = $('#adminPromptInput')?.value.trim();
+        const videoUrl = $('#adminVideoInput')?.value.trim();
+        if (!prompt) return toast('Add a prompt before saving.', 'error');
+
+        const rows = [
+            { key: 'weekly_prompt', value: prompt },
+            { key: 'youtube_url', value: videoUrl || CONFIG.youtubeSrc }
+        ];
+
+        setButtonLoading('#saveSiteSettingsBtn', true, 'Saving...');
+        try {
+            const { error } = await state.db.from('site_settings').upsert(rows, { onConflict: 'key' });
+            if (error) return toast(`Could not save settings: ${friendlyDbError(error)}`, 'error', 8000);
+            setWeeklyPrompt(prompt);
+            loadYouTubePlayer(toYouTubeEmbedUrl(videoUrl || CONFIG.youtubeSrc));
+            toast('Site settings saved.');
+        } catch (error) {
+            console.error('Settings save failed:', error);
+            toast(`Could not save settings: ${friendlyDbError(error)}`, 'error', 8000);
+        } finally {
+            setButtonLoading('#saveSiteSettingsBtn', false);
+        }
+    }
+
+    function toYouTubeEmbedUrl(url) {
+        const fallback = CONFIG.youtubeSrc;
+        if (!url) return fallback;
+        try {
+            if (url.includes('/embed/')) {
+                const joiner = url.includes('?') ? '&' : '?';
+                return `${url}${joiner}autoplay=1&mute=1&playsinline=1&controls=1&rel=0&enablejsapi=1`;
+            }
+            const parsed = new URL(url);
+            const id = parsed.searchParams.get('v') || parsed.pathname.split('/').filter(Boolean).pop();
+            if (!id) return fallback;
+            const start = parsed.searchParams.get('t') || parsed.searchParams.get('start') || '0';
+            const seconds = String(start).replace('s', '');
+            return `https://www.youtube.com/embed/${encodeURIComponent(id)}?start=${encodeURIComponent(seconds)}&autoplay=1&mute=1&playsinline=1&controls=1&rel=0&enablejsapi=1&origin=${encodeURIComponent(window.location.origin || '')}`;
+        } catch {
+            return fallback;
+        }
     }
 
     function useRandomPrompt() {
@@ -1217,7 +1271,28 @@
     }
 
     function setWeeklyPrompt(prompt) {
-        setText('#weeklyPromptText', prompt);
+        state.currentPrompt = prompt || '';
+        setText('#weeklyPromptText', state.currentPrompt);
+    }
+
+    function loadYouTubePlayer(src = CONFIG.youtubeSrc) {
+        const player = $('#youtubePlayer');
+        if (!player) return;
+        if (player.src !== src) player.src = src;
+        state.currentVideoUrl = src;
+    }
+
+    function playBackgroundVideo() {
+        const bgVideo = $('#bgVideo');
+        if (!bgVideo) return;
+        bgVideo.muted = true;
+        bgVideo.play().catch(() => {
+            const retry = () => {
+                bgVideo.play().catch(() => undefined);
+                window.removeEventListener('pointerdown', retry);
+            };
+            window.addEventListener('pointerdown', retry, { once: true });
+        });
     }
 
     async function copyPrompt() {
@@ -1249,36 +1324,18 @@
         setText('#candleBtn', lit ? '🕯️ Put out candle' : '🕯️ Light candle');
     }
 
-    function toggleQuietRoom() {
-        const quiet = !document.body.classList.contains('quiet-room');
-        document.body.classList.toggle('quiet-room', quiet);
-        $('#silenceBtn')?.setAttribute('aria-pressed', String(quiet));
-        setText('#silenceBtn', quiet ? 'Room silenced' : 'Silence room');
-        const bgVideo = $('#bgVideo');
-        if (bgVideo) {
-            if (quiet) bgVideo.pause();
-            else bgVideo.play().catch(() => undefined);
-        }
-    }
-
     function toggleRibbonPanel(event) {
         event?.stopPropagation();
         const panel = $('#nookRibbonPanel');
         const button = $('#bookmarkMenuBtn');
         if (!panel || !button) return;
-        const open = panel.classList.contains('hidden');
-        panel.classList.toggle('hidden', !open);
-        button.classList.toggle('is-open', open);
-        button.setAttribute('aria-expanded', String(open));
+        const isOpen = panel.classList.toggle('hidden') === false;
+        button.setAttribute('aria-expanded', String(isOpen));
     }
 
     function closeRibbonPanel() {
-        const panel = $('#nookRibbonPanel');
-        const button = $('#bookmarkMenuBtn');
-        if (!panel || panel.classList.contains('hidden')) return;
-        panel.classList.add('hidden');
-        button?.classList.remove('is-open');
-        button?.setAttribute('aria-expanded', 'false');
+        $('#nookRibbonPanel')?.classList.add('hidden');
+        $('#bookmarkMenuBtn')?.setAttribute('aria-expanded', 'false');
     }
 
     function toggleMenu(button) {
@@ -1366,58 +1423,6 @@
             button.disabled = false;
             delete button.dataset.originalText;
         }
-    }
-
-    function friendlyDbError(error) {
-        const message = String(error?.message || error || 'Unknown error');
-        if (/load failed|failed to fetch|network/i.test(message)) {
-            return 'Network request failed. Check the Supabase URL, anon key, CORS/RLS policies, and your connection.';
-        }
-        if (/row-level security|permission denied|policy/i.test(message)) {
-            return 'Supabase blocked this action. Check the Row Level Security insert/update policy for this table.';
-        }
-        return message;
-    }
-
-    function owlConfirm(options = {}) {
-        const modal = $('#owlConfirmModal');
-        const card = modal?.querySelector('.confirm-card');
-        const confirmBtn = $('#owlConfirmBtn');
-        const cancelBtn = $('#owlCancelBtn');
-        if (!modal || !confirmBtn || !cancelBtn) return Promise.resolve(window.confirm(options.message || 'Are you sure?'));
-
-        setText('#owlConfirmTitle', options.title || 'Are you sure?');
-        setText('#owlConfirmMessage', options.message || 'This action cannot be undone.');
-        setText('#owlConfirmBtn', options.confirmText || 'Confirm');
-        setText('#owlCancelBtn', options.cancelText || 'Cancel');
-        confirmBtn.classList.toggle('danger', !!options.danger);
-
-        modal.classList.remove('hidden');
-        confirmBtn.focus();
-
-        return new Promise((resolve) => {
-            const cleanup = (result) => {
-                modal.classList.add('hidden');
-                confirmBtn.removeEventListener('click', onConfirm);
-                cancelBtn.removeEventListener('click', onCancel);
-                modal.removeEventListener('click', onBackdrop);
-                document.removeEventListener('keydown', onKey);
-                resolve(result);
-            };
-            const onConfirm = () => cleanup(true);
-            const onCancel = () => cleanup(false);
-            const onBackdrop = (event) => {
-                if (event.target === modal || !card?.contains(event.target)) cleanup(false);
-            };
-            const onKey = (event) => {
-                if (event.key === 'Escape') cleanup(false);
-            };
-
-            confirmBtn.addEventListener('click', onConfirm);
-            cancelBtn.addEventListener('click', onCancel);
-            modal.addEventListener('click', onBackdrop);
-            document.addEventListener('keydown', onKey);
-        });
     }
 
     function toast(message, type = 'success', timeout = 4200) {

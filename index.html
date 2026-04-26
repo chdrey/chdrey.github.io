@@ -3,16 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#211916">
+    <meta name="theme-color" content="#20372a">
     <title>The Story Nook</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Source+Sans+3:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+    <div id="welcomeOverlay" class="welcome-overlay">
+        <div class="welcome-card">
+            <div class="brand-lockup big">
+                <span class="brand-mark" aria-hidden="true">
+                    <span></span><span></span><span></span>
+                </span>
+                <span>The Story Nook</span>
+            </div>
+            <p class="eyebrow">A cozy corner for tiny worlds</p>
+            <blockquote class="weekly-quote">
+                “The Road goes ever on and on, down from the door where it began.”
+                <footer>— J.R.R. Tolkien</footer>
+            </blockquote>
+            <div class="welcome-actions">
+                <button id="enterBtn" class="btn-primary large">Enter the Nook</button>
+                <button id="browseBtn" class="btn-ghost large">Browse stories</button>
+            </div>
+        </div>
+    </div>
 
     <nav id="mainNav" class="site-nav">
         <button id="navLogo" class="brand-lockup nav-logo" aria-label="Go to top">
@@ -33,50 +53,8 @@
                     <img id="navAvatar" src="" alt="Profile avatar" class="avatar-small">
                 </button>
             </div>
-            <button id="bookmarkMenuBtn" class="bookmark-ribbon" type="button" aria-expanded="false" aria-controls="nookRibbonPanel">
-                <span class="sr-only">Open reader menu</span>
-            </button>
         </div>
     </nav>
-
-    <aside id="nookRibbonPanel" class="ribbon-panel hidden" aria-label="Reader menu">
-        <div class="ribbon-scroll">
-            <div class="ribbon-grip" aria-hidden="true"></div>
-            <div class="ribbon-heading">
-                <p class="eyebrow dark">Nook ledger</p>
-                <h2>Stories & notes</h2>
-            </div>
-
-            <section class="stats-grid" aria-label="Story Nook highlights">
-                <article class="stat-card"><strong id="statStories">—</strong><span>stories shared</span></article>
-                <article class="stat-card"><strong id="statVotes">—</strong><span>hearts given</span></article>
-                <article class="stat-card"><strong id="statWriters">—</strong><span>writers visited</span></article>
-            </section>
-
-            <section class="feed" aria-labelledby="feedTitle">
-                <div class="section-heading split">
-                    <div>
-                        <p class="eyebrow dark">Reader shelf</p>
-                        <h2 id="feedTitle">Latest Submissions</h2>
-                    </div>
-                    <button id="refreshFeedBtn" class="btn-secondary small" type="button">Refresh</button>
-                </div>
-
-                <div class="feed-toolbar">
-                    <label class="sr-only" for="storySearch">Search stories</label>
-                    <input type="search" id="storySearch" placeholder="Search stories or pen names...">
-                    <label class="sr-only" for="feedSort">Sort stories</label>
-                    <select id="feedSort">
-                        <option value="created_at">Newest first</option>
-                        <option value="votes">Most loved</option>
-                    </select>
-                </div>
-
-                <div id="storyFeed" class="feed-list-container"></div>
-                <button id="loadMoreBtn" class="btn-secondary full-width load-more" type="button">Load more stories</button>
-            </section>
-        </div>
-    </aside>
 
     <div class="video-background" aria-hidden="true">
         <video muted loop playsinline id="bgVideo">
@@ -87,27 +65,19 @@
     <div class="overlay" aria-hidden="true"></div>
 
     <main>
-        <section class="hero card" aria-labelledby="inspirationTitle">
-            <div class="hero-copy">
-                <div>
-                    <p class="eyebrow">This week's inspiration</p>
-                    <h1 id="inspirationTitle">Weekly prompt & film</h1>
-                </div>
-                <button id="infoBtn" class="info-icon" aria-label="About The Story Nook">ⓘ</button>
-            </div>
-
+        <section class="hero card compact-inspiration" aria-label="Weekly inspiration">
             <div class="prompt-strip">
-                <span class="prompt-label">Prompt seed</span>
                 <p id="weeklyPromptText">A traveler finds a floating library where every unwritten story is waiting on a shelf.</p>
-                <button id="copyPromptBtn" class="btn-tiny" type="button">Copy</button>
+                <button id="copyPromptBtn" class="btn-tiny" type="button" aria-label="Copy prompt">Copy</button>
             </div>
 
             <div class="video-wrapper">
-                <iframe id="youtubePlayer" src="" title="Weekly inspiration video" frameborder="0" allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                <iframe id="youtubePlayer" src="" title="Inspiration video" frameborder="0" allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </section>
 
         <section id="writingZoneSection" class="writing-zone card" aria-labelledby="writeTitle">
+            <button id="exitFocusBtn" class="focus-close" type="button" aria-label="Exit focus mode">×</button>
             <div class="section-heading split">
                 <div>
                     <p class="eyebrow">Writing desk</p>
@@ -117,22 +87,19 @@
 
             <textarea id="mainStoryInput" maxlength="2000" placeholder="Start with a sentence you would keep in a notebook..."></textarea>
 
-            <div id="focusControls" class="focus-controls" aria-label="Writing room controls">
-                <button id="candleBtn" class="candle-toggle" type="button" aria-pressed="false"><span aria-hidden="true">🕯️</span> Light candle</button>
-                <button id="silenceBtn" class="btn-ghost small" type="button" aria-pressed="false">Silence room</button>
-                <button id="exitFocusBtn" class="btn-secondary small" type="button">Return to page</button>
-            </div>
-
             <div class="writer-tools">
                 <div class="char-meter" aria-label="Story character count">
                     <div class="char-track"><span id="charBar"></span></div>
                     <span><strong id="charCount">0</strong>/2000</span>
                 </div>
-                <button id="clearDraftBtn" class="text-link clear-draft-link" type="button">Clear draft</button>
             </div>
 
-            <div class="action-bar">
-                <input type="text" id="guestPenName" placeholder="Pen Name (Guest)" maxlength="32" autocomplete="nickname">
+            <div class="action-bar writer-action-line">
+                <div class="writing-actions-left">
+                    <input type="text" id="guestPenName" placeholder="Pen Name (Guest)" maxlength="32" autocomplete="nickname">
+                    <button id="candleBtn" class="candle-toggle" type="button" aria-pressed="false"><span aria-hidden="true">🕯️</span> Light candle</button>
+                    <button id="clearDraftBtn" class="text-link clear-draft-link" type="button">Clear draft</button>
+                </div>
                 <button id="publishBtn" class="btn-primary" type="button">Publish Story</button>
             </div>
         </section>
@@ -143,6 +110,29 @@
                 <h2 id="topStoriesTitle">Top Stories</h2>
             </div>
             <div class="top-stories-container" id="topStories"></div>
+        </section>
+
+        <section class="feed card" aria-labelledby="feedTitle">
+            <div class="section-heading split">
+                <div>
+                    <p class="eyebrow">Fresh pages</p>
+                    <h2 id="feedTitle">Latest Submissions</h2>
+                </div>
+                <button id="refreshFeedBtn" class="btn-secondary small" type="button">Refresh</button>
+            </div>
+
+            <div class="feed-toolbar">
+                <label class="sr-only" for="storySearch">Search stories</label>
+                <input type="search" id="storySearch" placeholder="Search stories or pen names...">
+                <label class="sr-only" for="feedSort">Sort stories</label>
+                <select id="feedSort">
+                    <option value="created_at">Newest first</option>
+                    <option value="votes">Most loved</option>
+                </select>
+            </div>
+
+            <div id="storyFeed" class="feed-list-container"></div>
+            <button id="loadMoreBtn" class="btn-secondary full-width load-more" type="button">Load more stories</button>
         </section>
     </main>
 
@@ -268,6 +258,7 @@
             <div class="admin-tabs">
                 <button class="tab-btn active" type="button" data-admin-tab="users">Users & Badges</button>
                 <button class="tab-btn" type="button" data-admin-tab="contest">Manual Awards</button>
+                <button class="tab-btn" type="button" data-admin-tab="settings">Site Settings</button>
             </div>
             <div id="adminTabUsers" class="admin-tab-content">
                 <input type="search" id="adminUserSearch" placeholder="Search user by name...">
@@ -281,6 +272,34 @@
                 <div class="winner-input-group"><label>🎭 The Bard</label><div><input type="text" id="badgeInput_1" placeholder="Username"><button data-award="1" class="btn-primary small" type="button">Award</button><button data-revoke="1" class="btn-delete small" type="button">Revoke</button></div></div>
                 <div class="winner-input-group"><label>🗣️ Talk of the Nook</label><div><input type="text" id="badgeInput_2" placeholder="Username"><button data-award="2" class="btn-primary small" type="button">Award</button><button data-revoke="2" class="btn-delete small" type="button">Revoke</button></div></div>
                 <div class="winner-input-group"><label>💎 The Trilogy Master</label><div><input type="text" id="badgeInput_6" placeholder="Username"><button data-award="6" class="btn-primary small" type="button">Award</button><button data-revoke="6" class="btn-delete small" type="button">Revoke</button></div></div>
+            </div>
+            <div id="adminTabSettings" class="admin-tab-content hidden">
+                <h3>Site Settings</h3>
+                <p class="modal-intro dark">Optional: connect this to a Supabase <code>site_settings</code> table to update the public prompt and video without changing code.</p>
+                <label for="adminPromptInput">Prompt</label>
+                <textarea id="adminPromptInput" rows="4" placeholder="Current weekly prompt"></textarea>
+                <label for="adminVideoInput">YouTube embed or watch link</label>
+                <input id="adminVideoInput" type="url" placeholder="https://www.youtube.com/watch?v=...">
+                <button id="saveSiteSettingsBtn" class="btn-primary full-width" type="button">Save Site Settings</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="editStoryModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="editStoryTitle">
+        <div class="modal-content book-style read-modal-layout">
+            <button class="close-modal" type="button" data-close="editStoryModal" aria-label="Close">&times;</button>
+            <div class="read-header">
+                <div class="read-icon">✎</div>
+                <div>
+                    <p class="eyebrow dark">Author revision</p>
+                    <h2 id="editStoryTitle">Edit story</h2>
+                </div>
+            </div>
+            <textarea id="editStoryInput" class="edit-story-input" maxlength="2000" placeholder="Revise your story..."></textarea>
+            <div class="action-bar writer-action-line">
+                <button class="btn-secondary" type="button" data-close="editStoryModal">Cancel</button>
+                <button id="saveStoryEditBtn" class="btn-primary" type="button">Save Changes</button>
             </div>
         </div>
     </div>
@@ -314,31 +333,15 @@
             <button class="close-modal" type="button" data-close="aboutModal" aria-label="Close">&times;</button>
             <h2 id="aboutTitle">About The Nook</h2>
             <div class="modal-body-text">
-                <p><strong>The Story Nook</strong> is a small weekly space for short fiction: one prompt, a quiet writing desk, and a public shelf for reading what others have made.</p>
+                <p><strong>The Story Nook</strong> is a soft little writing ritual: watch the weekly inspiration, draft a flash-fiction response, then read, vote, and comment on what others make.</p>
                 <ul>
-                    <li><strong>Read:</strong> browse new pieces from the ribbon menu.</li>
-                    <li><strong>Write:</strong> keep a local draft and publish when it feels ready.</li>
-                    <li><strong>Connect:</strong> vote, comment, and collect profile badges over time.</li>
+                    <li><strong>Watch:</strong> ease into the mood with the weekly video.</li>
+                    <li><strong>Write:</strong> keep a local draft, use prompt seeds, and publish when ready.</li>
+                    <li><strong>Connect:</strong> vote, comment, collect badges, and keep your favorite pen name.</li>
                 </ul>
             </div>
         </div>
     </div>
-
-    <div id="owlConfirmModal" class="confirm-layer hidden" role="dialog" aria-modal="true" aria-labelledby="owlConfirmTitle">
-        <div class="confirm-card" role="document">
-            <div class="owl-silhouette" aria-hidden="true">
-                <span class="owl-eye left"></span>
-                <span class="owl-eye right"></span>
-            </div>
-            <h2 id="owlConfirmTitle">Are you sure?</h2>
-            <p id="owlConfirmMessage">This action cannot be undone.</p>
-            <div class="confirm-actions">
-                <button id="owlCancelBtn" class="btn-ghost" type="button">Cancel</button>
-                <button id="owlConfirmBtn" class="btn-primary" type="button">Confirm</button>
-            </div>
-        </div>
-    </div>
-
 
     <script src="script.js"></script>
 </body>
