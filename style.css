@@ -6555,3 +6555,915 @@ body:not(.focus-mode) #writingZoneSection #soundEffectsMenu:not(.hidden) {
    - publish success sound
    - owl/wing sound on footer contact
    ========================================================= */
+
+
+/* =========================================================
+   Final 59: spacing, ribbon, mobile writing flow refinements
+   ========================================================= */
+
+/* 1. Ribbon width + edge position.
+   The bookmark stays on the screen edge side it currently uses, but is wider
+   and sits 5px from the edge. The dropdown opens slightly farther left. */
+.bookmark-menu-shell {
+    --story-ribbon-width: 52px !important;
+    width: var(--story-ribbon-width) !important;
+    right: 5px !important;
+}
+
+.bookmark-menu-shell::before,
+.bookmark-ribbon {
+    width: var(--story-ribbon-width) !important;
+}
+
+.ribbon-panel {
+    right: calc(var(--story-ribbon-width) + 10px) !important;
+}
+
+.site-nav.scrolled .bookmark-menu-shell,
+#mainNav.scrolled .bookmark-menu-shell {
+    --story-ribbon-width: 48px !important;
+}
+
+.site-nav.scrolled .ribbon-panel,
+#mainNav.scrolled .ribbon-panel {
+    right: calc(var(--story-ribbon-width) + 10px) !important;
+}
+
+@media (max-width: 760px) {
+    .bookmark-menu-shell {
+        --story-ribbon-width: 46px !important;
+        width: var(--story-ribbon-width) !important;
+        right: 5px !important;
+    }
+
+    .bookmark-menu-shell::before,
+    .bookmark-ribbon {
+        width: var(--story-ribbon-width) !important;
+    }
+
+    .ribbon-panel {
+        right: calc(var(--story-ribbon-width) + 10px) !important;
+    }
+
+    .site-nav.scrolled .bookmark-menu-shell,
+    #mainNav.scrolled .bookmark-menu-shell {
+        --story-ribbon-width: 44px !important;
+    }
+}
+
+/* 2. Weekly Prompt window 20px upward, with balanced following spacing. */
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+    margin-top: -20px !important;
+    margin-bottom: 1.15rem !important;
+}
+
+@media (max-width: 760px) {
+    .compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+        margin-top: -20px !important;
+        margin-bottom: 1rem !important;
+    }
+}
+
+/* 3. Main Writing Desk header spacing: tighter and cleaner. */
+body:not(.focus-mode) #writingZoneSection {
+    padding-top: 3.05rem !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .section-heading {
+    margin: 0 0 0.62rem !important;
+    min-height: 1.65rem !important;
+    align-items: center !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .section-heading .eyebrow {
+    line-height: 1 !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+    top: 0.78rem !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .ambient-menu {
+    top: 3.05rem !important;
+}
+
+/* Mobile: Sound/Light sit to the right of the Writing Desk title. */
+@media (max-width: 760px) {
+    body:not(.focus-mode) #writingZoneSection {
+        padding-top: 1.15rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .section-heading {
+        min-height: 2.15rem !important;
+        margin: 0 9.1rem 0.52rem 0 !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+        top: 0.86rem !important;
+        right: 0.82rem !important;
+        left: auto !important;
+        transform: none !important;
+        gap: 0.38rem !important;
+        max-width: 8.7rem !important;
+        justify-content: flex-end !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        min-width: 4.15rem !important;
+        padding: 0.48rem 0.54rem !important;
+        font-size: 0.74rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-icon-btn > span:first-child {
+        font-size: 0.88rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .ambient-menu {
+        top: 3.15rem !important;
+    }
+}
+
+/* 4. Mobile Writing Desk footer: pen name and publish align horizontally. */
+@media (max-width: 640px) {
+    #writingZoneSection .writer-action-line {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        align-items: stretch !important;
+        gap: 0.48rem !important;
+        padding-top: 0.62rem !important;
+        margin-top: 0.35rem !important;
+    }
+
+    #writingZoneSection .writing-actions-left {
+        width: auto !important;
+        min-width: 0 !important;
+        display: block !important;
+    }
+
+    #writingZoneSection #guestPenName {
+        height: 2.72rem !important;
+        padding: 0.68rem 0.72rem !important;
+        font-size: 0.88rem !important;
+    }
+
+    #writingZoneSection #publishBtn {
+        width: auto !important;
+        min-width: 5.9rem !important;
+        height: 2.72rem !important;
+        padding: 0.64rem 0.76rem !important;
+        font-size: 0.86rem !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+        align-self: stretch !important;
+    }
+}
+
+/* 6. Mobile Focus Mode: compact header, title left, X always easy to reach. */
+@media (max-width: 760px) {
+    body.focus-mode main {
+        padding: 64px 8px 28px !important;
+    }
+
+    body.focus-mode #writingZoneSection {
+        min-height: calc(100svh - 70px) !important;
+        margin-top: 0 !important;
+        padding: 2.52rem 0.76rem 0.76rem !important;
+        border-radius: 18px !important;
+        scroll-margin-top: 62px !important;
+        gap: 0.5rem !important;
+    }
+
+    body.focus-mode #writingZoneSection .focus-ambient-controls,
+    body.focus-mode #writingZoneSection .ambient-menu {
+        display: none !important;
+    }
+
+    body.focus-mode #writingZoneSection .section-heading {
+        display: flex !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        min-height: 1.1rem !important;
+        margin: 0 2.85rem 0.12rem 0 !important;
+        padding: 0 !important;
+        text-align: left !important;
+    }
+
+    body.focus-mode #writingZoneSection .section-heading .eyebrow {
+        display: block !important;
+        font-size: 0.74rem !important;
+        letter-spacing: 0.11em !important;
+        line-height: 1 !important;
+        text-align: left !important;
+    }
+
+    body.focus-mode .focus-close {
+        top: 0.46rem !important;
+        right: 0.5rem !important;
+        width: 2.18rem !important;
+        height: 2.18rem !important;
+        z-index: 14 !important;
+    }
+
+    body.focus-mode #mainStoryInput {
+        flex: 1 1 auto !important;
+        min-height: min(56svh, 420px) !important;
+        max-height: none !important;
+        font-size: 1rem !important;
+        line-height: 1.55 !important;
+        padding: 0.86rem !important;
+        resize: none !important;
+        scroll-margin-bottom: 42vh !important;
+    }
+
+    body.focus-mode .writer-tools {
+        margin-top: 0 !important;
+        flex: 0 0 auto !important;
+    }
+
+    body.focus-mode .writer-action-line {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        align-items: stretch !important;
+        gap: 0.45rem !important;
+        padding-top: 0.54rem !important;
+        margin: 0 !important;
+        flex: 0 0 auto !important;
+    }
+
+    body.focus-mode .writing-actions-left {
+        width: auto !important;
+        min-width: 0 !important;
+        display: block !important;
+    }
+
+    body.focus-mode #guestPenName,
+    body.focus-mode #publishBtn {
+        height: 2.58rem !important;
+    }
+
+    body.focus-mode #guestPenName {
+        width: 100% !important;
+        min-width: 0 !important;
+        padding: 0.62rem 0.68rem !important;
+        font-size: 0.86rem !important;
+    }
+
+    body.focus-mode #publishBtn {
+        width: auto !important;
+        min-width: 5.75rem !important;
+        padding: 0.62rem 0.72rem !important;
+        font-size: 0.84rem !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+    }
+}
+
+@media (max-width: 380px) {
+    body:not(.focus-mode) #writingZoneSection .section-heading {
+        margin-right: 8.35rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+        max-width: 8rem !important;
+        gap: 0.28rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        min-width: 3.8rem !important;
+        padding-left: 0.46rem !important;
+        padding-right: 0.46rem !important;
+    }
+
+    body.focus-mode #publishBtn,
+    #writingZoneSection #publishBtn {
+        min-width: 5.3rem !important;
+        padding-left: 0.58rem !important;
+        padding-right: 0.58rem !important;
+        font-size: 0.8rem !important;
+    }
+}
+
+
+/* =========================================================
+   Final 60: ribbon connection + compact headers polish
+   ========================================================= */
+
+/* Weekly Prompt: move the whole window another 20px upward. */
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+    margin-top: -40px !important;
+    margin-bottom: 1.08rem !important;
+}
+
+@media (max-width: 760px) {
+    .compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+        margin-top: -40px !important;
+        margin-bottom: 0.95rem !important;
+    }
+}
+
+/* Ribbon: no visual gap between ribbon and dropdown.
+   Desktop keeps the 5px edge offset. Mobile sits flush with the right edge. */
+.bookmark-menu-shell {
+    --story-ribbon-width: 52px !important;
+    right: 5px !important;
+    width: var(--story-ribbon-width) !important;
+}
+
+.bookmark-menu-shell::before,
+.bookmark-ribbon {
+    width: var(--story-ribbon-width) !important;
+    right: 0 !important;
+}
+
+.ribbon-panel {
+    right: calc(var(--story-ribbon-width) + 5px) !important;
+}
+
+.site-nav.scrolled .bookmark-menu-shell,
+#mainNav.scrolled .bookmark-menu-shell {
+    --story-ribbon-width: 48px !important;
+    right: 5px !important;
+}
+
+.site-nav.scrolled .ribbon-panel,
+#mainNav.scrolled .ribbon-panel {
+    right: calc(var(--story-ribbon-width) + 5px) !important;
+}
+
+@media (max-width: 760px) {
+    .bookmark-menu-shell,
+    .site-nav.scrolled .bookmark-menu-shell,
+    #mainNav.scrolled .bookmark-menu-shell {
+        right: 0 !important;
+        left: auto !important;
+        --story-ribbon-width: 46px !important;
+        width: var(--story-ribbon-width) !important;
+    }
+
+    .bookmark-menu-shell::before,
+    .bookmark-ribbon {
+        right: 0 !important;
+        left: auto !important;
+        width: var(--story-ribbon-width) !important;
+    }
+
+    .ribbon-panel,
+    .site-nav.scrolled .ribbon-panel,
+    #mainNav.scrolled .ribbon-panel {
+        right: var(--story-ribbon-width) !important;
+        left: auto !important;
+    }
+}
+
+/* Writing Desk main header: title left, controls centered/right, less headroom. */
+body:not(.focus-mode) #writingZoneSection {
+    padding-top: 2.55rem !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .section-heading {
+    min-height: 1.25rem !important;
+    margin: 0 8.8rem 0.46rem 0 !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .section-heading .eyebrow {
+    margin: 0 !important;
+    line-height: 1 !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+    top: 0.62rem !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .ambient-menu {
+    top: 2.78rem !important;
+}
+
+/* Focus Mode: title sits left and aligns visually with the X button row. */
+body.focus-mode #writingZoneSection {
+    padding-top: 2.75rem !important;
+}
+
+body.focus-mode #writingZoneSection .section-heading {
+    margin: 0 3.15rem 0.42rem 0 !important;
+    min-height: 1.35rem !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+}
+
+body.focus-mode #writingZoneSection .section-heading .eyebrow {
+    margin: 0 !important;
+    line-height: 1 !important;
+    text-align: left !important;
+}
+
+body.focus-mode .focus-close {
+    top: 0.48rem !important;
+    right: 0.62rem !important;
+}
+
+/* Reader Favorites and Latest Submissions: consistent title headroom. */
+.leaderboard.card,
+.feed.card {
+    padding-top: 1.18rem !important;
+}
+
+.leaderboard.card .section-heading,
+.feed.card .section-heading {
+    min-height: 1.25rem !important;
+    margin: 0 0 0.76rem !important;
+    padding: 0 !important;
+    align-items: center !important;
+}
+
+.feed.card .section-heading.split {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.75rem !important;
+}
+
+.leaderboard.card .section-heading h2,
+.feed.card .section-heading h2,
+#topStoriesTitle,
+#feedTitle {
+    margin: 0 !important;
+    line-height: 1 !important;
+}
+
+.feed.card #refreshFeedBtn {
+    align-self: center !important;
+}
+
+/* Mobile versions: keep everything compact and aligned, with Sound/Light to title's right. */
+@media (max-width: 760px) {
+    body:not(.focus-mode) #writingZoneSection {
+        padding-top: 0.95rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .section-heading {
+        min-height: 1.95rem !important;
+        margin: 0 8.75rem 0.42rem 0 !important;
+        padding: 0 !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+        top: 0.66rem !important;
+        right: 0.68rem !important;
+        left: auto !important;
+        transform: none !important;
+        max-width: 8.4rem !important;
+        gap: 0.32rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        min-width: 3.95rem !important;
+        padding: 0.46rem 0.5rem !important;
+        font-size: 0.72rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .ambient-menu {
+        top: 2.78rem !important;
+    }
+
+    body.focus-mode main {
+        padding-top: 58px !important;
+    }
+
+    body.focus-mode #writingZoneSection {
+        min-height: calc(100svh - 64px) !important;
+        padding: 2.28rem 0.72rem 0.72rem !important;
+        scroll-margin-top: 56px !important;
+    }
+
+    body.focus-mode #writingZoneSection .section-heading {
+        min-height: 1rem !important;
+        margin: 0 2.65rem 0.12rem 0 !important;
+        padding: 0 !important;
+    }
+
+    body.focus-mode .focus-close {
+        top: 0.38rem !important;
+        right: 0.46rem !important;
+        width: 2.08rem !important;
+        height: 2.08rem !important;
+    }
+
+    .leaderboard.card,
+    .feed.card {
+        padding-top: 1.02rem !important;
+    }
+
+    .leaderboard.card .section-heading,
+    .feed.card .section-heading {
+        min-height: 1.15rem !important;
+        margin-bottom: 0.62rem !important;
+    }
+
+    .feed.card .section-heading.split {
+        gap: 0.58rem !important;
+    }
+}
+
+@media (max-width: 380px) {
+    body:not(.focus-mode) #writingZoneSection .section-heading {
+        margin-right: 8rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+        max-width: 7.8rem !important;
+        gap: 0.24rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        min-width: 3.65rem !important;
+        padding-left: 0.42rem !important;
+        padding-right: 0.42rem !important;
+    }
+}
+
+
+/* =========================================================
+   Final 61: main-page header alignment + Writing Desk controls
+   ========================================================= */
+
+/* All main-page section headers: titles stay anchored to the left.
+   If a header has a button, the button sits on the right. */
+main .section-heading,
+main .section-heading.split,
+main .weekly-prompt-heading {
+    display: flex !important;
+    align-items: center !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    padding-left: 0 !important;
+    margin-left: 0 !important;
+}
+
+main .section-heading.split {
+    justify-content: space-between !important;
+}
+
+main .section-heading > div,
+main .section-heading h2,
+main .section-heading p,
+main .section-label-title,
+main .eyebrow {
+    text-align: left !important;
+    margin-left: 0 !important;
+}
+
+/* Desktop Writing Desk:
+   keep the title at the left and move Sound/Light down about 20px.
+   The extra top space is balanced so the controls feel centered in the header area. */
+body:not(.focus-mode) #writingZoneSection {
+    padding-top: 3.82rem !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .section-heading {
+    margin: 0 9rem 0.62rem 0 !important;
+    min-height: 1.35rem !important;
+    justify-content: flex-start !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+    top: 1.88rem !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .ambient-menu {
+    top: 4.05rem !important;
+}
+
+/* Reader Favorites / Latest Submissions stay consistent and left-aligned. */
+.leaderboard.card .section-heading,
+.feed.card .section-heading,
+.feed.card .section-heading.split {
+    justify-content: flex-start !important;
+    text-align: left !important;
+}
+
+.feed.card .section-heading.split {
+    justify-content: space-between !important;
+}
+
+.feed.card .section-heading.split > div {
+    min-width: 0 !important;
+}
+
+/* Mobile:
+   Writing Desk title remains at the far left.
+   Sound/Light move to the right of the header without pushing the title over. */
+@media (max-width: 760px) {
+    main .section-heading,
+    main .section-heading.split,
+    main .weekly-prompt-heading {
+        justify-content: flex-start !important;
+        text-align: left !important;
+        padding-left: 0 !important;
+        margin-left: 0 !important;
+    }
+
+    main .section-heading.split {
+        justify-content: space-between !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection {
+        padding-top: 2.95rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .section-heading {
+        margin: 0 8.7rem 0.52rem 0 !important;
+        min-height: 1.7rem !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
+        padding-left: 0 !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .section-heading .eyebrow {
+        margin-left: 0 !important;
+        transform: none !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+        top: 1.36rem !important;
+        right: 0.68rem !important;
+        left: auto !important;
+        transform: none !important;
+        max-width: 8.35rem !important;
+        justify-content: flex-end !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .ambient-menu {
+        top: 3.58rem !important;
+    }
+
+    /* Mobile Focus Mode: title stays hard-left, X remains right. */
+    body.focus-mode #writingZoneSection .section-heading {
+        margin: 0 2.7rem 0.12rem 0 !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
+        padding-left: 0 !important;
+    }
+
+    body.focus-mode #writingZoneSection .section-heading .eyebrow {
+        margin-left: 0 !important;
+        transform: none !important;
+        text-align: left !important;
+    }
+
+    .leaderboard.card .section-heading,
+    .feed.card .section-heading,
+    .feed.card .section-heading.split {
+        justify-content: flex-start !important;
+        text-align: left !important;
+        padding-left: 0 !important;
+    }
+
+    .feed.card .section-heading.split {
+        justify-content: space-between !important;
+    }
+}
+
+@media (max-width: 380px) {
+    body:not(.focus-mode) #writingZoneSection .section-heading {
+        margin-right: 8.05rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+        right: 0.52rem !important;
+        max-width: 7.75rem !important;
+    }
+}
+
+
+/* =========================================================
+   Final 62: locked-left section titles and balanced Writing Desk controls
+   ========================================================= */
+
+/* Main-page headers: titles lock to the left edge of their own card.
+   Headers with buttons keep the button on the right; headers without buttons
+   simply stay left. */
+main .section-heading,
+main .weekly-prompt-heading {
+    width: 100% !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+}
+
+main .section-heading.split {
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+}
+
+main .section-heading > div {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    min-width: 0 !important;
+}
+
+main .section-heading h2,
+main .section-heading p,
+main .section-heading .eyebrow,
+main .section-label-title {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    text-align: left !important;
+    transform: none !important;
+}
+
+/* Desktop Writing Desk:
+   Keep title in its original left position. Sound/Light are absolute controls,
+   lowered about 20px from the earlier desktop position and vertically balanced
+   in the header space. */
+body:not(.focus-mode) #writingZoneSection {
+    position: relative !important;
+    padding-top: 3.72rem !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .section-heading {
+    width: calc(100% - 9.25rem) !important;
+    max-width: calc(100% - 9.25rem) !important;
+    margin: 0 0 0.58rem 0 !important;
+    padding: 0 !important;
+    min-height: 1.3rem !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    text-align: left !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .section-heading .eyebrow {
+    margin: 0 !important;
+    padding: 0 !important;
+    transform: none !important;
+    line-height: 1 !important;
+    text-align: left !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+    position: absolute !important;
+    top: 1.72rem !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .ambient-menu {
+    top: 3.92rem !important;
+}
+
+/* Reader Favorites and Latest Submissions share the same headroom rhythm. */
+.leaderboard.card,
+.feed.card {
+    padding-top: 1.12rem !important;
+}
+
+.leaderboard.card .section-heading,
+.feed.card .section-heading,
+.feed.card .section-heading.split {
+    margin: 0 0 0.72rem 0 !important;
+    padding: 0 !important;
+    min-height: 1.25rem !important;
+}
+
+.feed.card .section-heading.split > div {
+    flex: 1 1 auto !important;
+}
+
+.feed.card #refreshFeedBtn {
+    flex: 0 0 auto !important;
+}
+
+/* Mobile:
+   Writing Desk title remains at the original far-left position.
+   Sound/Light float to the right of the header without moving the title. */
+@media (max-width: 760px) {
+    body:not(.focus-mode) #writingZoneSection {
+        position: relative !important;
+        padding-top: 2.86rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .section-heading {
+        width: calc(100% - 8.65rem) !important;
+        max-width: calc(100% - 8.65rem) !important;
+        margin: 0 0 0.48rem 0 !important;
+        padding: 0 !important;
+        min-height: 1.72rem !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        text-align: left !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .section-heading .eyebrow {
+        margin: 0 !important;
+        padding: 0 !important;
+        transform: none !important;
+        text-align: left !important;
+        line-height: 1 !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+        position: absolute !important;
+        top: 1.18rem !important;
+        right: 0.68rem !important;
+        left: auto !important;
+        transform: none !important;
+        margin: 0 !important;
+        gap: 0.32rem !important;
+        max-width: 8.25rem !important;
+        justify-content: flex-end !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        min-width: 3.92rem !important;
+        padding: 0.46rem 0.5rem !important;
+        font-size: 0.72rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .ambient-menu {
+        top: 3.32rem !important;
+    }
+
+    /* Main-page headers on mobile: title left, optional button right. */
+    main .section-heading,
+    main .weekly-prompt-heading {
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
+    }
+
+    main .section-heading.split {
+        justify-content: space-between !important;
+    }
+
+    .leaderboard.card,
+    .feed.card {
+        padding-top: 1rem !important;
+    }
+
+    .leaderboard.card .section-heading,
+    .feed.card .section-heading,
+    .feed.card .section-heading.split {
+        margin-bottom: 0.62rem !important;
+        min-height: 1.18rem !important;
+    }
+
+    /* Mobile Focus Mode: title stays left; X owns the right side. */
+    body.focus-mode #writingZoneSection .section-heading {
+        width: calc(100% - 2.8rem) !important;
+        max-width: calc(100% - 2.8rem) !important;
+        margin: 0 0 0.12rem 0 !important;
+        padding: 0 !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
+    }
+
+    body.focus-mode #writingZoneSection .section-heading .eyebrow {
+        margin: 0 !important;
+        padding: 0 !important;
+        transform: none !important;
+        text-align: left !important;
+    }
+}
+
+@media (max-width: 380px) {
+    body:not(.focus-mode) #writingZoneSection .section-heading {
+        width: calc(100% - 8rem) !important;
+        max-width: calc(100% - 8rem) !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+        right: 0.52rem !important;
+        max-width: 7.7rem !important;
+        gap: 0.24rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        min-width: 3.62rem !important;
+        padding-left: 0.42rem !important;
+        padding-right: 0.42rem !important;
+    }
+}

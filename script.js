@@ -53,6 +53,13 @@
             audioMuted: false,
             audioVolume: 0.5,
             activeLighting: null
+        },
+        writingTap: {
+            startX: 0,
+            startY: 0,
+            startTime: 0,
+            moved: false,
+            intentionalUntil: 0
         }
     };
 
@@ -190,14 +197,7 @@
             updateCharCounter();
             saveDraft();
         });
-        $('#mainStoryInput')?.addEventListener('pointerdown', () => {
-            if (isMobileWritingViewport()) enterFocusMode();
-        }, { passive: true });
-        $('#mainStoryInput')?.addEventListener('touchstart', () => {
-            if (isMobileWritingViewport()) enterFocusMode();
-        }, { passive: true });
-        $('#mainStoryInput')?.addEventListener('focus', enterFocusMode);
-        $('#mainStoryInput')?.addEventListener('click', enterFocusMode);
+        wireIntentionalWritingFocus();
         $('#guestPenName')?.addEventListener('input', saveGuestName);
         $('#publishBtn')?.addEventListener('click', publishStory);
         $('#clearDraftBtn')?.addEventListener('click', clearDraft);
@@ -1532,6 +1532,63 @@
         syncFocusAudio();
     }
 
+    function wireIntentionalWritingFocus() {
+        const input = $('#mainStoryInput');
+        if (!input || input.dataset.intentionalFocusReady === 'true') return;
+        input.dataset.intentionalFocusReady = 'true';
+
+        input.addEventListener('pointerdown', (event) => {
+            if (!isMobileWritingViewport()) return;
+            state.writingTap.startX = event.clientX;
+            state.writingTap.startY = event.clientY;
+            state.writingTap.startTime = Date.now();
+            state.writingTap.moved = false;
+        }, { passive: true });
+
+        input.addEventListener('pointermove', (event) => {
+            if (!isMobileWritingViewport() || !state.writingTap.startTime) return;
+            const distance = Math.hypot(
+                event.clientX - state.writingTap.startX,
+                event.clientY - state.writingTap.startY
+            );
+            if (distance > 10) state.writingTap.moved = true;
+        }, { passive: true });
+
+        input.addEventListener('pointerup', (event) => {
+            if (!isMobileWritingViewport()) return;
+            const distance = Math.hypot(
+                event.clientX - state.writingTap.startX,
+                event.clientY - state.writingTap.startY
+            );
+            const duration = Date.now() - state.writingTap.startTime;
+            const deliberateTap = !state.writingTap.moved && distance <= 10 && duration <= 900;
+
+            state.writingTap.startTime = 0;
+
+            if (deliberateTap) {
+                state.writingTap.intentionalUntil = Date.now() + 900;
+                enterFocusMode();
+            }
+        }, { passive: true });
+
+        input.addEventListener('focus', () => {
+            if (!isMobileWritingViewport() || Date.now() <= state.writingTap.intentionalUntil) {
+                enterFocusMode();
+            }
+        });
+
+        input.addEventListener('click', () => {
+            if (!isMobileWritingViewport()) {
+                enterFocusMode();
+                return;
+            }
+
+            if (Date.now() <= state.writingTap.intentionalUntil) {
+                enterFocusMode();
+            }
+        });
+    }
+
     function isMobileWritingViewport() {
         return window.matchMedia('(max-width: 760px), (pointer: coarse)').matches;
     }
@@ -1554,7 +1611,7 @@
                 writingZone?.scrollIntoView({ behavior: 'auto', block: 'start' });
                 setTimeout(() => {
                     storyInput?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }, 180);
+                }, 120);
             });
         } else {
             writingZone?.scrollIntoView({ behavior: 'smooth', block: 'center' });
