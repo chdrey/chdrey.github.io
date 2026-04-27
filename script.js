@@ -6,7 +6,7 @@
         adminUsername: 'PenPaleto',
         supabaseUrl: 'https://lypndarukqjtkyhxygwe.supabase.co',
         supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5cG5kYXJ1a3FqdGt5aHh5Z3dlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3Nzc2NzAsImV4cCI6MjA3OTM1MzY3MH0.NE5Q1BFVsBDyKSUxHO--aR-jbSHSLW8klha7C7_VbUA',
-        youtubeSrc: 'https://www.youtube.com/embed/XDvLE7TZBmk?start=699&autoplay=1&mute=0&playsinline=1&controls=1&rel=0&enablejsapi=1&origin=' + encodeURIComponent(window.location.origin || window.location.href.split('/').slice(0,3).join('/')),
+        youtubeSrc: 'https://www.youtube.com/embed/XDvLE7TZBmk?start=699&autoplay=0&mute=0&playsinline=1&controls=1&rel=0&enablejsapi=1&origin=' + encodeURIComponent(window.location.origin || window.location.href.split('/').slice(0,3).join('/')),
         draftKey: 'story-nook:draft:v2',
         guestNameKey: 'story-nook:guest-name:v2',
         prompts: [
@@ -89,6 +89,7 @@
         playBackgroundVideo();
         updateFocusMuteButton();
         updateFocusVisibility();
+        updateAmbientTriggerStates();
         primeYouTubeAudio();
         initializeSupabase();
     }
@@ -1368,14 +1369,14 @@
         try {
             if (url.includes('/embed/')) {
                 const joiner = url.includes('?') ? '&' : '?';
-                return `${url}${joiner}autoplay=1&mute=0&playsinline=1&controls=1&rel=0&enablejsapi=1`;
+                return `${url}${joiner}autoplay=0&mute=0&playsinline=1&controls=1&rel=0&enablejsapi=1`;
             }
             const parsed = new URL(url);
             const id = parsed.searchParams.get('v') || parsed.pathname.split('/').filter(Boolean).pop();
             if (!id) return fallback;
             const start = parsed.searchParams.get('t') || parsed.searchParams.get('start') || '0';
             const seconds = String(start).replace('s', '');
-            return `https://www.youtube.com/embed/${encodeURIComponent(id)}?start=${encodeURIComponent(seconds)}&autoplay=1&mute=1&playsinline=1&controls=1&rel=0&enablejsapi=1&origin=${encodeURIComponent(window.location.origin || '')}`;
+            return `https://www.youtube.com/embed/${encodeURIComponent(id)}?start=${encodeURIComponent(seconds)}&autoplay=0&mute=1&playsinline=1&controls=1&rel=0&enablejsapi=1&origin=${encodeURIComponent(window.location.origin || '')}`;
         } catch {
             return fallback;
         }
@@ -1511,21 +1512,10 @@
     }
 
     function primeYouTubeAudio() {
-        resumeYouTubePlayer();
-
-        // Browser autoplay policies can block unmuted playback until the user
-        // touches/clicks once. This keeps the intended behavior ready without
-        // being annoying.
-        const retry = () => {
-            if (!state.ambient.audioMuted && state.ambient.activeSounds.size === 0) {
-                resumeYouTubePlayer();
-            }
-            window.removeEventListener('pointerdown', retry);
-            window.removeEventListener('keydown', retry);
-        };
-
-        window.addEventListener('pointerdown', retry, { once: true });
-        window.addEventListener('keydown', retry, { once: true });
+        // YouTube autoplay is intentionally disabled. The embedded player should
+        // not start itself after focus-mode clicks, X close, outside clicks,
+        // volume changes, or ambient sound changes. Playback stays user-controlled.
+        updateFocusMuteButton();
     }
 
     function updateFocusMuteButton() {
@@ -1550,7 +1540,7 @@
         state.ambient.audioMuted = value <= 0;
 
         updateFocusMuteButton();
-        syncFocusAudio();
+        syncFocusAudio({ allowYouTubeResume: false });
     }
 
     function setAmbientMasterAudible() {
@@ -1562,7 +1552,7 @@
     }
 
     function syncFocusAudio(options = {}) {
-        const { allowYouTubeResume = true } = options;
+        const { allowYouTubeResume = false } = options;
 
         updateFocusMuteButton();
         setAmbientMasterAudible();
@@ -1587,7 +1577,7 @@
         state.ambient.audioVolume = getSiteVolume() > 0 ? 0 : 0.5;
         state.ambient.audioMuted = state.ambient.audioVolume <= 0;
         updateFocusMuteButton();
-        syncFocusAudio();
+        syncFocusAudio({ allowYouTubeResume: false });
     }
 
     function wireIntentionalWritingFocus() {
@@ -1701,6 +1691,7 @@
         candle?.setAttribute('aria-label', lit ? 'Put out candle' : 'Light candle');
         candle?.setAttribute('title', lit ? 'Put out candle' : 'Light candle');
         setCandleIcon();
+        updateAmbientTriggerStates();
     }
 
     function updateFocusVisibility() {
@@ -1727,6 +1718,7 @@
         menu.classList.toggle('hidden', !willOpen);
         button.setAttribute('aria-expanded', String(willOpen));
         updateFocusVisibility();
+        updateAmbientTriggerStates();
     }
 
     function closeAmbientMenus() {
@@ -1734,6 +1726,18 @@
         $('#lightingEffectsMenu')?.classList.add('hidden');
         $('#soundEffectsBtn')?.setAttribute('aria-expanded', 'false');
         $('#lightingEffectsBtn')?.setAttribute('aria-expanded', 'false');
+        updateAmbientTriggerStates();
+    }
+
+    function updateAmbientTriggerStates() {
+        const soundActive = state.ambient.activeSounds.size > 0;
+        const lightActive = !!state.ambient.activeLighting || document.body.classList.contains('candle-lit');
+
+        $('#soundEffectsBtn')?.classList.toggle('has-active-effect', soundActive);
+        $('#soundEffectsBtn')?.setAttribute('aria-pressed', String(soundActive));
+
+        $('#lightingEffectsBtn')?.classList.toggle('has-active-effect', lightActive);
+        $('#lightingEffectsBtn')?.setAttribute('aria-pressed', String(lightActive));
     }
 
     function toggleFocusEffectsMaster() {
@@ -1743,7 +1747,7 @@
         $('#focusEffectsMasterBtn')?.setAttribute('aria-pressed', String(enabled));
         setText('#focusEffectsMasterBtn', enabled ? 'Effects' : 'Effects off');
         setAmbientMasterAudible();
-        syncFocusAudio();
+        syncFocusAudio({ allowYouTubeResume: false });
     }
 
     async function handleSoundMenuClick(event) {
@@ -1759,6 +1763,7 @@
         if (isActive) {
             stopAmbientSound(soundId);
             button.setAttribute('aria-pressed', 'false');
+            updateAmbientTriggerStates();
             return;
         }
 
@@ -1771,8 +1776,9 @@
         if (!started) {
             button.setAttribute('aria-pressed', 'false');
         } else {
-            syncFocusAudio();
+            syncFocusAudio({ allowYouTubeResume: false });
         }
+        updateAmbientTriggerStates();
     }
 
     function handleLightingMenuClick(event) {
@@ -1800,12 +1806,14 @@
             state.ambient.activeLighting = activeClass;
             button.setAttribute('aria-pressed', 'true');
         }
+        updateAmbientTriggerStates();
     }
 
     function clearLightingEffect() {
         LIGHTING_CLASSES.forEach((className) => document.body.classList.remove(className));
         state.ambient.activeLighting = null;
         $$('[data-lighting]').forEach((button) => button.setAttribute('aria-pressed', 'false'));
+        updateAmbientTriggerStates();
     }
 
 
@@ -1974,13 +1982,15 @@
         $(`[data-sound="${soundId}"]`)?.setAttribute('aria-pressed', 'false');
 
         if (state.ambient.activeSounds.size === 0) {
-            syncFocusAudio();
+            syncFocusAudio({ allowYouTubeResume: false });
         }
+        updateAmbientTriggerStates();
     }
 
     function stopAllAmbientSounds() {
         Array.from(state.ambient.activeSounds.keys()).forEach(stopAmbientSound);
-        syncFocusAudio();
+        syncFocusAudio({ allowYouTubeResume: false });
+        updateAmbientTriggerStates();
     }
 
 

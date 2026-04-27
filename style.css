@@ -8549,3 +8549,221 @@ body:not(.focus-mode) #writingZoneSection .ambient-menu {
         top: 3px !important;
     }
 }
+
+
+/* =========================================================
+   Final 76: archive ribbon/dropdown + compact Focus Mode header
+   ========================================================= */
+
+/*
+   ARCHIVED FOR LATER:
+   The storybook ribbon/dropdown menu code is intentionally preserved in
+   index.html/script.js/style.css for possible future use, but hidden for now.
+   To restore later, remove this block and revisit the bookmark menu styles.
+*/
+.bookmark-menu-shell,
+.ribbon-panel,
+.bookmark-ribbon,
+#bookmarkMenuShell,
+#ribbonPanel {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* Focus Mode desktop/tablet:
+   Bring the top of the outer writing box down tighter, then align the X button
+   to the same visual level as Sound/Light. The header area now uses the same
+   breathing room above the buttons as below them before the writing box starts. */
+body.focus-mode #writingZoneSection {
+    padding-top: 1.05rem !important;
+}
+
+body.focus-mode #writingZoneSection .writing-desk-header {
+    min-height: 2.35rem !important;
+    margin: 0 0 0.72rem 0 !important;
+    padding: 0 !important;
+    align-items: center !important;
+}
+
+body.focus-mode #writingZoneSection .writing-desk-title {
+    align-self: center !important;
+}
+
+body.focus-mode #writingZoneSection .writing-desk-title .eyebrow {
+    top: 0 !important;
+    line-height: 1 !important;
+}
+
+/* Sound/Light remain centered in the header row. */
+body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+    align-self: center !important;
+    transform: none !important;
+    margin: 0 !important;
+}
+
+/* X button aligned to Sound/Light row instead of floating high in the corner. */
+body.focus-mode .focus-close {
+    top: 1.05rem !important;
+    right: 1.05rem !important;
+    width: 2.28rem !important;
+    height: 2.28rem !important;
+    line-height: 1 !important;
+    z-index: 20 !important;
+}
+
+/* Popups stay attached to the adjusted Focus Mode header. */
+body.focus-mode #writingZoneSection .ambient-menu {
+    top: 3.8rem !important;
+}
+
+/* Mobile Focus Mode keeps the compact header and X close to the writing area. */
+@media (max-width: 760px) {
+    body.focus-mode #writingZoneSection {
+        padding-top: 0.82rem !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-header {
+        min-height: 1.28rem !important;
+        margin: 0 0 0.18rem 0 !important;
+        padding: 0 !important;
+    }
+
+    body.focus-mode .focus-close {
+        top: 0.72rem !important;
+        right: 0.72rem !important;
+        width: 1.95rem !important;
+        height: 1.95rem !important;
+    }
+
+    body.focus-mode #mainStoryInput {
+        min-height: min(62svh, 455px) !important;
+    }
+}
+
+
+/* =========================================================
+   Final 77: YouTube autoplay fully disabled
+   ========================================================= */
+
+/*
+   YouTube no longer auto-plays after focus mode, X close, outside clicks,
+   ambient sound changes, or volume changes. Playback is now user-controlled
+   from the embedded YouTube player.
+*/
+
+
+/* =========================================================
+   Final 78: active Sound/Light states + spacing refinements
+   ========================================================= */
+
+/* Sound/Light match the X button height and stay visually consistent. */
+#writingZoneSection .writing-desk-controls .focus-mini-btn.focus-icon-btn,
+#writingZoneSection .focus-mini-btn.focus-icon-btn {
+    height: 2.28rem !important;
+    min-height: 2.28rem !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    align-items: center !important;
+}
+
+/* Active sound or light selection keeps the parent trigger green until cleared. */
+#soundEffectsBtn.has-active-effect,
+#lightingEffectsBtn.has-active-effect,
+#soundEffectsBtn[aria-pressed="true"],
+#lightingEffectsBtn[aria-pressed="true"] {
+    background: linear-gradient(135deg, var(--sage-soft), var(--sage)) !important;
+    color: #0d0d0b !important;
+    border-color: rgba(146, 170, 103, 0.78) !important;
+    box-shadow:
+        0 8px 18px rgba(0,0,0,0.16),
+        0 0 0 3px rgba(139, 162, 99, 0.10),
+        0 0 24px rgba(139, 162, 99, 0.16) !important;
+}
+
+#soundEffectsBtn.has-active-effect span,
+#lightingEffectsBtn.has-active-effect span,
+#soundEffectsBtn[aria-pressed="true"] span,
+#lightingEffectsBtn[aria-pressed="true"] span {
+    color: #0d0d0b !important;
+}
+
+/* Writing Desk title on main page: move down 5px while staying left. */
+body:not(.focus-mode) #writingZoneSection .writing-desk-title .eyebrow {
+    position: relative !important;
+    top: 5px !important;
+}
+
+/* Latest Submissions outside box: shorten from top by about 5px. */
+.feed.card {
+    padding-top: 0.82rem !important;
+}
+
+/* Footer contents move up 5px while the footer box itself stays put. */
+.footer-content-polished,
+.footer-content {
+    transform: translateY(-5px) !important;
+}
+
+/* Mobile sizes keep same relationship with X button. */
+@media (max-width: 760px) {
+    #writingZoneSection .writing-desk-controls .focus-mini-btn.focus-icon-btn,
+    #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        height: 1.95rem !important;
+        min-height: 1.95rem !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .writing-desk-title .eyebrow {
+        top: 5px !important;
+    }
+
+    .feed.card {
+        padding-top: 0.70rem !important;
+    }
+}
+
+
+/* =========================================================
+   Final 79: Weekly Prompt + Writing Desk micro-spacing
+   ========================================================= */
+
+/* Weekly Prompt outside box: expand top by about 3px. */
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+    padding-top: calc(0.45rem + 3px) !important;
+}
+
+@media (max-width: 760px) {
+    .compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+        padding-top: calc(0.42rem + 3px) !important;
+    }
+}
+
+/* Weekly Prompt text on main page: move up about 5px. */
+#weeklyPromptText {
+    position: relative !important;
+    top: -5px !important;
+}
+
+/* Writing Desk title text on main page: move 3px farther down. */
+body:not(.focus-mode) #writingZoneSection .writing-desk-title .eyebrow {
+    position: relative !important;
+    top: 8px !important;
+}
+
+@media (max-width: 760px) {
+    body:not(.focus-mode) #writingZoneSection .writing-desk-title .eyebrow {
+        top: 8px !important;
+    }
+}
+
+
+/* =========================================================
+   Final 80: Weekly Prompt text raised 3px more
+   ========================================================= */
+
+#weeklyPromptText {
+    position: relative !important;
+    top: -8px !important;
+}
