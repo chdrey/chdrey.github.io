@@ -1561,7 +1561,9 @@
         state.ambient.master.gain.setTargetAtTime(audible ? 0.92 * volume : 0, state.ambient.ctx.currentTime, 0.05);
     }
 
-    function syncFocusAudio() {
+    function syncFocusAudio(options = {}) {
+        const { allowYouTubeResume = true } = options;
+
         updateFocusMuteButton();
         setAmbientMasterAudible();
 
@@ -1575,7 +1577,9 @@
             return;
         }
 
-        resumeYouTubePlayer();
+        if (allowYouTubeResume) {
+            resumeYouTubePlayer();
+        }
     }
 
     function toggleFocusMute() {
@@ -1657,7 +1661,7 @@
             closeRibbonPanel();
             closeAmbientMenus();
             document.body.classList.add('focus-mode');
-            syncFocusAudio();
+            syncFocusAudio({ allowYouTubeResume: !isMobile });
         }
 
         if (isMobile) {

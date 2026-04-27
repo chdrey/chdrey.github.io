@@ -7928,3 +7928,184 @@ body:not(.focus-mode) #writingZoneSection .ambient-menu {
 /* =========================================================
    Final 67: feather button enters mobile Focus Mode
    ========================================================= */
+
+
+/* =========================================================
+   Final 68: dropdown sits flush against ribbon
+   ========================================================= */
+
+/* Move the dropdown panel toward the ribbon so there is no visible gap.
+   A tiny 2px overlap prevents shadows/borders from creating a hairline seam. */
+.ribbon-panel,
+.site-nav.scrolled .ribbon-panel,
+#mainNav.scrolled .ribbon-panel {
+    right: calc(var(--story-ribbon-width) - 2px) !important;
+}
+
+@media (max-width: 760px) {
+    .ribbon-panel,
+    .site-nav.scrolled .ribbon-panel,
+    #mainNav.scrolled .ribbon-panel {
+        right: calc(var(--story-ribbon-width) - 2px) !important;
+    }
+}
+
+
+/* =========================================================
+   Final 69: structural Writing Desk header + mobile YouTube pause respect
+   ========================================================= */
+
+/* New structure:
+   .writing-desk-title and .writing-desk-controls are siblings, so controls
+   can never push the title toward the center. */
+#writingZoneSection .writing-desk-header {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-height: 3.25rem !important;
+    margin: 0 0 0.65rem 0 !important;
+    padding: 0 !important;
+}
+
+#writingZoneSection .writing-desk-title {
+    grid-column: 1 !important;
+    justify-self: start !important;
+    align-self: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+    transform: none !important;
+    min-width: 0 !important;
+    z-index: 2 !important;
+}
+
+#writingZoneSection .writing-desk-title .eyebrow {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+    transform: none !important;
+    white-space: nowrap !important;
+    line-height: 1 !important;
+}
+
+/* Desktop: Sound/Light stay in the familiar centered header position,
+   moved down within the larger header space, without affecting title layout. */
+#writingZoneSection .writing-desk-controls.focus-ambient-controls {
+    grid-column: 2 !important;
+    justify-self: center !important;
+    position: static !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.62rem !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    z-index: 7 !important;
+}
+
+body:not(.focus-mode) #writingZoneSection {
+    padding-top: 1.45rem !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .ambient-menu {
+    top: 4.65rem !important;
+}
+
+/* Focus mode uses the same separate header; X owns the right side. */
+body.focus-mode #writingZoneSection .writing-desk-header {
+    grid-template-columns: 1fr auto 2.75rem !important;
+    min-height: 2.55rem !important;
+    margin-bottom: 0.42rem !important;
+}
+
+body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+    grid-column: 2 !important;
+}
+
+/* Kill old Writing Desk section-heading rules inside this card.
+   The title now lives in .writing-desk-title. */
+#writingZoneSection > .section-heading,
+#writingZoneSection > .section-heading.split {
+    display: none !important;
+}
+
+/* Mobile and narrow desktop:
+   Title stays hard-left. Controls sit on the right side of the same header
+   and never reserve/move the title. */
+@media (max-width: 760px) {
+    #writingZoneSection .writing-desk-header {
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        min-height: 2.35rem !important;
+        margin-bottom: 0.48rem !important;
+    }
+
+    #writingZoneSection .writing-desk-title {
+        grid-column: 1 !important;
+        justify-self: start !important;
+        text-align: left !important;
+        max-width: calc(100vw - 12rem) !important;
+    }
+
+    #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+        grid-column: 2 !important;
+        justify-self: end !important;
+        gap: 0.32rem !important;
+        max-width: 8.3rem !important;
+    }
+
+    #writingZoneSection .writing-desk-controls .focus-mini-btn.focus-icon-btn {
+        min-width: 3.92rem !important;
+        padding: 0.46rem 0.5rem !important;
+        font-size: 0.72rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection {
+        padding-top: 1rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .ambient-menu {
+        top: 3.5rem !important;
+    }
+
+    /* In mobile Focus Mode, remove Sound/Light from the top so the writing
+       area and X stay clean above the keyboard. */
+    body.focus-mode #writingZoneSection .writing-desk-header {
+        grid-template-columns: 1fr 2.6rem !important;
+        min-height: 1.55rem !important;
+        margin-bottom: 0.16rem !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls,
+    body.focus-mode #writingZoneSection .ambient-menu {
+        display: none !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-title {
+        max-width: calc(100vw - 5.5rem) !important;
+    }
+}
+
+@media (max-width: 380px) {
+    #writingZoneSection .writing-desk-title {
+        max-width: calc(100vw - 11.2rem) !important;
+    }
+
+    #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+        max-width: 7.7rem !important;
+        gap: 0.24rem !important;
+    }
+
+    #writingZoneSection .writing-desk-controls .focus-mini-btn.focus-icon-btn {
+        min-width: 3.62rem !important;
+        padding-left: 0.42rem !important;
+        padding-right: 0.42rem !important;
+    }
+}
