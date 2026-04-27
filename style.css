@@ -5119,3 +5119,47 @@ body:not(.focus-mode) .writing-actions-left {
         font-size: clamp(0.9rem, 3.9vw, 1.08rem) !important;
     }
 }
+
+
+/* =========================================================
+   Final 44: focus-mode YouTube audio fallback + mute button
+   ========================================================= */
+
+.focus-audio-mute {
+    display: inline-grid;
+    place-items: center;
+    width: 2.05rem;
+    height: 2.05rem;
+    padding: 0;
+    border: 1px solid rgba(208, 167, 111, 0.24);
+    background: rgba(14, 9, 6, 0.56);
+    color: var(--paper-soft);
+    border-radius: 50%;
+    font-size: 0.95rem;
+    line-height: 1;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.16);
+    cursor: pointer;
+    transition: background 180ms ease, border-color 180ms ease, transform 180ms ease, color 180ms ease;
+}
+
+.focus-audio-mute:hover {
+    transform: translateY(-1px);
+    border-color: rgba(208, 167, 111, 0.38);
+    background: rgba(34, 22, 14, 0.66);
+}
+
+.focus-audio-mute[aria-pressed="true"] {
+    color: rgba(244, 230, 206, 0.78);
+    background: rgba(14, 9, 6, 0.48);
+    border-color: rgba(208, 167, 111, 0.18);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.13);
+}
+
+@media (max-width: 520px) {
+    .focus-audio-mute {
+        width: 1.92rem;
+        height: 1.92rem;
+        font-size: 0.88rem;
+    }
+}

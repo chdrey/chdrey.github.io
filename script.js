@@ -50,6 +50,7 @@
             master: null,
             activeSounds: new Map(),
             effectsEnabled: true,
+            audioMuted: false,
             activeLighting: null
         }
     };
@@ -78,6 +79,7 @@
         setWeeklyPrompt(CONFIG.prompts[0]);
         loadYouTubePlayer();
         playBackgroundVideo();
+        updateFocusMuteButton();
         initializeSupabase();
     }
 
@@ -191,6 +193,7 @@
         $('#candleBtn')?.addEventListener('click', toggleCandleMode);
         $('#exitFocusBtn')?.addEventListener('click', exitFocusMode);
         $('#focusEffectsMasterBtn')?.addEventListener('click', toggleFocusEffectsMaster);
+        $('#focusMuteBtn')?.addEventListener('click', toggleFocusMute);
         $('#soundEffectsBtn')?.addEventListener('click', () => toggleAmbientMenu('soundEffectsMenu', 'soundEffectsBtn'));
         $('#lightingEffectsBtn')?.addEventListener('click', () => toggleAmbientMenu('lightingEffectsMenu', 'lightingEffectsBtn'));
         $('#soundEffectsMenu')?.addEventListener('click', handleSoundMenuClick);
@@ -1382,16 +1385,66 @@
         }
     }
 
-    function quietYouTubePlayer() {
+    function quietYouTubePlayer({ pause = true } = {}) {
         postYouTubeCommand('mute');
-        postYouTubeCommand('pauseVideo');
+        if (pause) postYouTubeCommand('pauseVideo');
+    }
+
+    function resumeYouTubePlayer() {
+        const player = getYouTubePlayer();
+        if (!player) return;
+        if (!player.src) loadYouTubePlayer();
+
+        postYouTubeCommand('setVolume', [54]);
+        postYouTubeCommand('unMute');
+        postYouTubeCommand('playVideo');
+    }
+
+    function updateFocusMuteButton() {
+        const button = $('#focusMuteBtn');
+        if (!button) return;
+        const muted = !!state.ambient.audioMuted;
+        button.setAttribute('aria-pressed', String(muted));
+        button.setAttribute('aria-label', muted ? 'Unmute focus audio' : 'Mute focus audio');
+        button.title = muted ? 'Unmute focus audio' : 'Mute focus audio';
+        button.textContent = muted ? '🔇' : '🔈';
+    }
+
+    function setAmbientMasterAudible() {
+        if (!state.ambient.master || !state.ambient.ctx) return;
+        const audible = !state.ambient.audioMuted && state.ambient.effectsEnabled;
+        state.ambient.master.gain.setTargetAtTime(audible ? 0.92 : 0, state.ambient.ctx.currentTime, 0.05);
+    }
+
+    function syncFocusAudio() {
+        updateFocusMuteButton();
+        setAmbientMasterAudible();
+
+        if (!document.body.classList.contains('focus-mode')) return;
+
+        if (state.ambient.audioMuted) {
+            quietYouTubePlayer();
+            return;
+        }
+
+        if (state.ambient.activeSounds.size > 0) {
+            quietYouTubePlayer();
+            return;
+        }
+
+        resumeYouTubePlayer();
+    }
+
+    function toggleFocusMute() {
+        state.ambient.audioMuted = !state.ambient.audioMuted;
+        syncFocusAudio();
     }
 
     function enterFocusMode() {
         if (!document.body.classList.contains('focus-mode')) {
             closeRibbonPanel();
-            quietYouTubePlayer();
             document.body.classList.add('focus-mode');
+            syncFocusAudio();
             $('#writingZoneSection')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }
@@ -1403,6 +1456,8 @@
         stopAllAmbientSounds();
         clearLightingEffect();
         closeAmbientMenus();
+        quietYouTubePlayer();
+        updateFocusMuteButton();
     }
 
     function toggleCandleMode() {
@@ -1435,10 +1490,8 @@
         document.body.classList.toggle('effects-off', !enabled);
         $('#focusEffectsMasterBtn')?.setAttribute('aria-pressed', String(enabled));
         setText('#focusEffectsMasterBtn', enabled ? 'Effects' : 'Effects off');
-        if (state.ambient.master && state.ambient.ctx) {
-            const target = enabled ? 0.85 : 0;
-            state.ambient.master.gain.setTargetAtTime(target, state.ambient.ctx.currentTime, 0.04);
-        }
+        setAmbientMasterAudible();
+        syncFocusAudio();
     }
 
     async function handleSoundMenuClick(event) {
@@ -1462,6 +1515,8 @@
 
         if (!started) {
             button.setAttribute('aria-pressed', 'false');
+        } else {
+            syncFocusAudio();
         }
     }
 
@@ -1556,6 +1611,7 @@
         if (!ctx || !state.ambient.master) return false;
 
         quietYouTubePlayer();
+        setAmbientMasterAudible();
 
         const groupGain = ctx.createGain();
         groupGain.gain.value = 0.001;
@@ -1632,10 +1688,15 @@
         }, 180);
         state.ambient.activeSounds.delete(soundId);
         $(`[data-sound="${soundId}"]`)?.setAttribute('aria-pressed', 'false');
+
+        if (state.ambient.activeSounds.size === 0) {
+            syncFocusAudio();
+        }
     }
 
     function stopAllAmbientSounds() {
         Array.from(state.ambient.activeSounds.keys()).forEach(stopAmbientSound);
+        syncFocusAudio();
     }
 
 
