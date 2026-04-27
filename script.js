@@ -74,13 +74,26 @@
         'light-moonlit-desk'
     ];
 
+    const AUDIO_SOURCES = {
+        'relaxing-rain': 'assets/audio/relaxing-rain.mp3',
+        'fireplace': 'assets/audio/fireplace.mp3',
+        'ocean-waves': 'assets/audio/ocean-waves.mp3',
+        'morning-birds': 'assets/audio/morning-birds.mp3',
+        'relaxing-storm': 'assets/audio/relaxing-storm.mp3',
+        'day-at-the-park': 'assets/audio/day-at-the-park.mp3',
+        'far-away-thunder': 'assets/audio/far-away-thunder.mp3',
+        'humming': 'assets/audio/humming.mp3',
+        'brown-noise': 'assets/audio/brown-noise.mp3'
+    };
+
+
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
 
     document.addEventListener('DOMContentLoaded', boot);
 
     function boot() {
-        document.body.classList.remove('focus-mode', 'candle-lit', 'quiet-room', 'effects-off', ...LIGHTING_CLASSES);
+        document.body.classList.remove('focus-mode', 'candle-lit', 'candle-brightness-active', 'quiet-room', 'effects-off', ...LIGHTING_CLASSES);
         wireStaticEvents();
         restoreDraft();
         updateCharCounter();
@@ -89,6 +102,7 @@
         playBackgroundVideo();
         updateFocusMuteButton();
         updateFocusVisibility();
+        updateCandleBrightness();
         updateAmbientTriggerStates();
         primeYouTubeAudio();
         initializeSupabase();
@@ -205,11 +219,8 @@
         $('#eraseStoryBtn')?.addEventListener('click', openClearStoryConfirm);
         $('#confirmEraseStoryBtn')?.addEventListener('click', eraseStoryDraft);
         $('#copyPromptBtn')?.addEventListener('click', startWritingFromPrompt);
-        $('#candleBtn')?.addEventListener('click', (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            toggleCandleMode();
-        });
+        $('#candleBrightnessSlider')?.addEventListener('input', updateCandleBrightness);
+        $('#candleBrightnessSlider')?.addEventListener('change', updateCandleBrightness);
         $('#exitFocusBtn')?.addEventListener('click', (event) => {
             event.preventDefault();
             event.stopPropagation();
@@ -219,6 +230,9 @@
         $('#soundEffectsBtn')?.addEventListener('click', () => toggleAmbientMenu('soundEffectsMenu', 'soundEffectsBtn'));
         $('#lightingEffectsBtn')?.addEventListener('click', () => toggleAmbientMenu('lightingEffectsMenu', 'lightingEffectsBtn'));
         $('#soundEffectsMenu')?.addEventListener('click', handleSoundMenuClick);
+        $('#soundEffectsMenu')?.addEventListener('input', handleSoundVolumeInput);
+        $('#soundEffectsMenu')?.addEventListener('change', handleSoundVolumeInput);
+        $('#soundEffectsMenu')?.addEventListener('keydown', handleSoundMenuKeydown);
         $('#lightingEffectsMenu')?.addEventListener('click', handleLightingMenuClick);
         $('#focusVisibilitySlider')?.addEventListener('input', updateFocusVisibility);
         $('#saveStoryEditBtn')?.addEventListener('click', saveStoryEdit);
@@ -1544,11 +1558,14 @@
     }
 
     function setAmbientMasterAudible() {
-        if (!state.ambient.master || !state.ambient.ctx) return;
-
         const volume = getSiteVolume();
         const audible = volume > 0 && state.ambient.effectsEnabled;
-        state.ambient.master.gain.setTargetAtTime(audible ? 0.92 * volume : 0, state.ambient.ctx.currentTime, 0.05);
+
+        if (state.ambient.master && state.ambient.ctx) {
+            state.ambient.master.gain.setTargetAtTime(audible ? 0.92 * volume : 0, state.ambient.ctx.currentTime, 0.05);
+        }
+
+        updateActiveSoundVolumes();
     }
 
     function syncFocusAudio(options = {}) {
@@ -1681,12 +1698,16 @@
     }
 
     function toggleCandleMode() {
+        const slider = $('#candleBrightnessSlider');
+        if (slider) {
+            slider.value = getCandleBrightnessLevel() > 0.01 ? '0' : '100';
+            updateCandleBrightness();
+            return;
+        }
+
         const lit = !document.body.classList.contains('candle-lit');
         const candle = $('#candleBtn');
-
-        if (lit) clearLightingEffect();
         document.body.classList.toggle('candle-lit', lit);
-
         candle?.setAttribute('aria-pressed', String(lit));
         candle?.setAttribute('aria-label', lit ? 'Put out candle' : 'Light candle');
         candle?.setAttribute('title', lit ? 'Put out candle' : 'Light candle');
@@ -1694,11 +1715,78 @@
         updateAmbientTriggerStates();
     }
 
+    function getCandleBrightnessLevel() {
+        const slider = $('#candleBrightnessSlider');
+        if (!slider) return 0;
+        return clamp01((Number(slider.value) || 0) / 100);
+    }
+
+    function mixColor(start, end, amount) {
+        const t = clamp01(amount);
+        const channel = (index) => Math.round(start[index] + (end[index] - start[index]) * t);
+        return `rgb(${channel(0)}, ${channel(1)}, ${channel(2)})`;
+    }
+
+    function getFocusVisibilityLevel() {
+        const slider = $('#focusVisibilitySlider');
+        if (!slider) return 0.88;
+        return Math.max(48, Math.min(96, Number(slider.value) || 88)) / 100;
+    }
+
+    function getFocusInkFactor() {
+        return clamp01((getFocusVisibilityLevel() - 0.48) / 0.48);
+    }
+
+    function updateCandleBrightness() {
+        const slider = $('#candleBrightnessSlider');
+        if (!slider) return;
+
+        const level = getCandleBrightnessLevel();
+        const eased = level <= 0 ? 0 : 1 - Math.pow(1 - level, 1.35);
+        const active = level > 0.01;
+        const inkFactor = getFocusInkFactor();
+        const surfaceStrength = 0.42 + (0.58 * inkFactor);
+        const inputStrength = 0.48 + (0.52 * inkFactor);
+
+        document.body.classList.remove('candle-lit');
+        document.body.classList.toggle('candle-brightness-active', active);
+
+        document.body.style.setProperty('--candle-level', level.toFixed(3));
+        document.body.style.setProperty('--candle-ease', eased.toFixed(3));
+        document.body.style.setProperty('--focus-ink-factor', inkFactor.toFixed(3));
+        document.body.style.setProperty('--candle-page-alpha', eased.toFixed(3));
+        document.body.style.setProperty('--candle-glow-alpha', (0.42 * eased).toFixed(3));
+        document.body.style.setProperty('--candle-overlay-alpha', (0.54 + (0.04 * eased)).toFixed(3));
+        document.body.style.setProperty('--candle-panel-alpha-1', ((0.08 + (0.86 * eased)) * surfaceStrength).toFixed(3));
+        document.body.style.setProperty('--candle-panel-alpha-2', ((0.07 + (0.82 * eased)) * surfaceStrength).toFixed(3));
+        document.body.style.setProperty('--candle-border-alpha', (0.10 + (0.20 * eased * inputStrength)).toFixed(3));
+        document.body.style.setProperty('--candle-input-alpha', ((0.08 + (0.64 * eased)) * inputStrength).toFixed(3));
+        document.body.style.setProperty('--candle-control-alpha', (0.05 + (0.51 * eased)).toFixed(3));
+        document.body.style.setProperty('--candle-text-color', mixColor([246, 234, 212], [39, 31, 24], eased));
+        document.body.style.setProperty('--candle-muted-color', mixColor([200, 195, 165], [61, 48, 36], eased));
+        document.body.style.setProperty('--candle-track-alpha', (0.05 + (0.06 * eased)).toFixed(3));
+        document.body.style.setProperty('--candle-range-progress-alpha', (0.42 + (0.18 * eased)).toFixed(3));
+        document.body.style.setProperty('--candle-control-hover-alpha', Math.min(0.78, 0.13 + (0.51 * eased)).toFixed(3));
+        document.body.style.setProperty('--candle-focus-inset-alpha', (0.22 * eased).toFixed(3));
+        document.body.style.setProperty('--candle-focus-shadow-alpha', (0.26 + (0.10 * (1 - inkFactor))).toFixed(3));
+        document.body.style.setProperty('--candle-char-track-alpha', (0.14 + (0.08 * eased)).toFixed(3));
+        document.body.style.setProperty('--candle-char-border-alpha', (0.12 + (0.10 * eased)).toFixed(3));
+        document.body.style.setProperty('--candle-char-glow-alpha', (0.16 + (0.12 * eased)).toFixed(3));
+        document.body.style.setProperty('--candle-room-overlay-alpha', (0.40 - (0.12 * eased)).toFixed(3));
+        document.body.style.setProperty('--candle-room-overlay-saturation', (0.96 + (0.10 * eased)).toFixed(3));
+        document.body.style.setProperty('--story-room-candle-brightness', (0.72 + (0.18 * eased)).toFixed(3));
+        document.body.style.setProperty('--story-room-candle-saturation', (0.92 + (0.12 * eased)).toFixed(3));
+        document.body.style.setProperty('--story-room-candle-blur', `${(3.8 - (0.8 * eased)).toFixed(2)}px`);
+
+        slider.setAttribute('aria-valuetext', `${Math.round(level * 100)}% candle brightness`);
+        updateAmbientTriggerStates();
+    }
+
     function updateFocusVisibility() {
         const slider = $('#focusVisibilitySlider');
         if (!slider) return;
 
-        const level = Math.max(48, Math.min(96, Number(slider.value) || 88)) / 100;
+        const level = getFocusVisibilityLevel();
         const secondary = Math.min(0.98, level + 0.05);
         const textareaAlpha = Math.max(0.10, Math.min(0.42, level - 0.58));
         const blur = Math.round(5 + level * 10);
@@ -1707,6 +1795,8 @@
         document.body.style.setProperty('--focus-zone-alpha-2', secondary.toFixed(2));
         document.body.style.setProperty('--focus-textarea-alpha', textareaAlpha.toFixed(2));
         document.body.style.setProperty('--focus-zone-blur', `${blur}px`);
+
+        updateCandleBrightness();
     }
 
     function toggleAmbientMenu(menuId, buttonId) {
@@ -1718,6 +1808,7 @@
         menu.classList.toggle('hidden', !willOpen);
         button.setAttribute('aria-expanded', String(willOpen));
         updateFocusVisibility();
+        updateCandleBrightness();
         updateAmbientTriggerStates();
     }
 
@@ -1729,9 +1820,67 @@
         updateAmbientTriggerStates();
     }
 
+    function clamp01(value, fallback = 0.7) {
+        const number = Number(value);
+        if (!Number.isFinite(number)) return fallback;
+        return Math.max(0, Math.min(1, number));
+    }
+
+    function getSoundTile(soundId) {
+        return document.querySelector(`[data-sound="${soundId}"]`);
+    }
+
+    function getSoundVolumeFromControl(soundId) {
+        const slider = document.querySelector(`[data-sound-volume="${soundId}"]`);
+        return clamp01((Number(slider?.value) || 0) / 100, 0.7);
+    }
+
+    function getEffectiveSoundVolume(entry) {
+        if (!entry) return 0;
+        const globalVolume = getSiteVolume();
+        const localVolume = clamp01(entry.volume, 0.7);
+        return globalVolume > 0 && state.ambient.effectsEnabled ? globalVolume * localVolume : 0;
+    }
+
+    function updateSoundVolumeUi(soundId, volume) {
+        const tile = getSoundTile(soundId);
+        if (!tile) return;
+        const percent = Math.round(clamp01(volume, 0.7) * 100);
+        const slider = tile.querySelector('[data-sound-volume]');
+        const value = tile.querySelector('.sound-mix-volume-value');
+        if (slider && document.activeElement !== slider) slider.value = String(percent);
+        if (value) value.textContent = `${percent}%`;
+    }
+
+    function updateActiveSoundVolumes() {
+        state.ambient.activeSounds.forEach((entry, soundId) => {
+            if (!entry?.audio) return;
+            entry.audio.volume = getEffectiveSoundVolume(entry);
+            updateSoundVolumeUi(soundId, entry.volume);
+        });
+    }
+
+    function handleSoundVolumeInput(event) {
+        const slider = event.target.closest('[data-sound-volume]');
+        if (!slider) return;
+
+        event.stopPropagation();
+
+        const soundId = slider.dataset.soundVolume;
+        const entry = state.ambient.activeSounds.get(soundId);
+        const volume = clamp01((Number(slider.value) || 0) / 100, 0.7);
+
+        updateSoundVolumeUi(soundId, volume);
+
+        if (entry?.audio) {
+            entry.volume = volume;
+            entry.audio.volume = getEffectiveSoundVolume(entry);
+        }
+    }
+
     function updateAmbientTriggerStates() {
         const soundActive = state.ambient.activeSounds.size > 0;
-        const lightActive = !!state.ambient.activeLighting || document.body.classList.contains('candle-lit');
+        const lightActive = !!state.ambient.activeLighting || document.body.classList.contains('candle-lit') || document.body.classList.contains('candle-brightness-active');
 
         $('#soundEffectsBtn')?.classList.toggle('has-active-effect', soundActive);
         $('#soundEffectsBtn')?.setAttribute('aria-pressed', String(soundActive));
@@ -1750,31 +1899,48 @@
         syncFocusAudio({ allowYouTubeResume: false });
     }
 
+    function handleSoundMenuKeydown(event) {
+        if (event.target.closest('[data-sound-volume]')) return;
+        const tile = event.target.closest('[data-sound]');
+        if (!tile) return;
+
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            tile.click();
+        }
+    }
+
     async function handleSoundMenuClick(event) {
-        const button = event.target.closest('[data-sound]');
-        if (!button) return;
+        if (event.target.closest('[data-sound-volume]') || event.target.closest('.sound-mix-slider-wrap')) {
+            event.stopPropagation();
+            return;
+        }
+
+        const tile = event.target.closest('[data-sound]');
+        if (!tile) return;
 
         event.preventDefault();
         event.stopPropagation();
 
-        const soundId = button.dataset.sound;
+        const soundId = tile.dataset.sound;
         const isActive = state.ambient.activeSounds.has(soundId);
 
         if (isActive) {
             stopAmbientSound(soundId);
-            button.setAttribute('aria-pressed', 'false');
+            tile.setAttribute('aria-pressed', 'false');
             updateAmbientTriggerStates();
             return;
         }
 
-        // Only one ambient sound should be active at a time.
-        stopAllAmbientSounds();
-
-        button.setAttribute('aria-pressed', 'true');
-        const started = await startAmbientSound(soundId);
+        // New mixer behavior: do not stop other active sounds.
+        // Users can layer any combination and tune each volume individually.
+        tile.setAttribute('aria-pressed', 'true');
+        const started = await startAmbientSound(soundId, {
+            volume: getSoundVolumeFromControl(soundId)
+        });
 
         if (!started) {
-            button.setAttribute('aria-pressed', 'false');
+            tile.setAttribute('aria-pressed', 'false');
         } else {
             syncFocusAudio({ allowYouTubeResume: false });
         }
@@ -1792,13 +1958,8 @@
         const activeClass = `light-${lighting}`;
         const isAlreadyActive = state.ambient.activeLighting === activeClass;
 
-        // Lighting choices override candle mode and each other.
-        document.body.classList.remove('candle-lit');
-        $('#candleBtn')?.setAttribute('aria-pressed', 'false');
-        $('#candleBtn')?.setAttribute('aria-label', 'Light candle');
-        $('#candleBtn')?.setAttribute('title', 'Light candle');
-        setCandleIcon();
-
+        // One lower lighting effect at a time. Candle stays independent and
+        // can remain layered with the selected lighting effect.
         clearLightingEffect();
 
         if (!isAlreadyActive) {
@@ -1896,90 +2057,95 @@
         return [oscillator, gainNode];
     }
 
-    async function startAmbientSound(soundId) {
+    async function startAmbientSound(soundId, options = {}) {
         if (state.ambient.activeSounds.has(soundId)) return true;
 
-        const ctx = await ensureAudioContext();
-        if (!ctx || !state.ambient.master) return false;
-
-        quietYouTubePlayer();
-        setAmbientMasterAudible();
-
-        const groupGain = ctx.createGain();
-        groupGain.gain.value = 0.001;
-        groupGain.connect(state.ambient.master);
-        groupGain.gain.setTargetAtTime(1, ctx.currentTime, 0.08);
-
-        const nodes = [groupGain];
-
-        switch (soundId) {
-            case 'white-noise':
-                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.12, type: 'lowpass', frequency: 1450, q: 0.4 }));
-                break;
-            case 'fireplace':
-                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.09, type: 'bandpass', frequency: 700, q: 0.8, seconds: 1.1 }));
-                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.032, type: 'highpass', frequency: 2600, q: 0.4, seconds: 0.8 }));
-                break;
-            case 'rain':
-                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.10, type: 'bandpass', frequency: 1800, q: 0.55 }));
-                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.045, type: 'highpass', frequency: 3600, q: 0.35, seconds: 1.3 }));
-                break;
-            case 'distant-thunder':
-                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.06, type: 'lowpass', frequency: 120, q: 0.7, seconds: 2.6 }));
-                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.042, frequency: 48, type: 'sine' }));
-                break;
-            case 'tranquil-park':
-                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.035, type: 'lowpass', frequency: 950, q: 0.4 }));
-                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.014, frequency: 523, type: 'sine' }));
-                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.010, frequency: 784, type: 'sine' }));
-                break;
-            case 'summer-day':
-                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.036, type: 'bandpass', frequency: 4200, q: 0.55, seconds: 1.6 }));
-                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.012, frequency: 660, type: 'triangle' }));
-                break;
-            case 'autumn-day':
-                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.058, type: 'bandpass', frequency: 650, q: 0.35, seconds: 1.8 }));
-                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.013, frequency: 196, type: 'sine' }));
-                break;
-            case 'winter-night':
-                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.055, type: 'lowpass', frequency: 360, q: 0.5, seconds: 2.4 }));
-                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.014, frequency: 92, type: 'sine' }));
-                break;
-            case 'night-by-the-lake':
-                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.052, type: 'lowpass', frequency: 620, q: 0.35, seconds: 2.2 }));
-                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.014, frequency: 130, type: 'sine' }));
-                break;
-            case 'ocean':
-                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.105, type: 'lowpass', frequency: 520, q: 0.28, seconds: 3.2 }));
-                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.052, type: 'bandpass', frequency: 930, q: 0.35, seconds: 2.8 }));
-                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.014, frequency: 72, type: 'sine' }));
-                break;
-            default:
-                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.06, type: 'lowpass', frequency: 900, q: 0.45 }));
+        const source = AUDIO_SOURCES[soundId];
+        if (!source) {
+            toast('Sound file is missing for this option.', 'error');
+            return false;
         }
 
-        state.ambient.activeSounds.set(soundId, nodes);
+        quietYouTubePlayer();
+
+        const volume = clamp01(options.volume ?? getSoundVolumeFromControl(soundId), 0.7);
+        updateSoundVolumeUi(soundId, volume);
+
+        const audio = new Audio(source);
+        audio.loop = true;
+        audio.preload = 'auto';
+        audio.volume = 0;
+
+        const entry = {
+            audio,
+            fadeFrame: null,
+            volume
+        };
+
+        state.ambient.activeSounds.set(soundId, entry);
+
+        try {
+            await audio.play();
+        } catch (error) {
+            console.warn('Audio playback blocked:', error);
+            state.ambient.activeSounds.delete(soundId);
+            toast('Tap once more to start sound in this browser.', 'error');
+            return false;
+        }
+
+        const fadeTo = getEffectiveSoundVolume(entry);
+        const startedAt = performance.now();
+        const duration = 220;
+
+        const fadeIn = (now) => {
+            const progress = Math.min(1, (now - startedAt) / duration);
+            audio.volume = fadeTo * progress;
+            if (progress < 1 && state.ambient.activeSounds.get(soundId) === entry) {
+                entry.fadeFrame = requestAnimationFrame(fadeIn);
+            }
+        };
+
+        entry.fadeFrame = requestAnimationFrame(fadeIn);
+        setAmbientMasterAudible();
         return true;
     }
 
     function stopAmbientSound(soundId) {
-        const nodes = state.ambient.activeSounds.get(soundId);
-        if (!nodes) return;
-        const ctx = state.ambient.ctx;
-        const groupGain = nodes[0];
-        if (ctx && groupGain?.gain) groupGain.gain.setTargetAtTime(0.001, ctx.currentTime, 0.05);
-        window.setTimeout(() => {
-            nodes.forEach((node) => {
-                try {
-                    if (typeof node.stop === 'function') node.stop();
-                    if (typeof node.disconnect === 'function') node.disconnect();
-                } catch {
-                    // Already stopped or disconnected.
+        const entry = state.ambient.activeSounds.get(soundId);
+        if (!entry) return;
+
+        const audio = entry.audio;
+        if (entry.fadeFrame) cancelAnimationFrame(entry.fadeFrame);
+
+        if (audio) {
+            const startVolume = audio.volume || 0;
+            const startedAt = performance.now();
+            const duration = 180;
+
+            const fadeOut = (now) => {
+                const progress = Math.min(1, (now - startedAt) / duration);
+                audio.volume = Math.max(0, startVolume * (1 - progress));
+
+                if (progress < 1) {
+                    entry.fadeFrame = requestAnimationFrame(fadeOut);
+                    return;
                 }
-            });
-        }, 180);
+
+                try {
+                    audio.pause();
+                    audio.currentTime = 0;
+                    audio.src = '';
+                    audio.load?.();
+                } catch {
+                    // Already stopped.
+                }
+            };
+
+            entry.fadeFrame = requestAnimationFrame(fadeOut);
+        }
+
         state.ambient.activeSounds.delete(soundId);
-        $(`[data-sound="${soundId}"]`)?.setAttribute('aria-pressed', 'false');
+        getSoundTile(soundId)?.setAttribute('aria-pressed', 'false');
 
         if (state.ambient.activeSounds.size === 0) {
             syncFocusAudio({ allowYouTubeResume: false });

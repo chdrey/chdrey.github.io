@@ -68,11 +68,7 @@
         </div>
     </nav>
 
-    <div class="video-background" aria-hidden="true">
-        <video muted loop playsinline id="bgVideo">
-            <source src="assets/fireplace.mp4" type="video/mp4">
-        </video>
-    </div>
+    <div class="video-background" aria-hidden="true"></div>
     <div class="page-glow" aria-hidden="true"></div>
     <div class="overlay" aria-hidden="true"></div>
 
@@ -118,21 +114,78 @@
                         <span class="slider-soft-label">Full</span>
                     </label>
                 </div>
-                <button type="button" data-sound="white-noise" aria-pressed="false">White noise</button>
-                <button type="button" data-sound="fireplace" aria-pressed="false">Fireplace</button>
-                <button type="button" data-sound="rain" aria-pressed="false">Rain</button>
-                <button type="button" data-sound="distant-thunder" aria-pressed="false">Distant thunder</button>
-                <button type="button" data-sound="tranquil-park" aria-pressed="false">Tranquil park</button>
-                <button type="button" data-sound="summer-day" aria-pressed="false">Summer day</button>
-                <button type="button" data-sound="autumn-day" aria-pressed="false">Autumn day</button>
-                <button type="button" data-sound="winter-night" aria-pressed="false">Winter night</button>
-                <button type="button" data-sound="night-by-the-lake" aria-pressed="false">Night by the lake</button>
-                <button type="button" data-sound="ocean" aria-pressed="false">Ocean</button>
+                                <div class="sound-mix-option" data-sound="relaxing-rain" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Relaxing rain</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Relaxing rain volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="relaxing-rain" type="range" min="0" max="100" value="70" step="1" aria-label="Relaxing rain volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="fireplace" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Fireplace</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Fireplace volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="fireplace" type="range" min="0" max="100" value="70" step="1" aria-label="Fireplace volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="ocean-waves" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Ocean waves</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Ocean waves volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="ocean-waves" type="range" min="0" max="100" value="70" step="1" aria-label="Ocean waves volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="morning-birds" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Morning birds</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Morning birds volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="morning-birds" type="range" min="0" max="100" value="70" step="1" aria-label="Morning birds volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="relaxing-storm" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Relaxing storm</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Relaxing storm volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="relaxing-storm" type="range" min="0" max="100" value="70" step="1" aria-label="Relaxing storm volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="day-at-the-park" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Day at the park</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Day at the park volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="day-at-the-park" type="range" min="0" max="100" value="70" step="1" aria-label="Day at the park volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="far-away-thunder" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Far away thunder</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Far away thunder volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="far-away-thunder" type="range" min="0" max="100" value="70" step="1" aria-label="Far away thunder volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="humming" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Humming</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Humming volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="humming" type="range" min="0" max="100" value="70" step="1" aria-label="Humming volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="brown-noise" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Brown noise</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Brown noise volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="brown-noise" type="range" min="0" max="100" value="70" step="1" aria-label="Brown noise volume">
+                    </label>
+                </div>
             </div>
             <div id="lightingEffectsMenu" class="ambient-menu lighting-menu hidden" role="menu" aria-label="Ambient lighting">
-                <div class="ambient-menu-feature candle-menu-feature">
+                <div class="ambient-menu-feature ambient-slider-feature candle-brightness-feature">
                     <span class="ambient-feature-label">Candle</span>
-                    <button id="candleBtn" class="candle-toggle candle-icon-toggle" type="button" aria-pressed="false" aria-label="Light candle" title="Light candle"><span class="candle-glyph" aria-hidden="true">🕯️</span></button>
+                    <label class="candle-brightness-slider" for="candleBrightnessSlider">
+                        <span class="slider-soft-label">Dim</span>
+                        <input id="candleBrightnessSlider" type="range" min="0" max="100" value="0" step="1" aria-label="Candle brightness">
+                        <span class="slider-soft-label">Bright</span>
+                    </label>
                 </div>
                 <div class="ambient-menu-feature ambient-slider-feature">
                     <span class="ambient-feature-label">Window</span>
@@ -144,7 +197,7 @@
                 </div>
                 <button type="button" data-lighting="fireplace-glow" aria-pressed="false">Fireplace glow</button>
                 <button type="button" data-lighting="rain-ambience" aria-pressed="false">Rain ambience</button>
-                <button type="button" data-lighting="wind" aria-pressed="false">Wind</button>
+                <button type="button" data-lighting="wind" aria-pressed="false">Under the covers</button>
                 <button type="button" data-lighting="thunder-flashes" aria-pressed="false">Thunder flashes</button>
                 <button type="button" data-lighting="summer-daylight" aria-pressed="false">Summer daylight</button>
                 <button type="button" data-lighting="twilight" aria-pressed="false">Twilight</button>

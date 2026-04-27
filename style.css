@@ -8767,3 +8767,2308 @@ body:not(.focus-mode) #writingZoneSection .writing-desk-title .eyebrow {
     position: relative !important;
     top: -8px !important;
 }
+
+
+/* =========================================================
+   Final 81: main page content raised 15px
+   ========================================================= */
+
+/* Move all main-page boxes/elements up together without changing the header/footer. */
+main {
+    margin-top: -15px !important;
+}
+
+@media (max-width: 760px) {
+    main {
+        margin-top: -15px !important;
+    }
+}
+
+
+/* =========================================================
+   Final 82: Weekly Prompt text raised 3px more
+   ========================================================= */
+
+#weeklyPromptText {
+    position: relative !important;
+    top: -11px !important;
+}
+
+
+/* =========================================================
+   Final 83: raise Sound/Light/X 3px + Weekly Prompt text 3px
+   ========================================================= */
+
+/* Weekly Prompt text up another 3px. */
+#weeklyPromptText {
+    position: relative !important;
+    top: -14px !important;
+}
+
+/* Main Writing Desk Sound/Light controls up about 3px. */
+body:not(.focus-mode) #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+    top: calc(-0.34rem - 3px) !important;
+}
+
+/* Focus Mode Sound/Light controls up about 3px when visible on desktop/tablet. */
+body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+    position: relative !important;
+    top: -3px !important;
+}
+
+/* X button up about 3px. */
+body.focus-mode .focus-close {
+    top: calc(1.05rem - 3px) !important;
+}
+
+@media (max-width: 760px) {
+    body:not(.focus-mode) #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+        top: calc(-0.28rem - 3px) !important;
+    }
+
+    body.focus-mode .focus-close {
+        top: calc(0.72rem - 3px) !important;
+    }
+}
+
+@media (max-width: 380px) {
+    body.focus-mode .focus-close {
+        top: calc(0.24rem - 3px) !important;
+    }
+}
+
+
+/* =========================================================
+   Final 84: correct focus-only button lift + prompt title/text correction
+   ========================================================= */
+
+/* Revert the accidental main-page Writing Desk Sound/Light movement.
+   Keep the main Writing Desk controls exactly where they were before Final 83. */
+body:not(.focus-mode) #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+    top: -0.34rem !important;
+}
+
+@media (max-width: 760px) {
+    body:not(.focus-mode) #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+        top: -0.28rem !important;
+    }
+}
+
+/* Focus Mode only: Sound/Light and X stay raised about 3px. */
+body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+    position: relative !important;
+    top: -3px !important;
+}
+
+body.focus-mode .focus-close {
+    top: calc(1.05rem - 3px) !important;
+}
+
+@media (max-width: 760px) {
+    body.focus-mode .focus-close {
+        top: calc(0.72rem - 3px) !important;
+    }
+}
+
+@media (max-width: 380px) {
+    body.focus-mode .focus-close {
+        top: calc(0.24rem - 3px) !important;
+    }
+}
+
+/* Weekly Prompt main prompt text: move down 9px from the accidental Final 83 position. */
+#weeklyPromptText {
+    position: relative !important;
+    top: -5px !important;
+}
+
+/* Weekly Prompt title text: this was the part meant to move up 3px. */
+.weekly-prompt-heading,
+.compact-inspiration .weekly-prompt-heading {
+    transform: translateY(7px) !important;
+}
+
+@media (max-width: 760px) {
+    .weekly-prompt-heading,
+    .compact-inspiration .weekly-prompt-heading {
+        transform: translateY(7px) !important;
+    }
+}
+
+
+/* =========================================================
+   Final 85: layered candle + revised ambient lighting moods
+   ========================================================= */
+
+/* Candle now layers with one selected lower light effect instead of replacing it. */
+body.candle-lit.light-fireplace-glow .page-glow,
+body.candle-lit.light-rain-ambience .page-glow,
+body.candle-lit.light-wind .page-glow,
+body.candle-lit.light-thunder-flashes .page-glow,
+body.candle-lit.light-summer-daylight .page-glow,
+body.candle-lit.light-twilight .page-glow,
+body.candle-lit.light-lamplight .page-glow,
+body.candle-lit.light-moonlit-desk .page-glow {
+    box-shadow: inset 0 0 0 9999px rgba(255, 205, 120, 0.035);
+}
+
+/* Summer daylight: sky blue field, soft blue orb, and sun from top-right. */
+body.light-summer-daylight {
+    --ambient-body-bg:
+        radial-gradient(circle at 83% 8%, rgba(255, 225, 96, 0.42), transparent 19rem),
+        radial-gradient(circle at 36% 24%, rgba(159, 218, 255, 0.36), transparent 34rem),
+        linear-gradient(160deg, #8dbfe3 0%, #4f8fc1 46%, #1b4268 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(circle at 84% 8%, rgba(255, 235, 120, 0.58), transparent 18rem),
+        radial-gradient(circle at 36% 26%, rgba(178, 225, 255, 0.42), transparent 32rem),
+        radial-gradient(circle at 63% 70%, rgba(71, 151, 210, 0.16), transparent 34rem) !important;
+    --ambient-overlay-bg: rgba(32, 90, 130, 0.24) !important;
+    --ambient-edge: rgba(205, 234, 255, 0.32) !important;
+    --ambient-card-glow: rgba(255, 226, 115, 0.12) !important;
+    --ambient-video-filter: saturate(1.04) blur(2px) brightness(1.05) !important;
+}
+
+/* Lamplight: yellow light from one side, surrounded by deep blue/black. */
+body.light-lamplight {
+    --ambient-body-bg:
+        radial-gradient(circle at 8% 52%, rgba(255, 205, 92, 0.34), transparent 20rem),
+        radial-gradient(circle at 70% 35%, rgba(18, 42, 86, 0.28), transparent 34rem),
+        linear-gradient(145deg, #03050b 0%, #07101e 54%, #000103 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(circle at 4% 52%, rgba(255, 211, 102, 0.50), transparent 22rem),
+        radial-gradient(circle at 64% 36%, rgba(23, 57, 113, 0.34), transparent 30rem),
+        radial-gradient(circle at 92% 82%, rgba(0, 0, 0, 0.28), transparent 28rem) !important;
+    --ambient-overlay-bg: rgba(3, 6, 12, 0.68) !important;
+    --ambient-edge: rgba(255, 211, 102, 0.20) !important;
+    --ambient-card-glow: rgba(255, 205, 92, 0.11) !important;
+}
+
+/* Fireplace glow: subtle campfire feeling with green top/bottom and moving red/yellow orbs. */
+body.light-fireplace-glow {
+    --ambient-body-bg:
+        radial-gradient(circle at 50% 58%, rgba(245, 34, 22, 0.20), transparent 18rem),
+        linear-gradient(180deg, #14381e 0%, #0f2717 34%, #241207 59%, #0b2f15 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(circle at 50% 58%, rgba(255, 28, 22, 0.45), transparent 15rem),
+        radial-gradient(circle at 43% 64%, rgba(255, 202, 70, 0.24), transparent 9rem),
+        radial-gradient(circle at 58% 66%, rgba(255, 164, 42, 0.22), transparent 11rem),
+        radial-gradient(circle at 50% 6%, rgba(64, 169, 88, 0.24), transparent 27rem),
+        radial-gradient(circle at 46% 96%, rgba(42, 133, 65, 0.26), transparent 30rem) !important;
+    --ambient-overlay-bg: rgba(7, 22, 11, 0.54) !important;
+    --ambient-card-glow: rgba(255, 77, 36, 0.11) !important;
+    --ambient-edge: rgba(95, 180, 104, 0.18) !important;
+    --ambient-animation: storyNookCampfireRed 6.8s ease-in-out infinite !important;
+}
+
+body.light-fireplace-glow .page-glow::after {
+    content: "";
+    position: fixed;
+    inset: -10%;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 41% 61%, rgba(255, 213, 74, 0.24), transparent 8rem),
+        radial-gradient(circle at 59% 66%, rgba(255, 177, 55, 0.22), transparent 7rem),
+        radial-gradient(circle at 48% 70%, rgba(255, 238, 112, 0.16), transparent 6rem);
+    filter: blur(12px);
+    mix-blend-mode: screen;
+    opacity: 0.58;
+    animation: storyNookCampfireYellow 2.15s ease-in-out infinite;
+}
+
+/* Thunder: keep the existing dark storm feel, add a second subtle side flash. */
+body.light-thunder-flashes {
+    --ambient-body-bg:
+        linear-gradient(160deg, #080812, #151622 52%, #05060b) !important;
+    --ambient-page-glow:
+        radial-gradient(circle at 78% 18%, rgba(190, 205, 224, 0.26), transparent 28rem),
+        radial-gradient(circle at 13% 30%, rgba(160, 181, 214, 0.16), transparent 26rem),
+        linear-gradient(180deg, rgba(20, 20, 32, 0.35), transparent) !important;
+    --ambient-overlay-bg: rgba(6, 6, 10, 0.68) !important;
+    --ambient-animation: storyNookSubtleThunderRight 10.8s ease-in-out infinite !important;
+}
+
+body.light-thunder-flashes .page-glow::after {
+    content: "";
+    position: fixed;
+    inset: -8%;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 8% 32%, rgba(196, 211, 235, 0.30), transparent 24rem),
+        linear-gradient(110deg, rgba(206, 222, 248, 0.16), transparent 44%);
+    opacity: 0.22;
+    filter: blur(8px);
+    mix-blend-mode: screen;
+    animation: storyNookSubtleThunderLeft 13.4s ease-in-out infinite;
+}
+
+/* Replace Wind with "Under the covers": dark edges and flashlight focused in the middle. */
+body.light-wind {
+    --ambient-body-bg:
+        radial-gradient(circle at 50% 48%, rgba(255, 237, 168, 0.18), transparent 20rem),
+        radial-gradient(circle at 50% 50%, rgba(10, 18, 30, 0.36), transparent 32rem),
+        linear-gradient(145deg, #010204 0%, #080c13 45%, #000000 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(circle at 50% 47%, rgba(255, 237, 168, 0.46), transparent 18rem),
+        radial-gradient(circle at 50% 50%, rgba(19, 26, 40, 0.32), transparent 30rem),
+        radial-gradient(circle at 0% 0%, rgba(0, 0, 0, 0.38), transparent 24rem),
+        radial-gradient(circle at 100% 100%, rgba(0, 0, 0, 0.46), transparent 26rem) !important;
+    --ambient-overlay-bg: rgba(1, 2, 4, 0.72) !important;
+    --ambient-card-glow: rgba(255, 237, 168, 0.10) !important;
+    --ambient-edge: rgba(255, 237, 168, 0.16) !important;
+    --ambient-animation: storyNookUnderCovers 8s ease-in-out infinite !important;
+}
+
+@keyframes storyNookCampfireRed {
+    0%, 100% {
+        opacity: 0.78;
+        filter: saturate(1.05) brightness(0.96);
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    42% {
+        opacity: 1;
+        filter: saturate(1.28) brightness(1.08);
+        transform: translate3d(0.4%, -0.3%, 0) scale(1.012);
+    }
+    70% {
+        opacity: 0.88;
+        filter: saturate(1.14) brightness(1.0);
+        transform: translate3d(-0.25%, 0.25%, 0) scale(1.004);
+    }
+}
+
+@keyframes storyNookCampfireYellow {
+    0%, 100% {
+        opacity: 0.42;
+        transform: translate3d(-0.6%, 0.4%, 0) scale(0.99);
+    }
+    35% {
+        opacity: 0.72;
+        transform: translate3d(1.1%, -0.8%, 0) scale(1.018);
+    }
+    62% {
+        opacity: 0.54;
+        transform: translate3d(-0.9%, -0.3%, 0) scale(1.006);
+    }
+}
+
+@keyframes storyNookSubtleThunderRight {
+    0%, 58%, 68%, 100% {
+        opacity: 0.54;
+        filter: brightness(0.88);
+    }
+    61% {
+        opacity: 0.82;
+        filter: brightness(1.28);
+    }
+    63% {
+        opacity: 0.64;
+        filter: brightness(1.02);
+    }
+    87% {
+        opacity: 0.74;
+        filter: brightness(1.16);
+    }
+}
+
+@keyframes storyNookSubtleThunderLeft {
+    0%, 45%, 55%, 100% {
+        opacity: 0.16;
+        filter: brightness(0.9);
+    }
+    48% {
+        opacity: 0.44;
+        filter: brightness(1.22);
+    }
+    51% {
+        opacity: 0.22;
+        filter: brightness(1);
+    }
+    79% {
+        opacity: 0.34;
+        filter: brightness(1.12);
+    }
+}
+
+@keyframes storyNookUnderCovers {
+    0%, 100% {
+        transform: scale(1) translate3d(0, 0, 0);
+        filter: brightness(0.98);
+    }
+    50% {
+        transform: scale(1.012) translate3d(0.25%, -0.2%, 0);
+        filter: brightness(1.05);
+    }
+}
+
+
+/* =========================================================
+   Final 86: softer brighter artistic ambient light refinements
+   ========================================================= */
+
+/* General artistic softening for ambient light moods:
+   brighter light, softer edges, less "perfect orb" definition. */
+body.light-fireplace-glow .page-glow,
+body.light-rain-ambience .page-glow,
+body.light-wind .page-glow,
+body.light-summer-daylight .page-glow,
+body.light-lamplight .page-glow {
+    filter: blur(18px) saturate(1.08) brightness(1.08);
+}
+
+/* Fireplace Glow:
+   deep blue top, dark brown bottom, red ember base, and soft flame shapes above. */
+body.light-fireplace-glow {
+    --ambient-body-bg:
+        radial-gradient(ellipse at 50% 78%, rgba(214, 28, 18, 0.38), transparent 24rem),
+        radial-gradient(ellipse at 48% 68%, rgba(255, 119, 32, 0.22), transparent 19rem),
+        linear-gradient(180deg, #071227 0%, #0b1424 34%, #21140f 68%, #2a150b 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(ellipse at 50% 82%, rgba(231, 22, 16, 0.62), transparent 20rem),
+        radial-gradient(ellipse at 45% 63%, rgba(255, 182, 52, 0.34), transparent 9rem),
+        radial-gradient(ellipse at 53% 59%, rgba(255, 92, 34, 0.36), transparent 10rem),
+        radial-gradient(ellipse at 60% 66%, rgba(255, 214, 75, 0.24), transparent 8rem),
+        radial-gradient(ellipse at 50% 18%, rgba(34, 61, 120, 0.30), transparent 34rem) !important;
+    --ambient-overlay-bg: rgba(6, 8, 18, 0.52) !important;
+    --ambient-card-glow: rgba(255, 82, 38, 0.16) !important;
+    --ambient-edge: rgba(255, 154, 61, 0.20) !important;
+    --ambient-animation: storyNookFireBase 7.6s ease-in-out infinite !important;
+}
+
+body.light-fireplace-glow .page-glow::after {
+    content: "";
+    position: fixed;
+    inset: -14%;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at 44% 57%, rgba(255, 223, 91, 0.36), transparent 7rem),
+        radial-gradient(ellipse at 52% 52%, rgba(255, 129, 34, 0.34), transparent 8rem),
+        radial-gradient(ellipse at 58% 58%, rgba(255, 238, 122, 0.24), transparent 6.5rem),
+        radial-gradient(ellipse at 49% 69%, rgba(235, 24, 12, 0.34), transparent 14rem);
+    filter: blur(22px) saturate(1.22) brightness(1.12);
+    mix-blend-mode: screen;
+    opacity: 0.78;
+    animation: storyNookFireFlames 3.4s ease-in-out infinite;
+}
+
+/* Summer Daylight:
+   brighter, sunnier, mixed blue-white-gold artistic light. */
+body.light-summer-daylight {
+    --ambient-body-bg:
+        radial-gradient(ellipse at 82% 8%, rgba(255, 239, 121, 0.74), transparent 23rem),
+        radial-gradient(ellipse at 58% 28%, rgba(255, 255, 255, 0.34), transparent 21rem),
+        radial-gradient(ellipse at 30% 18%, rgba(190, 233, 255, 0.54), transparent 34rem),
+        radial-gradient(ellipse at 18% 78%, rgba(255, 255, 255, 0.22), transparent 26rem),
+        linear-gradient(160deg, #bfe6ff 0%, #79c4f4 45%, #3b91d0 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(ellipse at 82% 8%, rgba(255, 245, 148, 0.82), transparent 20rem),
+        radial-gradient(ellipse at 58% 27%, rgba(255, 255, 255, 0.46), transparent 18rem),
+        radial-gradient(ellipse at 28% 18%, rgba(199, 235, 255, 0.62), transparent 34rem),
+        radial-gradient(ellipse at 18% 74%, rgba(255, 255, 255, 0.26), transparent 22rem),
+        radial-gradient(ellipse at 70% 74%, rgba(99, 188, 245, 0.20), transparent 30rem) !important;
+    --ambient-overlay-bg: rgba(63, 145, 202, 0.18) !important;
+    --ambient-edge: rgba(232, 248, 255, 0.38) !important;
+    --ambient-card-glow: rgba(255, 244, 164, 0.18) !important;
+    --ambient-video-filter: saturate(1.12) blur(2px) brightness(1.12) !important;
+    --ambient-animation: storyNookSummerBreath 9.5s ease-in-out infinite !important;
+}
+
+/* Lamplight:
+   yellow lamp source moved to top-left, with dark blue/black surrounding field. */
+body.light-lamplight {
+    --ambient-body-bg:
+        radial-gradient(ellipse at 11% 10%, rgba(255, 218, 99, 0.52), transparent 24rem),
+        radial-gradient(ellipse at 32% 28%, rgba(255, 182, 70, 0.18), transparent 20rem),
+        radial-gradient(ellipse at 74% 44%, rgba(18, 42, 86, 0.32), transparent 34rem),
+        linear-gradient(145deg, #02040a 0%, #07101f 56%, #000103 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(ellipse at 10% 8%, rgba(255, 220, 106, 0.70), transparent 22rem),
+        radial-gradient(ellipse at 28% 24%, rgba(255, 192, 82, 0.22), transparent 22rem),
+        radial-gradient(ellipse at 70% 42%, rgba(23, 57, 113, 0.38), transparent 32rem),
+        radial-gradient(ellipse at 94% 84%, rgba(0, 0, 0, 0.36), transparent 28rem) !important;
+    --ambient-overlay-bg: rgba(3, 6, 12, 0.66) !important;
+    --ambient-edge: rgba(255, 211, 102, 0.22) !important;
+    --ambient-card-glow: rgba(255, 205, 92, 0.13) !important;
+}
+
+/* Under the Covers:
+   stronger, wider yellow flashlight glow in center with dark edges. */
+body.light-wind {
+    --ambient-body-bg:
+        radial-gradient(ellipse at 50% 48%, rgba(255, 238, 158, 0.34), transparent 28rem),
+        radial-gradient(ellipse at 50% 48%, rgba(255, 223, 118, 0.18), transparent 39rem),
+        radial-gradient(ellipse at 50% 50%, rgba(10, 18, 30, 0.38), transparent 36rem),
+        linear-gradient(145deg, #000102 0%, #070a12 48%, #000000 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(ellipse at 50% 47%, rgba(255, 241, 164, 0.68), transparent 25rem),
+        radial-gradient(ellipse at 50% 48%, rgba(255, 206, 91, 0.28), transparent 33rem),
+        radial-gradient(ellipse at 50% 50%, rgba(19, 26, 40, 0.26), transparent 34rem),
+        radial-gradient(ellipse at 0% 0%, rgba(0, 0, 0, 0.46), transparent 28rem),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.54), transparent 30rem) !important;
+    --ambient-overlay-bg: rgba(1, 2, 4, 0.70) !important;
+    --ambient-card-glow: rgba(255, 237, 168, 0.14) !important;
+    --ambient-edge: rgba(255, 237, 168, 0.18) !important;
+    --ambient-animation: storyNookUnderCoversWide 9s ease-in-out infinite !important;
+}
+
+/* Rain Ambience:
+   subtle angled rain lines drifting right-to-left. */
+body.light-rain-ambience {
+    --ambient-body-bg:
+        linear-gradient(160deg, #0e1319, #18232a 52%, #0b0e13) !important;
+    --ambient-page-glow:
+        linear-gradient(115deg, rgba(190, 204, 213, 0.18), transparent 48%),
+        radial-gradient(ellipse at 70% 18%, rgba(116, 145, 160, 0.32), transparent 32rem),
+        radial-gradient(ellipse at 22% 72%, rgba(178, 194, 204, 0.14), transparent 27rem) !important;
+    --ambient-overlay-bg: rgba(9, 13, 17, 0.64) !important;
+    --ambient-edge: rgba(168, 188, 198, 0.20) !important;
+    --ambient-card-glow: rgba(145, 170, 182, 0.12) !important;
+}
+
+body.light-rain-ambience .page-glow::after {
+    content: "";
+    position: fixed;
+    inset: -22%;
+    pointer-events: none;
+    background:
+        repeating-linear-gradient(
+            108deg,
+            transparent 0 18px,
+            rgba(255, 255, 255, 0.00) 18px 27px,
+            rgba(255, 255, 255, 0.18) 27px 29px,
+            rgba(255, 255, 255, 0.00) 29px 56px
+        );
+    filter: blur(0.8px);
+    opacity: 0.18;
+    mix-blend-mode: screen;
+    animation: storyNookRainLines 12s linear infinite;
+}
+
+/* Animation refinements. */
+@keyframes storyNookFireBase {
+    0%, 100% {
+        opacity: 0.82;
+        filter: blur(18px) saturate(1.08) brightness(1.00);
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    45% {
+        opacity: 1;
+        filter: blur(20px) saturate(1.24) brightness(1.10);
+        transform: translate3d(0.25%, -0.15%, 0) scale(1.008);
+    }
+    72% {
+        opacity: 0.90;
+        filter: blur(19px) saturate(1.15) brightness(1.04);
+        transform: translate3d(-0.2%, 0.18%, 0) scale(1.004);
+    }
+}
+
+@keyframes storyNookFireFlames {
+    0%, 100% {
+        opacity: 0.58;
+        transform: translate3d(-0.25%, 0.4%, 0) scale(0.985);
+    }
+    34% {
+        opacity: 0.86;
+        transform: translate3d(0.55%, -1.2%, 0) scale(1.025);
+    }
+    67% {
+        opacity: 0.70;
+        transform: translate3d(-0.45%, -0.5%, 0) scale(1.006);
+    }
+}
+
+@keyframes storyNookSummerBreath {
+    0%, 100% {
+        opacity: 0.86;
+        transform: translate3d(0,0,0) scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: translate3d(-0.3%, 0.25%, 0) scale(1.012);
+    }
+}
+
+@keyframes storyNookUnderCoversWide {
+    0%, 100% {
+        transform: scale(1) translate3d(0, 0, 0);
+        filter: blur(18px) brightness(1.02);
+    }
+    50% {
+        transform: scale(1.018) translate3d(0.18%, -0.16%, 0);
+        filter: blur(20px) brightness(1.12);
+    }
+}
+
+@keyframes storyNookRainLines {
+    0% {
+        transform: translate3d(7%, -7%, 0);
+    }
+    100% {
+        transform: translate3d(-7%, 7%, 0);
+    }
+}
+
+
+/* =========================================================
+   Final 87: breathing ambient orbs + fire pyramid + refined lamplight
+   ========================================================= */
+
+/* Give the ambient light fields a gentle living motion.
+   Faster/flickery effects are reserved for fire and thunder; calmer effects
+   breathe slowly so they stay atmospheric rather than distracting. */
+body.light-summer-daylight {
+    --ambient-animation: storyNookOrbBreathSunny 10s ease-in-out infinite !important;
+}
+
+body.light-rain-ambience {
+    --ambient-animation: storyNookOrbBreathRain 12s ease-in-out infinite !important;
+}
+
+body.light-lamplight {
+    --ambient-animation: storyNookLampBreath 9.5s ease-in-out infinite !important;
+}
+
+body.light-wind {
+    --ambient-animation: storyNookUnderCoversWide 9s ease-in-out infinite !important;
+}
+
+body.light-twilight,
+body.light-moonlit-desk {
+    --ambient-animation: storyNookOrbBreathSlow 13s ease-in-out infinite !important;
+}
+
+/* Fire: blue/dark background stays, light structure becomes more like a small
+   pyramid of flame: large red ember base below, yellow/red flame glows above. */
+body.light-fireplace-glow {
+    --ambient-body-bg:
+        radial-gradient(ellipse at 50% 86%, rgba(220, 18, 14, 0.42), transparent 25rem),
+        linear-gradient(180deg, #071227 0%, #0b1424 34%, #21140f 68%, #2a150b 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(ellipse at 50% 87%, rgba(225, 18, 12, 0.74), transparent 22rem),
+        radial-gradient(ellipse at 50% 69%, rgba(255, 184, 45, 0.42), transparent 11rem),
+        radial-gradient(ellipse at 43% 74%, rgba(255, 64, 24, 0.34), transparent 10rem),
+        radial-gradient(ellipse at 57% 74%, rgba(255, 64, 24, 0.34), transparent 10rem),
+        radial-gradient(ellipse at 50% 59%, rgba(255, 231, 92, 0.34), transparent 8rem),
+        radial-gradient(ellipse at 50% 18%, rgba(34, 61, 120, 0.30), transparent 34rem) !important;
+    --ambient-overlay-bg: rgba(6, 8, 18, 0.52) !important;
+    --ambient-card-glow: rgba(255, 82, 38, 0.16) !important;
+    --ambient-edge: rgba(255, 154, 61, 0.20) !important;
+    --ambient-animation: storyNookFireRedBase 7.2s ease-in-out infinite !important;
+}
+
+/* Fast yellow flame layer, arranged above the red base. */
+body.light-fireplace-glow .page-glow::after {
+    content: "";
+    position: fixed;
+    inset: -14%;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at 50% 57%, rgba(255, 241, 104, 0.46), transparent 6.5rem),
+        radial-gradient(ellipse at 46% 65%, rgba(255, 196, 52, 0.38), transparent 7.5rem),
+        radial-gradient(ellipse at 54% 65%, rgba(255, 196, 52, 0.38), transparent 7.5rem),
+        radial-gradient(ellipse at 50% 75%, rgba(255, 74, 28, 0.30), transparent 12rem);
+    filter: blur(21px) saturate(1.26) brightness(1.18);
+    mix-blend-mode: screen;
+    opacity: 0.82;
+    animation: storyNookFireYellowFlicker 1.85s ease-in-out infinite;
+}
+
+/* Lamplight: small white lamp source in the top-left corner, connected to a
+   larger warm yellow glow beside it. */
+body.light-lamplight {
+    --ambient-body-bg:
+        radial-gradient(ellipse at 4% 5%, rgba(255, 255, 232, 0.62), transparent 11rem),
+        radial-gradient(ellipse at 18% 16%, rgba(255, 216, 98, 0.52), transparent 27rem),
+        radial-gradient(ellipse at 74% 44%, rgba(18, 42, 86, 0.32), transparent 34rem),
+        linear-gradient(145deg, #02040a 0%, #07101f 56%, #000103 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(ellipse at 4% 5%, rgba(255, 255, 238, 0.82), transparent 10rem),
+        radial-gradient(ellipse at 18% 16%, rgba(255, 214, 91, 0.66), transparent 29rem),
+        radial-gradient(ellipse at 30% 24%, rgba(255, 176, 58, 0.16), transparent 23rem),
+        radial-gradient(ellipse at 70% 42%, rgba(23, 57, 113, 0.38), transparent 32rem),
+        radial-gradient(ellipse at 94% 84%, rgba(0, 0, 0, 0.36), transparent 28rem) !important;
+    --ambient-overlay-bg: rgba(3, 6, 12, 0.66) !important;
+    --ambient-edge: rgba(255, 221, 128, 0.24) !important;
+    --ambient-card-glow: rgba(255, 210, 95, 0.15) !important;
+}
+
+body.light-lamplight .page-glow::after {
+    content: "";
+    position: fixed;
+    inset: -10%;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at 5% 5%, rgba(255, 255, 250, 0.40), transparent 8rem),
+        radial-gradient(ellipse at 19% 16%, rgba(255, 220, 115, 0.34), transparent 22rem);
+    filter: blur(18px) brightness(1.08);
+    mix-blend-mode: screen;
+    opacity: 0.58;
+    animation: storyNookLampConnectedGlow 8.5s ease-in-out infinite;
+}
+
+/* Calm breathing motions for softer artistic orbs. */
+@keyframes storyNookOrbBreathSunny {
+    0%, 100% {
+        opacity: 0.88;
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(18px) saturate(1.08) brightness(1.08);
+    }
+    50% {
+        opacity: 1;
+        transform: translate3d(-0.45%, 0.28%, 0) scale(1.022);
+        filter: blur(20px) saturate(1.14) brightness(1.16);
+    }
+}
+
+@keyframes storyNookOrbBreathRain {
+    0%, 100% {
+        opacity: 0.78;
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(18px) saturate(1.02) brightness(1.0);
+    }
+    50% {
+        opacity: 0.92;
+        transform: translate3d(0.35%, -0.22%, 0) scale(1.016);
+        filter: blur(20px) saturate(1.08) brightness(1.08);
+    }
+}
+
+@keyframes storyNookOrbBreathSlow {
+    0%, 100% {
+        opacity: 0.74;
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(18px) brightness(1);
+    }
+    50% {
+        opacity: 0.90;
+        transform: translate3d(0.25%, -0.18%, 0) scale(1.014);
+        filter: blur(20px) brightness(1.08);
+    }
+}
+
+@keyframes storyNookLampBreath {
+    0%, 100% {
+        opacity: 0.84;
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(18px) saturate(1.06) brightness(1.04);
+    }
+    50% {
+        opacity: 1;
+        transform: translate3d(0.18%, 0.16%, 0) scale(1.018);
+        filter: blur(20px) saturate(1.12) brightness(1.14);
+    }
+}
+
+@keyframes storyNookLampConnectedGlow {
+    0%, 100% {
+        opacity: 0.48;
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+        opacity: 0.68;
+        transform: translate3d(0.25%, 0.15%, 0) scale(1.022);
+    }
+}
+
+/* Fire red base moves/expands more slowly than the upper yellow flame. */
+@keyframes storyNookFireRedBase {
+    0%, 100% {
+        opacity: 0.82;
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(19px) saturate(1.12) brightness(1.02);
+    }
+    45% {
+        opacity: 1;
+        transform: translate3d(0.12%, -0.18%, 0) scale(1.018);
+        filter: blur(21px) saturate(1.26) brightness(1.10);
+    }
+    72% {
+        opacity: 0.90;
+        transform: translate3d(-0.10%, 0.12%, 0) scale(1.006);
+        filter: blur(20px) saturate(1.16) brightness(1.04);
+    }
+}
+
+/* Yellow flame layer: quicker flicker/contract/expand, still subtle. */
+@keyframes storyNookFireYellowFlicker {
+    0%, 100% {
+        opacity: 0.58;
+        transform: translate3d(0, 0.25%, 0) scale(0.985);
+        filter: blur(21px) saturate(1.18) brightness(1.06);
+    }
+    26% {
+        opacity: 0.88;
+        transform: translate3d(0.18%, -0.85%, 0) scale(1.038);
+        filter: blur(23px) saturate(1.38) brightness(1.22);
+    }
+    48% {
+        opacity: 0.64;
+        transform: translate3d(-0.20%, -0.28%, 0) scale(1.006);
+        filter: blur(20px) saturate(1.2) brightness(1.12);
+    }
+    72% {
+        opacity: 0.82;
+        transform: translate3d(0.15%, -0.62%, 0) scale(1.024);
+        filter: blur(22px) saturate(1.32) brightness(1.18);
+    }
+}
+
+
+/* =========================================================
+   Final 88: fireplace flame orbs centered triangular formation
+   ========================================================= */
+
+/* Remove the off-left yellow flicker and keep three flame orbs centered:
+   one top yellow orb, two lower yellow/orange orbs in a triangular stack. */
+body.light-fireplace-glow .page-glow::after {
+    content: "";
+    position: fixed;
+    inset: -14%;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at 50% 55%, rgba(255, 244, 120, 0.50), transparent 6.4rem),
+        radial-gradient(ellipse at 46.5% 66%, rgba(255, 199, 56, 0.40), transparent 7.4rem),
+        radial-gradient(ellipse at 53.5% 66%, rgba(255, 184, 48, 0.40), transparent 7.4rem),
+        radial-gradient(ellipse at 50% 76%, rgba(255, 70, 28, 0.24), transparent 12rem);
+    filter: blur(21px) saturate(1.26) brightness(1.18);
+    mix-blend-mode: screen;
+    opacity: 0.82;
+    animation: storyNookFireYellowFlicker 1.85s ease-in-out infinite;
+}
+
+
+/* =========================================================
+   Final 89: fireplace yellow glow centered + slow red base blink
+   ========================================================= */
+
+/* Keep the fireplace yellow flicker centered in the page/flame area.
+   This removes the side-looking yellow glow and tightens the three-orb
+   triangle around the middle. */
+body.light-fireplace-glow .page-glow::after {
+    content: "";
+    position: fixed;
+    inset: -14%;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at 50% 54%, rgba(255, 244, 120, 0.52), transparent 6.3rem),
+        radial-gradient(ellipse at 48.8% 65%, rgba(255, 199, 56, 0.42), transparent 7.1rem),
+        radial-gradient(ellipse at 51.2% 65%, rgba(255, 184, 48, 0.42), transparent 7.1rem),
+        radial-gradient(ellipse at 50% 76%, rgba(255, 70, 28, 0.22), transparent 12rem);
+    filter: blur(21px) saturate(1.26) brightness(1.18);
+    mix-blend-mode: screen;
+    opacity: 0.82;
+    animation: storyNookFireYellowFlicker 1.85s ease-in-out infinite;
+}
+
+/* Red base orb: slower breathing/blinking than the yellow flame layer. */
+body.light-fireplace-glow {
+    --ambient-animation: storyNookFireRedSlowBlink 9.2s ease-in-out infinite !important;
+}
+
+@keyframes storyNookFireRedSlowBlink {
+    0%, 100% {
+        opacity: 0.76;
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(19px) saturate(1.08) brightness(0.96);
+    }
+    38% {
+        opacity: 0.96;
+        transform: translate3d(0.08%, -0.12%, 0) scale(1.014);
+        filter: blur(21px) saturate(1.22) brightness(1.10);
+    }
+    68% {
+        opacity: 0.84;
+        transform: translate3d(-0.06%, 0.10%, 0) scale(1.005);
+        filter: blur(20px) saturate(1.14) brightness(1.02);
+    }
+}
+
+
+/* =========================================================
+   Final 90: fireplace glow red base only
+   ========================================================= */
+
+/* Remove the blinking yellow flame orb layer from Fireplace Glow.
+   Keep only the slower red glow/base from the main page-glow layer. */
+body.light-fireplace-glow .page-glow::after {
+    content: none !important;
+    display: none !important;
+    animation: none !important;
+    background: none !important;
+}
+
+/* Keep the bottom red glow slow and subtle. */
+body.light-fireplace-glow {
+    --ambient-animation: storyNookFireRedSlowBlink 9.2s ease-in-out infinite !important;
+}
+
+
+/* =========================================================
+   Final 91: Under the Covers brighter center + wider yellow spread
+   ========================================================= */
+
+/* Under the Covers: brighter white center, with a wider warm yellow gradient
+   spreading outward while keeping the dark blanket-like edges. */
+body.light-wind {
+    --ambient-body-bg:
+        radial-gradient(ellipse at 50% 47%, rgba(255, 255, 245, 0.58), transparent 18rem),
+        radial-gradient(ellipse at 50% 48%, rgba(255, 235, 142, 0.42), transparent 34rem),
+        radial-gradient(ellipse at 50% 50%, rgba(255, 205, 92, 0.20), transparent 44rem),
+        radial-gradient(ellipse at 50% 50%, rgba(10, 18, 30, 0.38), transparent 38rem),
+        linear-gradient(145deg, #000102 0%, #070a12 48%, #000000 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(ellipse at 50% 47%, rgba(255, 255, 248, 0.82), transparent 17rem),
+        radial-gradient(ellipse at 50% 49%, rgba(255, 236, 145, 0.52), transparent 31rem),
+        radial-gradient(ellipse at 50% 51%, rgba(255, 205, 91, 0.28), transparent 42rem),
+        radial-gradient(ellipse at 50% 50%, rgba(19, 26, 40, 0.24), transparent 36rem),
+        radial-gradient(ellipse at 0% 0%, rgba(0, 0, 0, 0.48), transparent 28rem),
+        radial-gradient(ellipse at 100% 100%, rgba(0, 0, 0, 0.56), transparent 30rem) !important;
+    --ambient-overlay-bg: rgba(1, 2, 4, 0.66) !important;
+    --ambient-card-glow: rgba(255, 240, 175, 0.18) !important;
+    --ambient-edge: rgba(255, 241, 185, 0.22) !important;
+    --ambient-animation: storyNookUnderCoversBrighter 9s ease-in-out infinite !important;
+}
+
+@keyframes storyNookUnderCoversBrighter {
+    0%, 100% {
+        transform: scale(1) translate3d(0, 0, 0);
+        filter: blur(18px) brightness(1.08) saturate(1.04);
+    }
+    50% {
+        transform: scale(1.02) translate3d(0.18%, -0.16%, 0);
+        filter: blur(21px) brightness(1.22) saturate(1.08);
+    }
+}
+
+
+/* =========================================================
+   Final 92: logo-inspired main background orbs
+   ========================================================= */
+
+/* Main site background: warmer cream/brown/gold with a deep blue accent.
+   Kept soft and slow so it feels like atmosphere rather than a busy effect. */
+body:not(.focus-mode):not(.candle-lit):not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) {
+    background:
+        radial-gradient(ellipse at 14% 9%, rgba(225, 174, 72, 0.28), transparent 28rem),
+        radial-gradient(ellipse at 31% 32%, rgba(246, 226, 187, 0.20), transparent 38rem),
+        radial-gradient(ellipse at 87% 13%, rgba(18, 36, 73, 0.34), transparent 34rem),
+        radial-gradient(ellipse at 83% 88%, rgba(105, 63, 32, 0.28), transparent 36rem),
+        linear-gradient(160deg, #1a100a 0%, #2d1b10 42%, #162034 100%) !important;
+}
+
+/* Match the soft orb layer to the new logo-inspired direction. */
+body:not(.focus-mode):not(.candle-lit):not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .page-glow {
+    background:
+        radial-gradient(ellipse at 15% 9%, rgba(236, 185, 77, 0.34), transparent 27rem),
+        radial-gradient(ellipse at 32% 33%, rgba(250, 231, 194, 0.24), transparent 36rem),
+        radial-gradient(ellipse at 88% 12%, rgba(20, 44, 91, 0.40), transparent 34rem),
+        radial-gradient(ellipse at 84% 88%, rgba(120, 72, 36, 0.30), transparent 36rem) !important;
+    opacity: 1 !important;
+    animation: storyNookMainOrbs 18s ease-in-out infinite;
+}
+
+/* Keep the overall contrast cozy and readable over the brighter cream/gold orbs. */
+body:not(.focus-mode):not(.candle-lit):not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .overlay {
+    background: rgba(16, 9, 5, 0.50) !important;
+    backdrop-filter: blur(2px);
+}
+
+@keyframes storyNookMainOrbs {
+    0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(0px) saturate(1) brightness(1);
+    }
+    45% {
+        transform: translate3d(-0.45%, 0.35%, 0) scale(1.018);
+        filter: blur(1px) saturate(1.08) brightness(1.06);
+    }
+    72% {
+        transform: translate3d(0.32%, -0.25%, 0) scale(1.008);
+        filter: blur(0.5px) saturate(1.04) brightness(1.03);
+    }
+}
+
+
+/* =========================================================
+   Final 93 Variant: Sandstone + Navy complementary orb background
+   ========================================================= */
+
+/*
+   Background concept:
+   - one solid cozy base background color
+   - three complementary, subtle orbs
+   - slow movement / contraction / expansion
+   This overrides the earlier main-background orb experiment only when no
+   selected light/candle/focus mode is active.
+*/
+body:not(.focus-mode):not(.candle-lit):not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) {
+    background:
+        radial-gradient(ellipse at 18% 18%, rgba(218, 190, 148, 0.18), transparent 34rem),
+        radial-gradient(ellipse at 82% 14%, rgba(8, 20, 46, 0.26), transparent 36rem),
+        radial-gradient(ellipse at 78% 86%, rgba(74, 43, 28, 0.22), transparent 38rem),
+        #17100c !important;
+}
+
+body:not(.focus-mode):not(.candle-lit):not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .page-glow {
+    background:
+        radial-gradient(ellipse at 18% 18%, rgba(218, 190, 148, 0.24), transparent 34rem),
+        radial-gradient(ellipse at 82% 14%, rgba(8, 20, 46, 0.28), transparent 36rem),
+        radial-gradient(ellipse at 78% 86%, rgba(74, 43, 28, 0.24), transparent 38rem) !important;
+    opacity: 1 !important;
+    filter: blur(1px) saturate(1.02) brightness(1.01);
+    animation: storyNookThreeOrbBreath_sandstone_navy 20s ease-in-out infinite !important;
+}
+
+body:not(.focus-mode):not(.candle-lit):not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .overlay {
+    background: rgba(14, 8, 5, 0.54) !important;
+    backdrop-filter: blur(2px);
+}
+
+@keyframes storyNookThreeOrbBreath_sandstone_navy {
+    0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(1px) saturate(1.00) brightness(1.00);
+    }
+    42% {
+        transform: translate3d(-0.32%, 0.24%, 0) scale(1.012);
+        filter: blur(2px) saturate(1.04) brightness(1.04);
+    }
+    72% {
+        transform: translate3d(0.24%, -0.18%, 0) scale(1.006);
+        filter: blur(1.5px) saturate(1.02) brightness(1.02);
+    }
+}
+
+
+/* =========================================================
+   Final 94 Variant: Sandstone + Dark Petroleum Teal
+   ========================================================= */
+
+/*
+   Based on Sandstone + Navy, but the navy orb is shifted into a deeper
+   petroleum teal: still dark/subtle, but warmer and more complementary.
+*/
+body:not(.focus-mode):not(.candle-lit):not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) {
+    background:
+        radial-gradient(ellipse at 18% 18%, rgba(218, 190, 148, 0.18), transparent 34rem),
+        radial-gradient(ellipse at 82% 14%, rgba(5, 43, 48, 0.28), transparent 36rem),
+        radial-gradient(ellipse at 78% 86%, rgba(62, 38, 27, 0.24), transparent 38rem),
+        #17100c !important;
+}
+
+body:not(.focus-mode):not(.candle-lit):not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .page-glow {
+    background:
+        radial-gradient(ellipse at 18% 18%, rgba(218, 190, 148, 0.22), transparent 34rem),
+        radial-gradient(ellipse at 82% 14%, rgba(7, 55, 61, 0.30), transparent 36rem),
+        radial-gradient(ellipse at 78% 86%, rgba(62, 38, 27, 0.26), transparent 38rem) !important;
+    opacity: 1 !important;
+    filter: blur(1px) saturate(1.02) brightness(1.01);
+    animation: storyNookThreeOrbBreath_sandstone_petroleum 20s ease-in-out infinite !important;
+}
+
+body:not(.focus-mode):not(.candle-lit):not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .overlay {
+    background: rgba(14, 8, 5, 0.54) !important;
+    backdrop-filter: blur(2px);
+}
+
+@keyframes storyNookThreeOrbBreath_sandstone_petroleum {
+    0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(1px) saturate(1.00) brightness(1.00);
+    }
+    42% {
+        transform: translate3d(-0.32%, 0.24%, 0) scale(1.012);
+        filter: blur(2px) saturate(1.05) brightness(1.04);
+    }
+    72% {
+        transform: translate3d(0.24%, -0.18%, 0) scale(1.006);
+        filter: blur(1.5px) saturate(1.03) brightness(1.02);
+    }
+}
+
+
+/* =========================================================
+   Final 95 Variant: Sandstone + Header Color
+   ========================================================= */
+
+/*
+   Same Sandstone base, but the former petroleum teal orb now uses the same
+   dark warm color family as the site header: rgba(16, 11, 8, ...).
+*/
+body:not(.focus-mode):not(.candle-lit):not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) {
+    background:
+        radial-gradient(ellipse at 18% 18%, rgba(218, 190, 148, 0.18), transparent 34rem),
+        radial-gradient(ellipse at 82% 14%, rgba(16, 11, 8, 0.34), transparent 36rem),
+        radial-gradient(ellipse at 78% 86%, rgba(62, 38, 27, 0.24), transparent 38rem),
+        #17100c !important;
+}
+
+body:not(.focus-mode):not(.candle-lit):not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .page-glow {
+    background:
+        radial-gradient(ellipse at 18% 18%, rgba(218, 190, 148, 0.22), transparent 34rem),
+        radial-gradient(ellipse at 82% 14%, rgba(16, 11, 8, 0.40), transparent 36rem),
+        radial-gradient(ellipse at 78% 86%, rgba(62, 38, 27, 0.26), transparent 38rem) !important;
+    opacity: 1 !important;
+    filter: blur(1px) saturate(1.02) brightness(1.01);
+    animation: storyNookThreeOrbBreath_sandstone_header_color 20s ease-in-out infinite !important;
+}
+
+body:not(.focus-mode):not(.candle-lit):not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .overlay {
+    background: rgba(14, 8, 5, 0.54) !important;
+    backdrop-filter: blur(2px);
+}
+
+@keyframes storyNookThreeOrbBreath_sandstone_header_color {
+    0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(1px) saturate(1.00) brightness(1.00);
+    }
+    42% {
+        transform: translate3d(-0.32%, 0.24%, 0) scale(1.012);
+        filter: blur(2px) saturate(1.04) brightness(1.03);
+    }
+    72% {
+        transform: translate3d(0.24%, -0.18%, 0) scale(1.006);
+        filter: blur(1.5px) saturate(1.02) brightness(1.02);
+    }
+}
+
+
+/* =========================================================
+   Final 94: refined Summer Daylight sky + brighter pulsing sun
+   ========================================================= */
+
+/* Summer Daylight: clearer sky gradient from bright sky blue at top
+   into deeper horizon blue, with a brighter slow-pulsing sun orb. */
+body.light-summer-daylight {
+    --ambient-body-bg:
+        radial-gradient(ellipse at 84% 9%, rgba(255, 247, 156, 0.88), transparent 21rem),
+        radial-gradient(ellipse at 83% 10%, rgba(255, 220, 70, 0.36), transparent 30rem),
+        radial-gradient(ellipse at 52% 30%, rgba(255, 255, 255, 0.24), transparent 24rem),
+        radial-gradient(ellipse at 28% 22%, rgba(210, 241, 255, 0.36), transparent 34rem),
+        linear-gradient(180deg, #bfeaff 0%, #8fd1f7 38%, #4c9bd3 72%, #24689e 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(ellipse at 84% 9%, rgba(255, 250, 170, 1), transparent 18rem),
+        radial-gradient(ellipse at 84% 9%, rgba(255, 218, 67, 0.48), transparent 30rem),
+        radial-gradient(ellipse at 53% 30%, rgba(255, 255, 255, 0.32), transparent 22rem),
+        radial-gradient(ellipse at 26% 22%, rgba(215, 244, 255, 0.42), transparent 32rem),
+        radial-gradient(ellipse at 58% 82%, rgba(55, 139, 204, 0.24), transparent 34rem) !important;
+    --ambient-overlay-bg: rgba(39, 121, 184, 0.16) !important;
+    --ambient-edge: rgba(232, 248, 255, 0.40) !important;
+    --ambient-card-glow: rgba(255, 242, 152, 0.20) !important;
+    --ambient-video-filter: saturate(1.10) blur(2px) brightness(1.12) !important;
+    --ambient-animation: storyNookSummerSunPulse 11.5s ease-in-out infinite !important;
+}
+
+/* Separate sun layer so the sun itself can breathe brighter and slower
+   without making the whole sky feel like it is flashing. */
+body.light-summer-daylight .page-glow::after {
+    content: "";
+    position: fixed;
+    inset: -10%;
+    pointer-events: none;
+    background:
+        radial-gradient(ellipse at 84% 9%, rgba(255, 255, 225, 0.72), transparent 9rem),
+        radial-gradient(ellipse at 84% 9%, rgba(255, 226, 88, 0.34), transparent 22rem);
+    filter: blur(16px) saturate(1.08) brightness(1.08);
+    mix-blend-mode: screen;
+    opacity: 0.78;
+    animation: storyNookSunOrbSlowPulse 7.8s ease-in-out infinite;
+}
+
+@keyframes storyNookSummerSunPulse {
+    0%, 100% {
+        opacity: 0.88;
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(18px) saturate(1.06) brightness(1.08);
+    }
+    50% {
+        opacity: 0.98;
+        transform: translate3d(-0.18%, 0.14%, 0) scale(1.010);
+        filter: blur(20px) saturate(1.10) brightness(1.14);
+    }
+}
+
+@keyframes storyNookSunOrbSlowPulse {
+    0%, 100% {
+        opacity: 0.68;
+        transform: scale(0.98);
+        filter: blur(16px) brightness(1.04);
+    }
+    50% {
+        opacity: 0.95;
+        transform: scale(1.06);
+        filter: blur(18px) brightness(1.28);
+    }
+}
+
+
+/* =========================================================
+   Final 95: sound menu label changed to Coffee shop
+   ========================================================= */
+
+/*
+   The former "Night by the lake" sound option is now "Coffee shop".
+   When real audio files are added later, use:
+   /assets/audio/coffee-shop.mp3
+*/
+
+
+/* =========================================================
+   Final 96: sound menu label changed to Wind storm
+   ========================================================= */
+
+/*
+   The former "Coffee shop" sound option is now "Wind storm".
+   When real audio files are added later, use:
+   /assets/audio/wind-storm.mp3
+*/
+
+
+/* =========================================================
+   Final 97: real ambient sound files
+   ========================================================= */
+
+/*
+   Real MP3 loops are now stored in:
+   /assets/audio/
+
+   Current sound categories:
+   - Relaxing rain
+   - Fireplace
+   - Ocean waves
+   - Morning birds
+   - Relaxing storm
+   - Day at the park
+   - Far away thunder
+   - Humming
+   - Brown noise
+*/
+
+
+/* =========================================================
+   Final 98: ambient sound mixer
+   ========================================================= */
+
+/* Mixer design:
+   Each sound tile can stay active at the same time. When active, its label
+   feathers upward and a small volume slider appears underneath, like a tucked
+   control panel inside the paper button. */
+.sound-menu {
+    gap: 0.46rem !important;
+}
+
+.sound-mix-option {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto 0fr;
+    align-items: center;
+    min-height: 2.34rem;
+    width: 100%;
+    border: 1px solid rgba(215, 165, 111, 0.22);
+    border-radius: 15px;
+    background: rgba(12, 8, 5, 0.50);
+    color: var(--paper-soft);
+    padding: 0.58rem 0.72rem;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    transition:
+        grid-template-rows 190ms ease,
+        min-height 190ms ease,
+        background 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        transform 160ms ease;
+    cursor: pointer;
+    user-select: none;
+    overflow: hidden;
+}
+
+.sound-mix-option:hover {
+    transform: translateX(2px);
+    border-color: rgba(215, 165, 111, 0.36);
+    background: rgba(18, 12, 8, 0.58);
+}
+
+.sound-mix-option:focus-visible {
+    outline: 2px solid rgba(215, 165, 111, 0.58);
+    outline-offset: 2px;
+}
+
+.sound-mix-label {
+    display: block;
+    line-height: 1.1;
+    font-size: 0.88rem;
+    letter-spacing: 0.01em;
+    transition:
+        transform 190ms ease,
+        opacity 190ms ease,
+        color 180ms ease,
+        font-size 190ms ease;
+}
+
+.sound-mix-slider-wrap {
+    display: grid;
+    grid-template-columns: 2.35rem minmax(0, 1fr);
+    align-items: center;
+    gap: 0.48rem;
+    min-height: 0;
+    opacity: 0;
+    transform: translateY(-0.16rem);
+    pointer-events: none;
+    transition: opacity 180ms ease, transform 190ms ease;
+}
+
+.sound-mix-volume-value {
+    font-size: 0.68rem;
+    color: rgba(255, 241, 212, 0.68);
+    font-variant-numeric: tabular-nums;
+}
+
+.sound-mix-slider {
+    width: 100%;
+    accent-color: var(--sage);
+    cursor: pointer;
+}
+
+.sound-mix-option[aria-pressed="true"] {
+    grid-template-rows: auto 1fr;
+    min-height: 3.6rem;
+    background:
+        linear-gradient(135deg, rgba(135, 158, 96, 0.28), rgba(28, 42, 24, 0.42)),
+        rgba(12, 8, 5, 0.60);
+    border-color: rgba(146, 170, 103, 0.58);
+    box-shadow:
+        0 10px 22px rgba(0,0,0,0.16),
+        0 0 0 3px rgba(139, 162, 99, 0.08),
+        0 0 24px rgba(139, 162, 99, 0.10);
+}
+
+.sound-mix-option[aria-pressed="true"] .sound-mix-label {
+    transform: translateY(-0.08rem);
+    opacity: 0.72;
+    color: rgba(255, 241, 212, 0.78);
+    font-size: 0.76rem;
+}
+
+.sound-mix-option[aria-pressed="true"] .sound-mix-slider-wrap {
+    opacity: 1;
+    transform: translateY(0.18rem);
+    pointer-events: auto;
+}
+
+body.candle-lit .sound-mix-option {
+    color: #3d3024;
+    background: rgba(255, 252, 241, 0.46);
+    border-color: rgba(80,55,38,0.18);
+}
+
+body.candle-lit .sound-mix-option[aria-pressed="true"] {
+    background:
+        linear-gradient(135deg, rgba(139, 162, 99, 0.25), rgba(255, 252, 241, 0.64));
+    border-color: rgba(104, 125, 78, 0.42);
+}
+
+body.candle-lit .sound-mix-volume-value,
+body.candle-lit .sound-mix-option[aria-pressed="true"] .sound-mix-label {
+    color: rgba(61, 48, 36, 0.74);
+}
+
+@media (max-width: 640px) {
+    .sound-mix-option {
+        min-height: 2.22rem;
+        padding: 0.54rem 0.64rem;
+        border-radius: 14px;
+    }
+
+    .sound-mix-option[aria-pressed="true"] {
+        min-height: 3.44rem;
+    }
+
+    .sound-mix-label {
+        font-size: 0.84rem;
+    }
+
+    .sound-mix-option[aria-pressed="true"] .sound-mix-label {
+        font-size: 0.72rem;
+    }
+}
+
+/* =========================================================
+   Slider polish: mixer sliders reach the full available space
+   ========================================================= */
+
+/* Range controls should not inherit the normal text-input box treatment.
+   This removes the extra padding/border that was shortening the mixer track. */
+input[type="range"],
+.site-volume-slider input[type="range"],
+.focus-visibility-slider input[type="range"],
+.sound-mix-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    display: block;
+    width: 100%;
+    min-width: 0;
+    height: 1rem;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: none;
+    cursor: pointer;
+}
+
+.sound-mix-slider-wrap {
+    width: 100%;
+    min-width: 0;
+}
+
+/* WebKit / Chromium range track */
+input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 0.32rem;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 241, 212, 0.22);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 0.92rem;
+    height: 0.92rem;
+    margin-top: -0.30rem;
+    border: 1px solid rgba(255, 241, 212, 0.72);
+    border-radius: 50%;
+    background: var(--accent-2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+}
+
+/* Firefox range track */
+input[type="range"]::-moz-range-track {
+    width: 100%;
+    height: 0.32rem;
+    border: 0;
+    border-radius: 999px;
+    background: rgba(255, 241, 212, 0.22);
+}
+
+input[type="range"]::-moz-range-progress {
+    height: 0.32rem;
+    border-radius: 999px;
+    background: var(--accent);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 0.92rem;
+    height: 0.92rem;
+    border: 1px solid rgba(255, 241, 212, 0.72);
+    border-radius: 50%;
+    background: var(--accent-2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+}
+
+input[type="range"]:focus-visible::-webkit-slider-thumb {
+    outline: 2px solid rgba(223, 191, 131, 0.52);
+    outline-offset: 3px;
+}
+
+input[type="range"]:focus-visible::-moz-range-thumb {
+    outline: 2px solid rgba(223, 191, 131, 0.52);
+    outline-offset: 3px;
+}
+
+/* Keep the mixer-specific sliders visually tucked in without a surrounding box. */
+.sound-mix-slider {
+    accent-color: var(--sage);
+}
+
+.sound-mix-slider::-webkit-slider-runnable-track {
+    background: rgba(255, 241, 212, 0.20);
+}
+
+.sound-mix-slider::-moz-range-track {
+    background: rgba(255, 241, 212, 0.20);
+}
+
+.sound-mix-slider::-moz-range-progress {
+    background: var(--sage);
+}
+
+body.candle-lit input[type="range"]::-webkit-slider-runnable-track,
+body.candle-lit .sound-mix-slider::-webkit-slider-runnable-track {
+    background: rgba(61, 48, 36, 0.22);
+}
+
+body.candle-lit input[type="range"]::-moz-range-track,
+body.candle-lit .sound-mix-slider::-moz-range-track {
+    background: rgba(61, 48, 36, 0.22);
+}
+
+/* =========================================================
+   Final 96: circular responsive background orbs
+   =========================================================
+   Keeps every ambient background orb circular from phone widths through
+   widescreen by using circle radial gradients with vmin-based responsive
+   stop sizes. Also mirrors the main-page default orb background into the
+   default focus-mode writing background when no candle/light effect is active.
+*/
+:root {
+    --nook-orb-xs: clamp(6rem, 16vmin, 10rem);
+    --nook-orb-sm: clamp(8rem, 20vmin, 14rem);
+    --nook-orb-md: clamp(12rem, 28vmin, 22rem);
+    --nook-orb-lg: clamp(16rem, 36vmin, 30rem);
+    --nook-orb-xl: clamp(20rem, 44vmin, 38rem);
+}
+
+/* Default page + default Focus Mode share the same circular orb background. */
+body:not(.candle-lit):not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) {
+    background:
+        radial-gradient(circle at 18% 18%, rgba(218, 190, 148, 0.18) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 82% 14%, rgba(16, 11, 8, 0.34) 0, transparent var(--nook-orb-xl)),
+        radial-gradient(circle at 78% 86%, rgba(62, 38, 27, 0.24) 0, transparent var(--nook-orb-xl)),
+        #17100c !important;
+}
+
+body:not(.candle-lit):not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .page-glow {
+    background:
+        radial-gradient(circle at 18% 18%, rgba(218, 190, 148, 0.22) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 82% 14%, rgba(16, 11, 8, 0.40) 0, transparent var(--nook-orb-xl)),
+        radial-gradient(circle at 78% 86%, rgba(62, 38, 27, 0.26) 0, transparent var(--nook-orb-xl)) !important;
+    opacity: 1 !important;
+    filter: blur(1px) saturate(1.02) brightness(1.01);
+    animation: storyNookThreeOrbBreath_circular_default 20s ease-in-out infinite !important;
+}
+
+body:not(.candle-lit):not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .overlay {
+    background: rgba(14, 8, 5, 0.54) !important;
+    backdrop-filter: blur(2px);
+}
+
+@keyframes storyNookThreeOrbBreath_circular_default {
+    0%, 100% {
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(1px) saturate(1.00) brightness(1.00);
+    }
+    42% {
+        transform: translate3d(-0.32%, 0.24%, 0) scale(1.012);
+        filter: blur(2px) saturate(1.04) brightness(1.03);
+    }
+    72% {
+        transform: translate3d(0.24%, -0.18%, 0) scale(1.006);
+        filter: blur(1.5px) saturate(1.02) brightness(1.02);
+    }
+}
+
+/* Fireplace Glow: circular red ember field only. */
+body.light-fireplace-glow {
+    --ambient-body-bg:
+        radial-gradient(circle at 50% 86%, rgba(220, 18, 14, 0.42) 0, transparent var(--nook-orb-md)),
+        linear-gradient(180deg, #071227 0%, #0b1424 34%, #21140f 68%, #2a150b 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(circle at 50% 87%, rgba(225, 18, 12, 0.74) 0, transparent var(--nook-orb-md)),
+        radial-gradient(circle at 50% 18%, rgba(34, 61, 120, 0.30) 0, transparent var(--nook-orb-lg)) !important;
+    --ambient-overlay-bg: rgba(6, 8, 18, 0.52) !important;
+    --ambient-card-glow: rgba(255, 82, 38, 0.16) !important;
+    --ambient-edge: rgba(255, 154, 61, 0.20) !important;
+    --ambient-animation: storyNookFireRedSlowBlink 9.2s ease-in-out infinite !important;
+}
+
+body.light-fireplace-glow .page-glow::after {
+    content: none !important;
+    display: none !important;
+    animation: none !important;
+    background: none !important;
+}
+
+/* Rain Ambience: circular cool glow orbs plus the rain-line texture. */
+body.light-rain-ambience {
+    --ambient-body-bg:
+        linear-gradient(160deg, #0e1319, #18232a 52%, #0b0e13) !important;
+    --ambient-page-glow:
+        linear-gradient(115deg, rgba(190, 204, 213, 0.18), transparent 48%),
+        radial-gradient(circle at 70% 18%, rgba(116, 145, 160, 0.32) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 22% 72%, rgba(178, 194, 204, 0.14) 0, transparent var(--nook-orb-md)) !important;
+    --ambient-overlay-bg: rgba(9, 13, 17, 0.64) !important;
+    --ambient-edge: rgba(168, 188, 198, 0.20) !important;
+    --ambient-card-glow: rgba(145, 170, 182, 0.12) !important;
+    --ambient-animation: storyNookOrbBreathRain 12s ease-in-out infinite !important;
+}
+
+/* Under the Covers: circular center glow and circular dark corner fields. */
+body.light-wind {
+    --ambient-body-bg:
+        radial-gradient(circle at 50% 47%, rgba(255, 255, 245, 0.58) 0, transparent var(--nook-orb-md)),
+        radial-gradient(circle at 50% 48%, rgba(255, 235, 142, 0.42) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 50% 50%, rgba(255, 205, 92, 0.20) 0, transparent var(--nook-orb-xl)),
+        radial-gradient(circle at 50% 50%, rgba(10, 18, 30, 0.38) 0, transparent var(--nook-orb-xl)),
+        linear-gradient(145deg, #000102 0%, #070a12 48%, #000000 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(circle at 50% 47%, rgba(255, 255, 248, 0.82) 0, transparent var(--nook-orb-md)),
+        radial-gradient(circle at 50% 49%, rgba(255, 236, 145, 0.52) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 50% 51%, rgba(255, 205, 91, 0.28) 0, transparent var(--nook-orb-xl)),
+        radial-gradient(circle at 50% 50%, rgba(19, 26, 40, 0.24) 0, transparent var(--nook-orb-xl)),
+        radial-gradient(circle at 0% 0%, rgba(0, 0, 0, 0.48) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 100% 100%, rgba(0, 0, 0, 0.56) 0, transparent var(--nook-orb-lg)) !important;
+    --ambient-overlay-bg: rgba(1, 2, 4, 0.66) !important;
+    --ambient-card-glow: rgba(255, 240, 175, 0.18) !important;
+    --ambient-edge: rgba(255, 241, 185, 0.22) !important;
+    --ambient-animation: storyNookUnderCoversBrighter 9s ease-in-out infinite !important;
+}
+
+/* Thunder: circular side flashes. */
+body.light-thunder-flashes {
+    --ambient-body-bg:
+        linear-gradient(160deg, #080812, #151622 52%, #05060b) !important;
+    --ambient-page-glow:
+        radial-gradient(circle at 78% 18%, rgba(190, 205, 224, 0.26) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 13% 30%, rgba(160, 181, 214, 0.16) 0, transparent var(--nook-orb-md)),
+        linear-gradient(180deg, rgba(20, 20, 32, 0.35), transparent) !important;
+    --ambient-overlay-bg: rgba(6, 6, 10, 0.68) !important;
+    --ambient-animation: storyNookSubtleThunderRight 10.8s ease-in-out infinite !important;
+}
+
+body.light-thunder-flashes .page-glow::after {
+    content: "";
+    position: fixed;
+    inset: -8%;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 8% 32%, rgba(196, 211, 235, 0.30) 0, transparent var(--nook-orb-md)),
+        linear-gradient(110deg, rgba(206, 222, 248, 0.16), transparent 44%);
+    opacity: 0.22;
+    filter: blur(8px);
+    mix-blend-mode: screen;
+    animation: storyNookSubtleThunderLeft 13.4s ease-in-out infinite;
+}
+
+/* Summer Daylight: circular sun and sky glows. */
+body.light-summer-daylight {
+    --ambient-body-bg:
+        radial-gradient(circle at 84% 9%, rgba(255, 247, 156, 0.88) 0, transparent var(--nook-orb-md)),
+        radial-gradient(circle at 83% 10%, rgba(255, 220, 70, 0.36) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 52% 30%, rgba(255, 255, 255, 0.24) 0, transparent var(--nook-orb-md)),
+        radial-gradient(circle at 28% 22%, rgba(210, 241, 255, 0.36) 0, transparent var(--nook-orb-lg)),
+        linear-gradient(180deg, #bfeaff 0%, #8fd1f7 38%, #4c9bd3 72%, #24689e 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(circle at 84% 9%, rgba(255, 250, 170, 1) 0, transparent var(--nook-orb-md)),
+        radial-gradient(circle at 84% 9%, rgba(255, 218, 67, 0.48) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 53% 30%, rgba(255, 255, 255, 0.32) 0, transparent var(--nook-orb-md)),
+        radial-gradient(circle at 26% 22%, rgba(215, 244, 255, 0.42) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 58% 82%, rgba(55, 139, 204, 0.24) 0, transparent var(--nook-orb-lg)) !important;
+    --ambient-overlay-bg: rgba(39, 121, 184, 0.16) !important;
+    --ambient-edge: rgba(232, 248, 255, 0.40) !important;
+    --ambient-card-glow: rgba(255, 242, 152, 0.20) !important;
+    --ambient-video-filter: saturate(1.10) blur(2px) brightness(1.12) !important;
+    --ambient-animation: storyNookSummerSunPulse 11.5s ease-in-out infinite !important;
+}
+
+body.light-summer-daylight .page-glow::after {
+    content: "";
+    position: fixed;
+    inset: -10%;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 84% 9%, rgba(255, 255, 225, 0.72) 0, transparent var(--nook-orb-sm)),
+        radial-gradient(circle at 84% 9%, rgba(255, 226, 88, 0.34) 0, transparent var(--nook-orb-md));
+    filter: blur(16px) saturate(1.08) brightness(1.08);
+    mix-blend-mode: screen;
+    opacity: 0.78;
+    animation: storyNookSunOrbSlowPulse 7.8s ease-in-out infinite;
+}
+
+/* Twilight: circular violet and ember fields. */
+body.light-twilight {
+    --ambient-body-bg:
+        radial-gradient(circle at 34% 12%, rgba(122, 79, 128, 0.15) 0, transparent var(--nook-orb-lg)),
+        linear-gradient(160deg, #160f18, #2b1b24 53%, #110b12) !important;
+    --ambient-page-glow:
+        radial-gradient(circle at 34% 12%, rgba(122, 79, 128, 0.24) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 80% 26%, rgba(208, 118, 70, 0.20) 0, transparent var(--nook-orb-lg)) !important;
+    --ambient-overlay-bg: rgba(15, 9, 16, 0.58) !important;
+    --ambient-edge: rgba(185, 128, 151, 0.16) !important;
+    --ambient-card-glow: rgba(208, 118, 70, 0.10) !important;
+    --ambient-animation: storyNookOrbBreathSlow 13s ease-in-out infinite !important;
+}
+
+/* Lamplight: circular lamp source and circular glow. */
+body.light-lamplight {
+    --ambient-body-bg:
+        radial-gradient(circle at 4% 5%, rgba(255, 255, 232, 0.62) 0, transparent var(--nook-orb-sm)),
+        radial-gradient(circle at 18% 16%, rgba(255, 216, 98, 0.52) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 74% 44%, rgba(18, 42, 86, 0.32) 0, transparent var(--nook-orb-lg)),
+        linear-gradient(145deg, #02040a 0%, #07101f 56%, #000103 100%) !important;
+    --ambient-page-glow:
+        radial-gradient(circle at 4% 5%, rgba(255, 255, 238, 0.82) 0, transparent var(--nook-orb-sm)),
+        radial-gradient(circle at 18% 16%, rgba(255, 214, 91, 0.66) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 30% 24%, rgba(255, 176, 58, 0.16) 0, transparent var(--nook-orb-md)),
+        radial-gradient(circle at 70% 42%, rgba(23, 57, 113, 0.38) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 94% 84%, rgba(0, 0, 0, 0.36) 0, transparent var(--nook-orb-md)) !important;
+    --ambient-overlay-bg: rgba(3, 6, 12, 0.66) !important;
+    --ambient-edge: rgba(255, 221, 128, 0.24) !important;
+    --ambient-card-glow: rgba(255, 210, 95, 0.15) !important;
+    --ambient-animation: storyNookLampBreath 9.5s ease-in-out infinite !important;
+}
+
+body.light-lamplight .page-glow::after {
+    content: "";
+    position: fixed;
+    inset: -10%;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 5% 5%, rgba(255, 255, 250, 0.40) 0, transparent var(--nook-orb-sm)),
+        radial-gradient(circle at 19% 16%, rgba(255, 220, 115, 0.34) 0, transparent var(--nook-orb-md));
+    filter: blur(18px) brightness(1.08);
+    mix-blend-mode: screen;
+    opacity: 0.58;
+    animation: storyNookLampConnectedGlow 8.5s ease-in-out infinite;
+}
+
+/* Moonlit Desk: circular moon glow. */
+body.light-moonlit-desk {
+    --ambient-body-bg:
+        linear-gradient(160deg, #0b0f16, #151b26 54%, #090b10) !important;
+    --ambient-page-glow:
+        radial-gradient(circle at 70% 12%, rgba(177, 193, 211, 0.26) 0, transparent var(--nook-orb-lg)),
+        linear-gradient(145deg, rgba(12, 17, 26, 0.30), transparent 70%) !important;
+    --ambient-overlay-bg: rgba(6, 8, 12, 0.66) !important;
+    --ambient-edge: rgba(177, 193, 211, 0.16) !important;
+    --ambient-card-glow: rgba(177, 193, 211, 0.09) !important;
+    --ambient-depth-blur: 4px;
+    --ambient-animation: storyNookOrbBreathSlow 13s ease-in-out infinite !important;
+}
+
+/* Candle-only mode keeps its glow circular too. */
+body.candle-lit:not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) {
+    background:
+        radial-gradient(circle at 50% 8%, rgba(255, 220, 148, 0.42) 0, transparent var(--nook-orb-md)),
+        linear-gradient(160deg, #f1e4c9, #d7bc85 62%, #b8915b) !important;
+}
+
+body.candle-lit:not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .page-glow {
+    background: radial-gradient(circle at 50% 15%, rgba(255, 214, 120, 0.38) 0, transparent var(--nook-orb-lg)) !important;
+}
+
+/* =========================================================
+   Final 97: progressive candle brightness slider
+   =========================================================
+   Replaces the instant candle button with a Dim → Bright slider. The far-right
+   value recreates the former fully lit candle look, while every value between
+   is a gradual step toward that warmer, clearer room.
+*/
+:root {
+    --candle-level: 0;
+    --candle-ease: 0;
+    --candle-page-alpha: 0;
+    --candle-glow-alpha: 0;
+    --candle-overlay-alpha: 0.54;
+    --candle-panel-alpha-1: 0.12;
+    --candle-panel-alpha-2: 0.10;
+    --candle-border-alpha: 0.12;
+    --candle-input-alpha: 0.18;
+    --candle-control-alpha: 0.05;
+    --candle-track-alpha: 0.12;
+    --candle-text-color: var(--text-main);
+    --candle-muted-color: var(--text-muted);
+}
+
+.candle-brightness-feature {
+    gap: 0.65rem;
+}
+
+.candle-brightness-slider {
+    display: grid;
+    grid-template-columns: auto minmax(150px, 1fr) auto;
+    align-items: center;
+    gap: 0.6rem;
+    width: 100%;
+    min-width: 0;
+}
+
+.candle-brightness-slider input[type="range"] {
+    width: 100%;
+    min-width: 0;
+}
+
+/* No old candle icon box remains in the Light popup. */
+.lighting-menu .candle-icon-toggle,
+.candle-toggle,
+#candleBtn {
+    display: none !important;
+}
+
+body.candle-brightness-active {
+    transition: background 0.24s ease;
+}
+
+/* No selected ambient light: slider progressively brightens into the former
+   candle-on page background. */
+body.candle-brightness-active:not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) {
+    background:
+        radial-gradient(circle at 50% 8%, rgba(255, 220, 148, var(--candle-glow-alpha)) 0, transparent var(--nook-orb-md)),
+        linear-gradient(160deg,
+            rgba(241, 228, 201, var(--candle-page-alpha)),
+            rgba(215, 188, 133, var(--candle-page-alpha)) 62%,
+            rgba(184, 145, 91, var(--candle-page-alpha))),
+        radial-gradient(circle at 18% 18%, rgba(218, 190, 148, 0.18) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 82% 14%, rgba(16, 11, 8, 0.34) 0, transparent var(--nook-orb-xl)),
+        radial-gradient(circle at 78% 86%, rgba(62, 38, 27, 0.24) 0, transparent var(--nook-orb-xl)),
+        #17100c !important;
+}
+
+body.candle-brightness-active:not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .page-glow {
+    background:
+        radial-gradient(circle at 50% 15%, rgba(255, 214, 120, var(--candle-glow-alpha)) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 18% 18%, rgba(218, 190, 148, 0.22) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 82% 14%, rgba(16, 11, 8, 0.40) 0, transparent var(--nook-orb-xl)),
+        radial-gradient(circle at 78% 86%, rgba(62, 38, 27, 0.26) 0, transparent var(--nook-orb-xl)) !important;
+    opacity: 1 !important;
+}
+
+body.candle-brightness-active .overlay {
+    background: rgba(18, 10, 5, var(--candle-overlay-alpha)) !important;
+    backdrop-filter: blur(2px) !important;
+}
+
+/* When a lower ambient light is selected, keep that mood and simply layer the
+   candle warmth into it based on the slider level. */
+body.candle-brightness-active.light-fireplace-glow .page-glow,
+body.candle-brightness-active.light-rain-ambience .page-glow,
+body.candle-brightness-active.light-wind .page-glow,
+body.candle-brightness-active.light-thunder-flashes .page-glow,
+body.candle-brightness-active.light-summer-daylight .page-glow,
+body.candle-brightness-active.light-twilight .page-glow,
+body.candle-brightness-active.light-lamplight .page-glow,
+body.candle-brightness-active.light-moonlit-desk .page-glow {
+    box-shadow: inset 0 0 0 9999px rgba(255, 205, 120, calc(0.035 * var(--candle-ease))) !important;
+}
+
+/* Main content windows, the writing desk, modals, and ambient menus brighten
+   progressively instead of jumping straight to the clear candle state. */
+body.candle-brightness-active main .card,
+body.candle-brightness-active main .welcome-card,
+body.candle-brightness-active main .story-card,
+body.candle-brightness-active main .stat-card,
+body.candle-brightness-active main .my-stories-container,
+body.candle-brightness-active main .story-accordion,
+body.candle-brightness-active main .comments-section-wrapper,
+body.candle-brightness-active main .comment-item,
+body.candle-brightness-active main .writing-zone,
+body.candle-brightness-active .modal-content.book-style,
+body.candle-brightness-active .modal-content.narrow,
+body.candle-brightness-active .passport-guide-style,
+body.candle-brightness-active .ambient-menu,
+body.focus-mode.candle-brightness-active #writingZoneSection {
+    color: var(--candle-text-color) !important;
+    background:
+        linear-gradient(145deg,
+            rgba(255, 248, 230, var(--candle-panel-alpha-1)),
+            rgba(238, 218, 178, var(--candle-panel-alpha-2))),
+        linear-gradient(145deg,
+            rgba(27, 19, 13, var(--focus-zone-alpha)),
+            rgba(18, 13, 9, var(--focus-zone-alpha-2))) !important;
+    border-color: rgba(80, 55, 38, var(--candle-border-alpha)) !important;
+    box-shadow:
+        0 24px 70px rgba(93, 61, 34, calc(0.18 * var(--candle-ease))),
+        inset 0 1px 0 rgba(255, 255, 255, calc(0.36 * var(--candle-ease))) !important;
+}
+
+body.candle-brightness-active main .card *,
+body.candle-brightness-active main .writing-zone *,
+body.candle-brightness-active main .story-card *,
+body.candle-brightness-active main .stat-card *,
+body.candle-brightness-active .modal-content.book-style *,
+body.candle-brightness-active .modal-content.narrow *,
+body.candle-brightness-active .passport-guide-style *,
+body.candle-brightness-active .ambient-menu *,
+body.focus-mode.candle-brightness-active .writing-zone * {
+    color: var(--candle-text-color) !important;
+}
+
+body.candle-brightness-active main .eyebrow,
+body.candle-brightness-active main .section-label-title,
+body.candle-brightness-active main .story-meta,
+body.candle-brightness-active main .muted,
+body.candle-brightness-active main small,
+body.candle-brightness-active .modal-content.book-style small,
+body.candle-brightness-active .ambient-feature-label,
+body.focus-mode.candle-brightness-active .char-meter,
+body.candle-brightness-active .slider-soft-label {
+    color: var(--candle-muted-color) !important;
+}
+
+body.candle-brightness-active main textarea,
+body.candle-brightness-active main input:not([type="range"]),
+body.candle-brightness-active main select,
+body.candle-brightness-active .modal-content.book-style input:not([type="range"]),
+body.candle-brightness-active .modal-content.book-style textarea,
+body.candle-brightness-active .modal-content.narrow input:not([type="range"]),
+body.candle-brightness-active .modal-content.narrow textarea,
+body.focus-mode.candle-brightness-active .writing-zone textarea,
+body.focus-mode.candle-brightness-active .writing-zone input:not([type="range"]) {
+    color: var(--candle-text-color) !important;
+    background: rgba(255, 252, 241, var(--candle-input-alpha)) !important;
+    border-color: rgba(80, 55, 38, var(--candle-border-alpha)) !important;
+}
+
+body.candle-brightness-active main textarea::placeholder,
+body.candle-brightness-active main input::placeholder,
+body.candle-brightness-active .modal-content.book-style textarea::placeholder,
+body.candle-brightness-active .modal-content.book-style input::placeholder,
+body.focus-mode.candle-brightness-active .writing-zone textarea::placeholder {
+    color: rgba(39, 31, 24, 0.42) !important;
+}
+
+body.candle-brightness-active main .btn-secondary,
+body.candle-brightness-active main .btn-ghost,
+body.candle-brightness-active main .btn-tiny,
+body.candle-brightness-active main .focus-mini-btn,
+body.candle-brightness-active main .text-link,
+body.candle-brightness-active .ambient-menu button:not(.focus-audio-mute) {
+    color: var(--candle-text-color) !important;
+    background: rgba(255, 252, 241, var(--candle-control-alpha)) !important;
+    border-color: rgba(80, 55, 38, var(--candle-border-alpha)) !important;
+}
+
+body.candle-brightness-active main .btn-primary,
+body.candle-brightness-active main #publishBtn {
+    color: #10100a !important;
+}
+
+body.candle-brightness-active input[type="range"]::-webkit-slider-runnable-track {
+    background: rgba(61, 48, 36, var(--candle-track-alpha)) !important;
+}
+
+body.candle-brightness-active input[type="range"]::-moz-range-track {
+    background: rgba(61, 48, 36, var(--candle-track-alpha)) !important;
+}
+
+body.candle-brightness-active input[type="range"]::-moz-range-progress {
+    background: rgba(125, 139, 109, calc(0.45 + (0.18 * var(--candle-ease)))) !important;
+}
+
+@media (max-width: 560px) {
+    .candle-brightness-slider {
+        grid-template-columns: auto minmax(92px, 1fr) auto;
+        gap: 0.45rem;
+    }
+}
+
+/* =========================================================
+   Final 98: default background image + depth-of-field layer
+   =========================================================
+   The new cozy reading-room artwork now sits on the fixed background layer.
+   It is intentionally scaled and softly blurred so it feels behind the UI,
+   while the overlay and circular glows keep text/cards readable from mobile
+   through widescreen.
+*/
+:root {
+    --story-room-bg: url("story-nook-default-background.jpg");
+    --story-room-bg-position: center center;
+    --story-room-bg-scale: 1.045;
+    --story-room-bg-blur: 3.8px;
+    --story-room-bg-brightness: 0.72;
+    --story-room-bg-saturation: 0.92;
+    --story-room-bg-opacity: 0.96;
+    --story-room-vignette: rgba(7, 4, 3, 0.58);
+}
+
+html,
+body {
+    background-color: #0f0906 !important;
+}
+
+.video-background {
+    overflow: hidden !important;
+    background: #0f0906 !important;
+    isolation: isolate;
+}
+
+.video-background::before {
+    content: "";
+    position: absolute;
+    inset: calc(-1 * max(18px, 1.4vw));
+    z-index: -2;
+    pointer-events: none;
+    background-image: var(--story-room-bg);
+    background-size: cover;
+    background-position: var(--story-room-bg-position);
+    background-repeat: no-repeat;
+    opacity: var(--story-room-bg-opacity);
+    filter:
+        blur(var(--story-room-bg-blur))
+        saturate(var(--story-room-bg-saturation))
+        brightness(var(--story-room-bg-brightness));
+    transform: scale(var(--story-room-bg-scale));
+    transform-origin: center;
+    will-change: transform, filter;
+}
+
+.video-background::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 50% 44%, transparent 0, rgba(5, 3, 2, 0.16) 48%, var(--story-room-vignette) 100%),
+        linear-gradient(180deg, rgba(8, 5, 3, 0.18), rgba(8, 5, 3, 0.34));
+}
+
+/* The generated room image replaces the old fireplace video layer. Keeping the
+   selector prevents any optional local video file from loading visually over it. */
+.video-background video,
+#bgVideo {
+    display: none !important;
+    opacity: 0 !important;
+}
+
+/* Default page and default Focus Mode now use the image as the foundation;
+   circular glows remain as subtle atmosphere instead of the whole background. */
+body:not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) {
+    background: #0f0906 !important;
+}
+
+body:not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .page-glow {
+    background:
+        radial-gradient(circle at 17% 16%, rgba(255, 220, 148, 0.18) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 78% 21%, rgba(120, 66, 34, 0.16) 0, transparent var(--nook-orb-xl)),
+        radial-gradient(circle at 76% 86%, rgba(12, 7, 4, 0.28) 0, transparent var(--nook-orb-xl)) !important;
+    opacity: 1 !important;
+    filter: blur(1px) saturate(1.02) brightness(1.01);
+    animation: storyNookThreeOrbBreath_circular_default 20s ease-in-out infinite !important;
+}
+
+body:not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .overlay {
+    background: rgba(12, 7, 4, 0.40) !important;
+    backdrop-filter: blur(1.2px) saturate(0.96);
+}
+
+/* Ambient light effects now tint the same distant room image instead of
+   replacing it with flat gradients. The circular light fields still come from
+   the existing --ambient-page-glow values. */
+body.light-fireplace-glow,
+body.light-rain-ambience,
+body.light-wind,
+body.light-thunder-flashes,
+body.light-summer-daylight,
+body.light-twilight,
+body.light-lamplight,
+body.light-moonlit-desk {
+    background: #0f0906 !important;
+}
+
+body.light-fireplace-glow { --story-room-bg-brightness: 0.58; --story-room-bg-saturation: 1.00; --story-room-bg-blur: 4.2px; --story-room-vignette: rgba(9, 3, 2, 0.66); }
+body.light-rain-ambience { --story-room-bg-brightness: 0.50; --story-room-bg-saturation: 0.62; --story-room-bg-blur: 4.8px; --story-room-vignette: rgba(4, 7, 10, 0.70); }
+body.light-wind { --story-room-bg-brightness: 0.46; --story-room-bg-saturation: 0.70; --story-room-bg-blur: 5px; --story-room-vignette: rgba(1, 2, 4, 0.72); }
+body.light-thunder-flashes { --story-room-bg-brightness: 0.42; --story-room-bg-saturation: 0.54; --story-room-bg-blur: 5.2px; --story-room-vignette: rgba(3, 3, 9, 0.76); }
+body.light-summer-daylight { --story-room-bg-brightness: 0.90; --story-room-bg-saturation: 0.95; --story-room-bg-blur: 3.2px; --story-room-vignette: rgba(36, 20, 8, 0.34); }
+body.light-twilight { --story-room-bg-brightness: 0.54; --story-room-bg-saturation: 0.72; --story-room-bg-blur: 4.6px; --story-room-vignette: rgba(11, 5, 13, 0.70); }
+body.light-lamplight { --story-room-bg-brightness: 0.64; --story-room-bg-saturation: 1.02; --story-room-bg-blur: 4px; --story-room-vignette: rgba(4, 3, 6, 0.70); }
+body.light-moonlit-desk { --story-room-bg-brightness: 0.43; --story-room-bg-saturation: 0.50; --story-room-bg-blur: 5px; --story-room-vignette: rgba(2, 4, 8, 0.78); }
+
+body.light-fireplace-glow .overlay,
+body.light-rain-ambience .overlay,
+body.light-wind .overlay,
+body.light-thunder-flashes .overlay,
+body.light-summer-daylight .overlay,
+body.light-twilight .overlay,
+body.light-lamplight .overlay,
+body.light-moonlit-desk .overlay {
+    backdrop-filter: blur(1.5px) saturate(0.96) !important;
+}
+
+/* Candle slider: brighten the UI and add candle warmth without covering the
+   room image with a solid gradient. */
+body.candle-brightness-active:not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) {
+    background: #0f0906 !important;
+    --story-room-bg-brightness: calc(0.72 + (0.18 * var(--candle-ease)));
+    --story-room-bg-saturation: calc(0.92 + (0.12 * var(--candle-ease)));
+    --story-room-bg-blur: calc(3.8px - (0.8px * var(--candle-ease)));
+}
+
+body.candle-brightness-active:not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .page-glow {
+    background:
+        radial-gradient(circle at 50% 15%, rgba(255, 214, 120, var(--candle-glow-alpha)) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 17% 16%, rgba(255, 220, 148, 0.18) 0, transparent var(--nook-orb-lg)),
+        radial-gradient(circle at 78% 21%, rgba(120, 66, 34, 0.16) 0, transparent var(--nook-orb-xl)),
+        radial-gradient(circle at 76% 86%, rgba(12, 7, 4, 0.28) 0, transparent var(--nook-orb-xl)) !important;
+}
+
+body.candle-brightness-active .overlay {
+    background: rgba(12, 7, 4, calc(0.40 - (0.12 * var(--candle-ease)))) !important;
+    backdrop-filter: blur(1.2px) saturate(calc(0.96 + (0.10 * var(--candle-ease)))) !important;
+}
+
+/* Make the writing surface feel closer than the background room. */
+#writingZoneSection,
+body.focus-mode #writingZoneSection {
+    box-shadow:
+        0 30px 90px rgba(0, 0, 0, 0.42),
+        0 0 0 1px rgba(255, 241, 212, 0.10),
+        inset 0 1px 0 rgba(255, 255, 255, 0.045) !important;
+}
+
+body.focus-mode #writingZoneSection {
+    backdrop-filter: blur(var(--focus-zone-blur)) saturate(1.04) !important;
+}
+
+@media (max-width: 760px) {
+    :root {
+        --story-room-bg-position: 58% center;
+        --story-room-bg-scale: 1.07;
+        --story-room-bg-blur: 4.6px;
+        --story-room-bg-brightness: 0.62;
+    }
+
+    body:not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) .overlay {
+        background: rgba(10, 6, 4, 0.48) !important;
+    }
+}
+
+@media (min-width: 1500px) {
+    :root {
+        --story-room-bg-scale: 1.035;
+        --story-room-bg-blur: 3.2px;
+    }
+}
+
+/* =========================================================
+   Final 99: candle slider polish + full Feather/Ink integration
+   ========================================================= */
+:root {
+    --focus-ink-factor: 0.833;
+    --range-track-height: 0.24rem;
+    --range-thumb-size: 0.86rem;
+}
+
+/* Keep every range input visually lean. The clickable range area still works,
+   but the transparent hit area no longer shows up as a thick ghost bar on
+   bright candle backgrounds. */
+input[type="range"],
+.site-volume-slider input[type="range"],
+.focus-visibility-slider input[type="range"],
+.candle-brightness-slider input[type="range"],
+.sound-mix-slider {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    height: 0.92rem !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    filter: none !important;
+}
+
+input[type="range"]::-webkit-slider-runnable-track,
+.sound-mix-slider::-webkit-slider-runnable-track {
+    height: var(--range-track-height) !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    box-shadow: none !important;
+}
+
+input[type="range"]::-webkit-slider-thumb,
+.sound-mix-slider::-webkit-slider-thumb {
+    width: var(--range-thumb-size) !important;
+    height: var(--range-thumb-size) !important;
+    margin-top: calc((var(--range-track-height) - var(--range-thumb-size)) / 2) !important;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.24) !important;
+}
+
+input[type="range"]::-moz-range-track,
+.sound-mix-slider::-moz-range-track,
+input[type="range"]::-moz-range-progress,
+.sound-mix-slider::-moz-range-progress {
+    height: var(--range-track-height) !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    box-shadow: none !important;
+}
+
+body.candle-brightness-active input[type="range"],
+body.candle-brightness-active .site-volume-slider input[type="range"],
+body.candle-brightness-active .focus-visibility-slider input[type="range"],
+body.candle-brightness-active .candle-brightness-slider input[type="range"],
+body.candle-brightness-active .sound-mix-slider {
+    background: transparent !important;
+    background-color: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    filter: none !important;
+}
+
+body.candle-brightness-active input[type="range"]::-webkit-slider-runnable-track,
+body.candle-brightness-active .sound-mix-slider::-webkit-slider-runnable-track {
+    height: var(--range-track-height) !important;
+    background: rgba(61, 48, 36, var(--candle-track-alpha)) !important;
+    box-shadow: none !important;
+}
+
+body.candle-brightness-active input[type="range"]::-moz-range-track,
+body.candle-brightness-active .sound-mix-slider::-moz-range-track {
+    height: var(--range-track-height) !important;
+    background: rgba(61, 48, 36, var(--candle-track-alpha)) !important;
+    box-shadow: none !important;
+}
+
+body.candle-brightness-active input[type="range"]::-moz-range-progress,
+body.candle-brightness-active .sound-mix-slider::-moz-range-progress {
+    height: var(--range-track-height) !important;
+    background: rgba(125, 139, 109, var(--candle-range-progress-alpha)) !important;
+}
+
+/* Stronger selector for the Writing Desk so candle brightness affects it on the
+   main page and in Focus Mode. Feather/Ink continues to control how solid the
+   writing surface feels while the candle slider is active. */
+body.candle-brightness-active #writingZoneSection {
+    color: var(--candle-text-color) !important;
+    background:
+        linear-gradient(145deg,
+            rgba(255, 248, 230, var(--candle-panel-alpha-1)),
+            rgba(238, 218, 178, var(--candle-panel-alpha-2))),
+        linear-gradient(145deg,
+            rgba(27, 19, 13, var(--focus-zone-alpha)),
+            rgba(18, 13, 9, var(--focus-zone-alpha-2))) !important;
+    border-color: rgba(80, 55, 38, var(--candle-border-alpha)) !important;
+    backdrop-filter: blur(var(--focus-zone-blur)) saturate(1.04) !important;
+    box-shadow:
+        0 28px 84px rgba(0, 0, 0, var(--candle-focus-shadow-alpha)),
+        0 18px 60px rgba(93, 61, 34, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, var(--candle-focus-inset-alpha)) !important;
+}
+
+body.candle-brightness-active #writingZoneSection textarea,
+body.focus-mode.candle-brightness-active #writingZoneSection textarea {
+    color: var(--candle-text-color) !important;
+    background:
+        linear-gradient(rgba(255, 252, 241, var(--candle-input-alpha)), rgba(255, 252, 241, var(--candle-input-alpha))),
+        rgba(0, 0, 0, var(--focus-textarea-alpha)) !important;
+    border-color: rgba(80, 55, 38, var(--candle-border-alpha)) !important;
+}
+
+body.candle-brightness-active #writingZoneSection textarea::placeholder {
+    color: rgba(39, 31, 24, 0.42) !important;
+}
+
+/* Make the Focus Mode X match the Sound/Light control treatment at high candle
+   brightness instead of turning into a flat gray button. */
+body.focus-mode.candle-brightness-active .focus-close {
+    color: var(--candle-text-color) !important;
+    background: rgba(255, 252, 241, var(--candle-control-alpha)) !important;
+    border-color: rgba(80, 55, 38, var(--candle-border-alpha)) !important;
+    box-shadow:
+        0 8px 18px rgba(0, 0, 0, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, var(--candle-focus-inset-alpha)) !important;
+    backdrop-filter: blur(10px) !important;
+}
+
+body.focus-mode.candle-brightness-active .focus-close:hover {
+    background: rgba(255, 252, 241, var(--candle-control-hover-alpha)) !important;
+}
+
+/* Word-count meter stays readable in bright Focus Mode and uses the same sage
+   family as the active Sound/Light controls. */
+body.candle-brightness-active #writingZoneSection .char-track {
+    background: rgba(61, 48, 36, var(--candle-char-track-alpha)) !important;
+    border: 1px solid rgba(80, 55, 38, var(--candle-char-border-alpha)) !important;
+}
+
+body.candle-brightness-active #writingZoneSection .char-track span {
+    background: linear-gradient(90deg, var(--sage-soft), var(--sage)) !important;
+    box-shadow: 0 0 14px rgba(125, 139, 109, var(--candle-char-glow-alpha)) !important;
+}
+
+/* Final 99 safeguards for browsers that do not support multiplied CSS calc(). */
+body.candle-brightness-active:not(.light-fireplace-glow):not(.light-rain-ambience):not(.light-wind):not(.light-thunder-flashes):not(.light-summer-daylight):not(.light-twilight):not(.light-lamplight):not(.light-moonlit-desk) {
+    --story-room-bg-brightness: var(--story-room-candle-brightness) !important;
+    --story-room-bg-saturation: var(--story-room-candle-saturation) !important;
+    --story-room-bg-blur: var(--story-room-candle-blur) !important;
+}
+
+body.candle-brightness-active .overlay {
+    background: rgba(12, 7, 4, var(--candle-room-overlay-alpha)) !important;
+    backdrop-filter: blur(1.2px) saturate(var(--candle-room-overlay-saturation)) !important;
+}
+
+:root {
+    --candle-range-progress-alpha: 0.42;
+    --candle-control-hover-alpha: 0.13;
+    --candle-focus-inset-alpha: 0;
+    --candle-focus-shadow-alpha: 0.28;
+    --candle-char-track-alpha: 0.14;
+    --candle-char-border-alpha: 0.12;
+    --candle-char-glow-alpha: 0.16;
+    --candle-room-overlay-alpha: 0.40;
+    --candle-room-overlay-saturation: 0.96;
+    --story-room-candle-brightness: 0.72;
+    --story-room-candle-saturation: 0.92;
+    --story-room-candle-blur: 3.8px;
+}
+
+/* =========================================================
+   Final 100: matching main/focus writing fields
+   =========================================================
+   The main-page writing textarea and guest pen-name field now use the
+   same writing-surface color recipe as the Focus Mode desk in both the
+   normal dark state and the candle-brightened state.
+*/
+#writingZoneSection #mainStoryInput,
+#writingZoneSection #guestPenName,
+body.focus-mode #writingZoneSection #mainStoryInput,
+body.focus-mode #writingZoneSection #guestPenName {
+    color: var(--paper) !important;
+    background:
+        linear-gradient(rgba(255, 245, 223, 0.035), rgba(255, 245, 223, 0.035)),
+        rgba(0, 0, 0, var(--focus-textarea-alpha)) !important;
+    border-color: rgba(255, 241, 212, 0.09) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035) !important;
+}
+
+#writingZoneSection #mainStoryInput::placeholder,
+#writingZoneSection #guestPenName::placeholder,
+body.focus-mode #writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode #writingZoneSection #guestPenName::placeholder {
+    color: rgba(255, 241, 212, 0.52) !important;
+}
+
+#writingZoneSection #mainStoryInput:focus,
+#writingZoneSection #guestPenName:focus,
+body.focus-mode #writingZoneSection #mainStoryInput:focus,
+body.focus-mode #writingZoneSection #guestPenName:focus {
+    border-color: var(--accent-2) !important;
+    box-shadow:
+        0 0 0 4px rgba(215, 165, 111, 0.16),
+        inset 0 1px 0 rgba(255, 255, 255, 0.045) !important;
+}
+
+body.candle-brightness-active #writingZoneSection #mainStoryInput,
+body.candle-brightness-active #writingZoneSection #guestPenName,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput,
+body.focus-mode.candle-brightness-active #writingZoneSection #guestPenName {
+    color: var(--candle-text-color) !important;
+    background:
+        linear-gradient(rgba(255, 252, 241, var(--candle-input-alpha)), rgba(255, 252, 241, var(--candle-input-alpha))),
+        rgba(0, 0, 0, var(--focus-textarea-alpha)) !important;
+    border-color: rgba(80, 55, 38, var(--candle-border-alpha)) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, var(--candle-focus-inset-alpha)) !important;
+}
+
+body.candle-brightness-active #writingZoneSection #mainStoryInput::placeholder,
+body.candle-brightness-active #writingZoneSection #guestPenName::placeholder,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode.candle-brightness-active #writingZoneSection #guestPenName::placeholder {
+    color: rgba(39, 31, 24, 0.42) !important;
+}
+
+body.candle-brightness-active #writingZoneSection #mainStoryInput:focus,
+body.candle-brightness-active #writingZoneSection #guestPenName:focus,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput:focus,
+body.focus-mode.candle-brightness-active #writingZoneSection #guestPenName:focus {
+    border-color: rgba(80, 55, 38, calc(var(--candle-border-alpha) + 0.12)) !important;
+    box-shadow:
+        0 0 0 4px rgba(125, 139, 109, 0.14),
+        inset 0 1px 0 rgba(255, 255, 255, var(--candle-focus-inset-alpha)) !important;
+}
