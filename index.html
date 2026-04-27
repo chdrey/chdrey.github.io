@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#120c08">
+    <title>The Story Nook</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Source+Sans+3:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <div id="toastRegion" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+    <nav id="mainNav" class="site-nav">
+        <button id="navLogo" class="brand-lockup nav-logo" type="button" aria-label="Back to top">
+            <img src="story-nook-logo.png" alt="" class="brand-logo-img" aria-hidden="true">
+            <span>The Story Nook</span>
+        </button>
+
+        <div class="nav-actions">
+            <div id="loggedOutNav" class="nav-group">
+                <div class="quote-of-day" aria-label="Quote of the day">
+                    <p>“There is no greater agony than bearing an untold story inside you.”</p>
+                    <cite>— Maya Angelou</cite>
+                </div>
+                <button id="navLoginBtn" class="btn-secondary">Log In</button>
+            </div>
+            <div id="loggedInNav" class="nav-group hidden">
+                <button id="navProfileBtn" class="profile-trigger">
+                    <span id="navUsername">Writer</span>
+                    <img id="navAvatar" src="" alt="Profile avatar" class="avatar-small">
+                </button>
+            </div>
+
+            <div class="bookmark-menu-shell">
+                <button id="bookmarkMenuBtn" class="bookmark-ribbon" type="button" aria-expanded="false" aria-controls="nookRibbonPanel" aria-label="Open site menu">
+                    <span></span>
+                </button>
+                <div id="nookRibbonPanel" class="ribbon-panel hidden" aria-label="Your Story Nook journey">
+                    <p id="journeyNote" class="ribbon-note storybook-menu-note">Sign in to reveal your journey.</p>
+                    <div class="storybook-menu-pages" aria-label="Creative journey menu">
+                        <button type="button" class="storybook-page-link" data-journey-action="collection">
+                            <span class="page-link-title">My Collection</span>
+                            <span class="page-link-desc">Keepsakes gathered from your time in the Nook.</span>
+                        </button>
+                        <button type="button" class="storybook-page-link" data-journey-action="milestones">
+                            <span class="page-link-title">Milestones</span>
+                            <span class="page-link-desc">The quiet marks your stories leave behind.</span>
+                        </button>
+                        <button type="button" class="storybook-page-link" data-journey-action="flair">
+                            <span class="page-link-title">Unlocked Flair</span>
+                            <span class="page-link-desc">Frames, badges, and earned details.</span>
+                        </button>
+                        <button type="button" class="storybook-page-link" data-journey-action="stories">
+                            <span class="page-link-title">My Stories</span>
+                            <span class="page-link-desc">Return to the pages you have shared.</span>
+                        </button>
+                        <button type="button" class="storybook-page-link logged-in-only hidden" data-poll-link="https://strawpoll.com">
+                            <span class="page-link-title">Vote Next Prompt</span>
+                            <span class="page-link-desc">Help choose next week’s theme and mood.</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="video-background" aria-hidden="true"></div>
+    <div class="page-glow" aria-hidden="true"></div>
+    <div class="overlay" aria-hidden="true"></div>
+
+    <main>
+        <section class="hero card compact-inspiration" aria-labelledby="weeklyPromptTitle">
+            <div class="section-heading weekly-prompt-heading">
+                <h2 id="weeklyPromptTitle" class="eyebrow section-label-title">Weekly Prompt</h2>
+            </div>
+            <div class="prompt-strip">
+                <p id="weeklyPromptText">A knight stands at a distance, gazing toward the entrance of a citadel he has finally returned to. Something has happened before this moment—something the reader does not yet know. Write the story of what led him here, what he has lost or gained, and why he hesitates before entering.</p>
+                <button id="copyPromptBtn" class="btn-tiny prompt-write-btn" type="button" aria-label="Start writing from this prompt" title="Start writing from this prompt"><span aria-hidden="true">🪶</span></button>
+            </div>
+
+            <div class="video-wrapper">
+                <iframe id="youtubePlayer" src="" title="Inspiration video" frameborder="0" allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </section>
+
+        <section id="writingZoneSection" class="writing-zone card" aria-labelledby="writeTitle">
+            <button id="exitFocusBtn" class="focus-close" type="button" aria-label="Exit focus mode">×</button>
+            <div class="writing-desk-header">
+                <div class="writing-desk-title">
+                    <p class="eyebrow">Writing desk</p>
+                    <h2 id="writeTitle" class="sr-only">Writing Desk</h2>
+                </div>
+                <div class="writing-desk-controls focus-ambient-controls" aria-label="Focus room controls">
+                    <button id="soundEffectsBtn" class="focus-mini-btn focus-icon-btn" type="button" aria-expanded="false" aria-controls="soundEffectsMenu">
+                        <span aria-hidden="true">≋</span>
+                        <span>Sound</span>
+                    </button>
+                    <button id="lightingEffectsBtn" class="focus-mini-btn focus-icon-btn" type="button" aria-expanded="false" aria-controls="lightingEffectsMenu">
+                        <span aria-hidden="true">☀</span>
+                        <span>Light</span>
+                    </button>
+                </div>
+            </div>
+            <div id="soundEffectsMenu" class="ambient-menu sound-menu hidden" role="menu" aria-label="Ambient sounds">
+                <div class="ambient-menu-feature ambient-slider-feature audio-slider-feature">
+                    <span class="ambient-feature-label">Volume</span>
+                    <label class="site-volume-slider" for="siteVolumeSlider">
+                        <span class="slider-soft-label">Off</span>
+                        <input id="siteVolumeSlider" type="range" min="0" max="100" value="50" step="1" aria-label="Website audio volume">
+                        <span class="slider-soft-label">Full</span>
+                    </label>
+                </div>
+                                <div class="sound-mix-option" data-sound="relaxing-rain" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Relaxing rain</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Relaxing rain volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="relaxing-rain" type="range" min="0" max="100" value="70" step="1" aria-label="Relaxing rain volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="fireplace" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Fireplace</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Fireplace volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="fireplace" type="range" min="0" max="100" value="70" step="1" aria-label="Fireplace volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="ocean-waves" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Ocean waves</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Ocean waves volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="ocean-waves" type="range" min="0" max="100" value="70" step="1" aria-label="Ocean waves volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="morning-birds" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Morning birds</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Morning birds volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="morning-birds" type="range" min="0" max="100" value="70" step="1" aria-label="Morning birds volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="relaxing-storm" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Relaxing storm</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Relaxing storm volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="relaxing-storm" type="range" min="0" max="100" value="70" step="1" aria-label="Relaxing storm volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="day-at-the-park" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Day at the park</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Day at the park volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="day-at-the-park" type="range" min="0" max="100" value="70" step="1" aria-label="Day at the park volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="far-away-thunder" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Far away thunder</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Far away thunder volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="far-away-thunder" type="range" min="0" max="100" value="70" step="1" aria-label="Far away thunder volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="humming" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Humming</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Humming volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="humming" type="range" min="0" max="100" value="70" step="1" aria-label="Humming volume">
+                    </label>
+                </div>
+                <div class="sound-mix-option" data-sound="brown-noise" role="button" tabindex="0" aria-pressed="false">
+                    <span class="sound-mix-label">Brown noise</span>
+                    <label class="sound-mix-slider-wrap" aria-label="Brown noise volume">
+                        <span class="sound-mix-volume-value">70%</span>
+                        <input class="sound-mix-slider" data-sound-volume="brown-noise" type="range" min="0" max="100" value="70" step="1" aria-label="Brown noise volume">
+                    </label>
+                </div>
+            </div>
+            <div id="lightingEffectsMenu" class="ambient-menu lighting-menu hidden" role="menu" aria-label="Ambient lighting">
+                <div class="ambient-menu-feature ambient-slider-feature candle-brightness-feature">
+                    <span class="ambient-feature-label">Candle</span>
+                    <label class="candle-brightness-slider" for="candleBrightnessSlider">
+                        <span class="slider-soft-label">Dim</span>
+                        <input id="candleBrightnessSlider" type="range" min="0" max="100" value="0" step="1" aria-label="Candle brightness">
+                        <span class="slider-soft-label">Bright</span>
+                    </label>
+                </div>
+                <div class="ambient-menu-feature ambient-slider-feature">
+                    <span class="ambient-feature-label">Window</span>
+                    <label class="focus-visibility-slider" for="focusVisibilitySlider">
+                        <span class="slider-soft-label">Feather</span>
+                        <input id="focusVisibilitySlider" type="range" min="48" max="96" value="88" step="1" aria-label="Writing window visibility">
+                        <span class="slider-soft-label">Ink</span>
+                    </label>
+                </div>
+                <button type="button" data-lighting="fireplace-glow" aria-pressed="false">Fireplace glow</button>
+                <button type="button" data-lighting="rain-ambience" aria-pressed="false">Rain ambience</button>
+                <button type="button" data-lighting="wind" aria-pressed="false">Under the covers</button>
+                <button type="button" data-lighting="thunder-flashes" aria-pressed="false">Thunder flashes</button>
+                <button type="button" data-lighting="summer-daylight" aria-pressed="false">Summer daylight</button>
+                <button type="button" data-lighting="twilight" aria-pressed="false">Twilight</button>
+                <button type="button" data-lighting="lamplight" aria-pressed="false">Lamplight</button>
+                <button type="button" data-lighting="moonlit-desk" aria-pressed="false">Moonlit desk</button>
+            </div>
+            <div class="story-input-wrap">
+                <textarea id="mainStoryInput" maxlength="2000" placeholder="Start with a sentence you would keep in a notebook..."></textarea>
+                <button id="eraseStoryBtn" class="textarea-eraser" type="button" aria-label="Clear writing area" title="Clear writing area">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4.2 15.9 13.7 6.4a2 2 0 0 1 2.8 0l3.1 3.1a2 2 0 0 1 0 2.8l-7.2 7.2H6.7L4.2 17a.8.8 0 0 1 0-1.1Z"></path>
+                        <path d="M11.7 19.5h8.1"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="writer-tools">
+                <div class="char-meter" aria-label="Story character count">
+                    <div class="char-track"><span id="charBar"></span></div>
+                    <span><strong id="charCount">0</strong>/2000</span>
+                </div>
+            </div>
+
+            <div class="action-bar writer-action-line">
+                <div class="writing-actions-left">
+                    <input type="text" id="guestPenName" placeholder="Pen Name (Guest)" maxlength="32" autocomplete="nickname">
+                </div>
+                <button id="publishBtn" class="btn-primary" type="button">Publish Story</button>
+            </div>
+        </section>
+
+        <section class="leaderboard card" aria-labelledby="topStoriesTitle">
+            <div class="section-heading">
+                <h2 id="topStoriesTitle" class="eyebrow section-label-title">Reader Favorites</h2>
+            </div>
+            <div class="top-stories-container" id="topStories"></div>
+        </section>
+
+        <section class="feed card" aria-labelledby="feedTitle">
+            <div class="section-heading split">
+                <div>
+                    <h2 id="feedTitle" class="eyebrow section-label-title">Latest Submissions</h2>
+                </div>
+                <button id="refreshFeedBtn" class="btn-secondary small" type="button">Refresh</button>
+            </div>
+
+            <div class="feed-toolbar">
+                <label class="sr-only" for="storySearch">Search stories</label>
+                <input type="search" id="storySearch" placeholder="Search stories or pen names...">
+                <label class="sr-only" for="feedSort">Sort stories</label>
+                <select id="feedSort">
+                    <option value="created_at">Newest first</option>
+                    <option value="votes">Most loved</option>
+                </select>
+            </div>
+
+            <div id="storyFeed" class="feed-list-container"></div>
+            <button id="loadMoreBtn" class="btn-secondary full-width load-more" type="button">Load more stories</button>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="footer-content footer-content-polished">
+            <div class="footer-main">
+                <div class="brand-lockup footer-brand">
+                    <img src="story-nook-logo.png" alt="" class="brand-logo-img" aria-hidden="true">
+                    <span>The Story Nook</span>
+                </div>
+                <p class="footer-note">Made with care for writers, readers, and late-night ideas.</p>
+            </div>
+
+            <nav class="footer-nav" aria-label="Footer links">
+                <a href="https://www.youtube.com/@TheStoryNook-YT" target="_blank" rel="noopener noreferrer">The Story Nook YT</a>
+                <button type="button" data-open="aboutModal">About Us</button>
+                <button type="button" data-scroll-target="weeklyPromptTitle">Weekly Prompt</button>
+                <button type="button" data-scroll-target="writingZoneSection">Writing Desk</button>
+                <button type="button" data-scroll-target="top">Back to Top</button>
+            </nav>
+
+            <button type="button" id="footerFeedbackBtn" class="footer-owl-link" aria-label="Send Us an Owl">
+                <span class="footer-owl-icon" aria-hidden="true">🦉</span>
+                <span class="footer-owl-text">Send Us an Owl</span>
+                <span class="footer-mail-icon" aria-hidden="true">✉</span>
+            </button>
+
+            <p class="footer-legal">© The Story Nook. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <div id="clearStoryModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="clearStoryTitle">
+        <div class="modal-content narrow cozy-panel clear-story-modal">
+            <button class="close-modal" type="button" data-close="clearStoryModal" aria-label="Close">&times;</button>
+            <div class="clear-story-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                    <path d="M4.2 15.9 13.7 6.4a2 2 0 0 1 2.8 0l3.1 3.1a2 2 0 0 1 0 2.8l-7.2 7.2H6.7L4.2 17a.8.8 0 0 1 0-1.1Z"></path>
+                    <path d="M11.7 19.5h8.1"></path>
+                </svg>
+            </div>
+            <h2 id="clearStoryTitle">Clear the writing area?</h2>
+            <p class="subtext">This will remove the current draft from this browser. The prompt will return as example text.</p>
+            <div class="modal-actions-row">
+                <button id="cancelEraseStoryBtn" class="btn-secondary" type="button" data-close="clearStoryModal">Cancel</button>
+                <button id="confirmEraseStoryBtn" class="btn-primary" type="button">Clear it</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="authModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+        <div class="modal-content narrow cozy-panel">
+            <button class="close-modal" type="button" data-close="authModal" aria-label="Close">&times;</button>
+            <div class="brand-lockup modal-brand">
+                <img src="story-nook-logo.png" alt="" class="brand-logo-img" aria-hidden="true">
+                <span>The Story Nook</span>
+            </div>
+            <h2 id="authTitle">Welcome back</h2>
+            <div class="auth-tabs" role="tablist" aria-label="Authentication mode">
+                <button id="loginTab" class="auth-tab active" type="button">Log In</button>
+                <button id="signupTab" class="auth-tab" type="button">Sign Up</button>
+            </div>
+            <form id="authForm" class="auth-form-container">
+                <label class="sr-only" for="emailInput">Email Address</label>
+                <input type="email" id="emailInput" placeholder="Email Address" autocomplete="email" required>
+                <label class="sr-only" for="passwordInput">Password</label>
+                <input type="password" id="passwordInput" placeholder="Password" autocomplete="current-password" minlength="6" required>
+                <label class="sr-only" for="usernameInput">Pen Name</label>
+                <input type="text" id="usernameInput" placeholder="Choose a Pen Name" class="hidden" autocomplete="username" maxlength="24">
+                <button id="authActionBtn" class="btn-primary full-width" type="submit">Log In</button>
+            </form>
+            <div class="auth-helper-row">
+                <button id="forgotPasswordBtn" type="button" class="text-link">Forgot password?</button>
+                <button id="authSwitchBtn" type="button" class="text-link">Need an account?</button>
+            </div>
+            <p id="authError" class="error-text" role="alert"></p>
+        </div>
+    </div>
+
+    <div id="feedbackModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="feedbackTitle">
+        <div class="modal-content narrow cozy-panel">
+            <button class="close-modal" type="button" data-close="feedbackModal" aria-label="Close">&times;</button>
+            <h2 id="feedbackTitle">🦉 Send an Owl</h2>
+            <p class="modal-intro">Suggestions, bug reports, praise for the fireplace—drop it here.</p>
+            <div class="auth-form-container">
+                <input type="email" id="feedbackEmail" placeholder="Your Email (so we can reply)">
+                <textarea id="feedbackText" placeholder="Write your missive here..." rows="5"></textarea>
+                <button id="submitFeedbackBtn" class="btn-primary full-width" type="button">Send to The High Council</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="profileModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="profileNameDisplay">
+        <div class="modal-content book-style">
+            <button class="close-modal" type="button" data-close="profileModal" aria-label="Close">&times;</button>
+            <div class="profile-header">
+                <div class="avatar-wrapper" title="Upload a new avatar">
+                    <img id="profileAvatar" src="" alt="Profile avatar" class="avatar-large profile-trigger-action">
+                    <input type="file" id="avatarUploadInput" accept="image/*" hidden>
+                    <div id="avatarEditOverlay" class="avatar-edit-hint">📷</div>
+                </div>
+                <div class="profile-info">
+                    <p class="eyebrow dark">Author profile</p>
+                    <h2 id="profileNameDisplay">Loading...</h2>
+                </div>
+            </div>
+
+            <button id="adminDashboardBtn" class="btn-primary full-width hidden" type="button">👑 Control Panel</button>
+
+            <div class="passport-section">
+                <div class="passport-header-row">
+                    <h3>🎖️ Author's Passport</h3>
+                    <button id="passportInfoBtn" class="info-icon-small" title="Guide" type="button">?</button>
+                </div>
+                <div id="flairGrid" class="flair-grid"></div>
+            </div>
+
+            <div id="settingsSection" class="settings-section">
+                <h3>⚙️ Settings</h3>
+                <div class="settings-grid">
+                    <input type="password" id="newPasswordInput" placeholder="New Password" autocomplete="new-password">
+                    <button id="changePasswordBtn" class="btn-secondary small" type="button">Update Password</button>
+                </div>
+                <button id="logoutBtn" class="btn-secondary full-width" type="button">Log Out</button>
+            </div>
+
+            <h3>My Stories</h3>
+            <div id="myStoriesList" class="my-stories-container"></div>
+
+            <div id="deleteSection" class="delete-section">
+                <button id="deleteAccountBtn" class="btn-delete-final full-width" type="button">Delete Profile Data</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="passportInfoModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+        <div class="modal-content passport-guide-style">
+            <button class="close-modal" type="button" data-close="passportInfoModal" aria-label="Close">&times;</button>
+            <h2 id="guideTitle" class="guide-title">Passport Guide</h2>
+            <p class="guide-desc">Collect badges to unlock profile frames.</p>
+            <div class="badge-guide-grid">
+                <div class="guide-item"><div class="flair-preview frame-wood guide-badge"></div><div><strong>The Bard</strong><br><small>Participated in the weekly prompt.</small></div></div>
+                <div class="guide-item"><div class="flair-preview frame-copper guide-badge"></div><div><strong>Talk of the Nook</strong><br><small>Most comments in a week.</small></div></div>
+                <div class="guide-item"><div class="flair-preview frame-stone guide-badge"></div><div><strong>The Ink Scribble</strong><br><small>3rd place in weekly voting.</small></div></div>
+                <div class="guide-item"><div class="flair-preview frame-iron guide-badge"></div><div><strong>The Cliffhanger</strong><br><small>2nd place in weekly voting.</small></div></div>
+                <div class="guide-item"><div class="flair-preview frame-gold guide-badge"></div><div><strong>The Golden Quill</strong><br><small>1st place in weekly voting.</small></div></div>
+                <div class="guide-item"><div class="flair-preview frame-diamond guide-badge"></div><div><strong>The Trilogy Master</strong><br><small>Top 3 for three weeks in a row.</small></div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+        <div class="modal-content book-style full-screen-mobile">
+            <button class="close-modal" type="button" data-close="adminModal" aria-label="Close">&times;</button>
+            <h2 id="adminTitle" class="admin-title">👑 Control Panel</h2>
+            <div class="admin-tabs">
+                <button class="tab-btn active" type="button" data-admin-tab="users">Users & Badges</button>
+                <button class="tab-btn" type="button" data-admin-tab="contest">Manual Awards</button>
+            </div>
+            <div id="adminTabUsers" class="admin-tab-content">
+                <input type="search" id="adminUserSearch" placeholder="Search user by name...">
+                <div id="adminUserList" class="admin-user-list"></div>
+            </div>
+            <div id="adminTabContest" class="admin-tab-content hidden">
+                <h3>🏆 Manage Badges</h3>
+                <div class="winner-input-group"><label>🥇 The Golden Quill</label><div><input type="text" id="badgeInput_5" placeholder="Username"><button data-award="5" class="btn-primary small" type="button">Award</button><button data-revoke="5" class="btn-delete small" type="button">Revoke</button></div></div>
+                <div class="winner-input-group"><label>🥈 The Cliffhanger</label><div><input type="text" id="badgeInput_4" placeholder="Username"><button data-award="4" class="btn-primary small" type="button">Award</button><button data-revoke="4" class="btn-delete small" type="button">Revoke</button></div></div>
+                <div class="winner-input-group"><label>🥉 The Ink Scribble</label><div><input type="text" id="badgeInput_3" placeholder="Username"><button data-award="3" class="btn-primary small" type="button">Award</button><button data-revoke="3" class="btn-delete small" type="button">Revoke</button></div></div>
+                <div class="winner-input-group"><label>🎭 The Bard</label><div><input type="text" id="badgeInput_1" placeholder="Username"><button data-award="1" class="btn-primary small" type="button">Award</button><button data-revoke="1" class="btn-delete small" type="button">Revoke</button></div></div>
+                <div class="winner-input-group"><label>🗣️ Talk of the Nook</label><div><input type="text" id="badgeInput_2" placeholder="Username"><button data-award="2" class="btn-primary small" type="button">Award</button><button data-revoke="2" class="btn-delete small" type="button">Revoke</button></div></div>
+                <div class="winner-input-group"><label>💎 The Trilogy Master</label><div><input type="text" id="badgeInput_6" placeholder="Username"><button data-award="6" class="btn-primary small" type="button">Award</button><button data-revoke="6" class="btn-delete small" type="button">Revoke</button></div></div>
+            </div>
+</div>
+    </div>
+
+
+    <div id="editStoryModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="editStoryTitle">
+        <div class="modal-content book-style read-modal-layout">
+            <button class="close-modal" type="button" data-close="editStoryModal" aria-label="Close">&times;</button>
+            <div class="read-header">
+                <div class="read-icon">✎</div>
+                <div>
+                    <p class="eyebrow dark">Author revision</p>
+                    <h2 id="editStoryTitle">Edit story</h2>
+                </div>
+            </div>
+            <textarea id="editStoryInput" class="edit-story-input" maxlength="2000" placeholder="Revise your story..."></textarea>
+            <div class="action-bar writer-action-line">
+                <button class="btn-secondary" type="button" data-close="editStoryModal">Cancel</button>
+                <button id="saveStoryEditBtn" class="btn-primary" type="button">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="readModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="readModalAuthor">
+        <div class="modal-content book-style read-modal-layout">
+            <button class="close-modal" type="button" data-close="readModal" aria-label="Close">&times;</button>
+            <div class="read-header">
+                <div class="read-icon">📖</div>
+                <div>
+                    <p class="eyebrow dark">Now reading</p>
+                    <h2 id="readModalAuthor">By @Author</h2>
+                </div>
+            </div>
+            <div id="readModalText" class="modal-body-text story-text-styled"></div>
+            <div id="modalActionsRow" class="story-actions-row modal-actions"></div>
+            <div class="comments-section-wrapper">
+                <h3>Discussion</h3>
+                <div id="modalCommentsList" class="comments-list"></div>
+                <div class="comment-input-area">
+                    <input type="text" id="commentGuestName" placeholder="Your Name" class="input-compact" maxlength="32">
+                    <input type="text" id="newCommentInput" placeholder="Share your thoughts..." class="input-wide">
+                    <button id="postCommentBtn" class="btn-primary small" type="button">Post</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="aboutModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+        <div class="modal-content book-style">
+            <button class="close-modal" type="button" data-close="aboutModal" aria-label="Close">&times;</button>
+            <h2 id="aboutTitle">About The Nook</h2>
+            <div class="modal-body-text about-nook-copy">
+                <p><strong>The Story Nook</strong> is a passion project for people who love stories: a quiet corner of the internet where writers and readers can step away from the noise, follow a weekly spark, and share something made with care.</p>
+                <p>We built it as a small gathering place for short fiction, thoughtful reading, gentle feedback, and discovering the voices of others.</p>
+                <p>As the Nook grows, we’ll keep shaping it with your feedback. Whether you arrive to write, read, vote, comment, or gather a little inspiration, we’re glad you’re here.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
