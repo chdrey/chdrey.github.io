@@ -140,7 +140,10 @@
             openModal('profileModal');
             resetProfileModalToMyView();
         });
-        $('#footerFeedbackBtn')?.addEventListener('click', openFeedback);
+        $('#footerFeedbackBtn')?.addEventListener('click', () => {
+            playOwlWingSound();
+            openFeedback();
+        });
         $$('[data-open]').forEach((button) => button.addEventListener('click', () => openModal(button.dataset.open)));
         $$('[data-scroll-target]').forEach((button) => {
             button.addEventListener('click', () => {
@@ -187,18 +190,28 @@
             updateCharCounter();
             saveDraft();
         });
+        $('#mainStoryInput')?.addEventListener('pointerdown', () => {
+            if (isMobileWritingViewport()) enterFocusMode();
+        }, { passive: true });
+        $('#mainStoryInput')?.addEventListener('touchstart', () => {
+            if (isMobileWritingViewport()) enterFocusMode();
+        }, { passive: true });
         $('#mainStoryInput')?.addEventListener('focus', enterFocusMode);
         $('#mainStoryInput')?.addEventListener('click', enterFocusMode);
         $('#guestPenName')?.addEventListener('input', saveGuestName);
         $('#publishBtn')?.addEventListener('click', publishStory);
         $('#clearDraftBtn')?.addEventListener('click', clearDraft);
-        $('#copyPromptBtn')?.addEventListener('click', copyPrompt);
+        $('#copyPromptBtn')?.addEventListener('click', startWritingFromPrompt);
         $('#candleBtn')?.addEventListener('click', (event) => {
             event.preventDefault();
             event.stopPropagation();
             toggleCandleMode();
         });
-        $('#exitFocusBtn')?.addEventListener('click', exitFocusMode);
+        $('#exitFocusBtn')?.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            exitFocusMode();
+        });
         $('#siteVolumeSlider')?.addEventListener('input', updateSiteVolumeFromSlider);
         $('#soundEffectsBtn')?.addEventListener('click', () => toggleAmbientMenu('soundEffectsMenu', 'soundEffectsBtn'));
         $('#lightingEffectsBtn')?.addEventListener('click', () => toggleAmbientMenu('lightingEffectsMenu', 'lightingEffectsBtn'));
@@ -713,6 +726,7 @@
         setButtonLoading('#publishBtn', false);
 
         if (error) return toast(`Error publishing: ${error.message}`, 'error');
+        playPublishSound();
         textArea.value = '';
         localStorage.removeItem(CONFIG.draftKey);
         updateCharCounter();
@@ -1378,6 +1392,28 @@
         }
     }
 
+    function startWritingFromPrompt() {
+        const input = $('#mainStoryInput');
+        const promptText = ($('#weeklyPromptText')?.textContent || '').trim();
+
+        if (!input || !promptText) return;
+
+        // Use the prompt as example text, not actual draft content.
+        // Browser placeholder behavior makes it disappear when the writer types
+        // and return automatically if the textarea is cleared.
+        input.placeholder = promptText;
+
+        enterFocusMode();
+
+        requestAnimationFrame(() => {
+            input.focus({ preventScroll: true });
+            input.scrollIntoView({
+                behavior: isMobileWritingViewport() ? 'auto' : 'smooth',
+                block: isMobileWritingViewport() ? 'nearest' : 'center'
+            });
+        });
+    }
+
     function getYouTubePlayer() {
         return $('#youtubePlayer');
     }
@@ -1496,16 +1532,37 @@
         syncFocusAudio();
     }
 
+    function isMobileWritingViewport() {
+        return window.matchMedia('(max-width: 760px), (pointer: coarse)').matches;
+    }
+
     function enterFocusMode() {
+        const writingZone = $('#writingZoneSection');
+        const storyInput = $('#mainStoryInput');
+        const isMobile = isMobileWritingViewport();
+
         if (!document.body.classList.contains('focus-mode')) {
+            playMenuPageSound();
             closeRibbonPanel();
+            closeAmbientMenus();
             document.body.classList.add('focus-mode');
             syncFocusAudio();
-            $('#writingZoneSection')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        if (isMobile) {
+            requestAnimationFrame(() => {
+                writingZone?.scrollIntoView({ behavior: 'auto', block: 'start' });
+                setTimeout(() => {
+                    storyInput?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 180);
+            });
+        } else {
+            writingZone?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }
 
     function exitFocusMode() {
+        if (document.body.classList.contains('focus-mode')) playMenuPageSound();
         document.body.classList.remove('focus-mode');
         closeAmbientMenus();
         syncFocusAudio();
@@ -1938,6 +1995,9 @@
 
     function playMenuPageSound() {
         try {
+            const volume = getSiteVolume();
+            if (volume <= 0) return;
+
             const AudioContext = window.AudioContext || window.webkitAudioContext;
             if (!AudioContext) return;
 
@@ -1968,7 +2028,7 @@
 
             const gain = ctx.createGain();
             gain.gain.setValueAtTime(0.0001, now);
-            gain.gain.linearRampToValueAtTime(0.032, now + 0.025);
+            gain.gain.linearRampToValueAtTime(0.032 * volume, now + 0.025);
             gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
 
             noise.connect(filter);
@@ -1978,6 +2038,126 @@
             noise.stop(now + duration + 0.02);
         } catch (error) {
             console.warn('Menu page sound skipped:', error);
+        }
+    }
+
+    function playPublishSound() {
+        try {
+            const volume = getSiteVolume();
+            if (volume <= 0) return;
+
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+
+            const ctx = state.ambient.ctx || new AudioContext();
+            state.ambient.ctx = ctx;
+            if (ctx.state === 'suspended') ctx.resume();
+
+            const now = ctx.currentTime;
+            const master = ctx.createGain();
+            master.gain.setValueAtTime(0.0001, now);
+            master.gain.linearRampToValueAtTime(0.09 * volume, now + 0.018);
+            master.gain.exponentialRampToValueAtTime(0.0001, now + 0.48);
+            master.connect(ctx.destination);
+
+            const notes = [
+                { frequency: 523.25, start: 0.00, duration: 0.18 },
+                { frequency: 659.25, start: 0.075, duration: 0.20 },
+                { frequency: 880.00, start: 0.15, duration: 0.26 }
+            ];
+
+            notes.forEach(({ frequency, start, duration }) => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(frequency, now + start);
+                gain.gain.setValueAtTime(0.0001, now + start);
+                gain.gain.linearRampToValueAtTime(0.28, now + start + 0.018);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + start + duration);
+
+                osc.connect(gain).connect(master);
+                osc.start(now + start);
+                osc.stop(now + start + duration + 0.03);
+            });
+        } catch (error) {
+            console.warn('Publish sound skipped:', error);
+        }
+    }
+
+    function playOwlWingSound() {
+        try {
+            const volume = getSiteVolume();
+            if (volume <= 0) return;
+
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+
+            const ctx = state.ambient.ctx || new AudioContext();
+            state.ambient.ctx = ctx;
+            if (ctx.state === 'suspended') ctx.resume();
+
+            const now = ctx.currentTime;
+            const master = ctx.createGain();
+            master.gain.setValueAtTime(0.0001, now);
+            master.gain.linearRampToValueAtTime(0.07 * volume, now + 0.025);
+            master.gain.exponentialRampToValueAtTime(0.0001, now + 0.62);
+            master.connect(ctx.destination);
+
+            const makeWing = (offset, panValue = 0) => {
+                const duration = 0.22;
+                const bufferSize = Math.max(1, Math.floor(ctx.sampleRate * duration));
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+
+                for (let i = 0; i < bufferSize; i += 1) {
+                    const t = i / bufferSize;
+                    const envelope = Math.sin(Math.PI * t) * (1 - t * 0.18);
+                    data[i] = (Math.random() * 2 - 1) * envelope;
+                }
+
+                const source = ctx.createBufferSource();
+                source.buffer = buffer;
+
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'lowpass';
+                filter.frequency.setValueAtTime(520, now + offset);
+                filter.frequency.exponentialRampToValueAtTime(950, now + offset + duration);
+                filter.Q.setValueAtTime(0.62, now + offset);
+
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.0001, now + offset);
+                gain.gain.linearRampToValueAtTime(0.72, now + offset + 0.035);
+                gain.gain.exponentialRampToValueAtTime(0.0001, now + offset + duration);
+
+                const pan = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+                if (pan) {
+                    pan.pan.setValueAtTime(panValue, now + offset);
+                    source.connect(filter).connect(gain).connect(pan).connect(master);
+                } else {
+                    source.connect(filter).connect(gain).connect(master);
+                }
+
+                source.start(now + offset);
+                source.stop(now + offset + duration + 0.03);
+            };
+
+            makeWing(0.00, -0.22);
+            makeWing(0.16, 0.20);
+
+            const hoot = ctx.createOscillator();
+            const hootGain = ctx.createGain();
+            hoot.type = 'sine';
+            hoot.frequency.setValueAtTime(310, now + 0.08);
+            hoot.frequency.exponentialRampToValueAtTime(235, now + 0.44);
+            hootGain.gain.setValueAtTime(0.0001, now + 0.08);
+            hootGain.gain.linearRampToValueAtTime(0.18, now + 0.15);
+            hootGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.48);
+            hoot.connect(hootGain).connect(master);
+            hoot.start(now + 0.08);
+            hoot.stop(now + 0.52);
+        } catch (error) {
+            console.warn('Owl sound skipped:', error);
         }
     }
 

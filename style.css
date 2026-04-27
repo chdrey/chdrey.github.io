@@ -6357,3 +6357,201 @@ body:not(.focus-mode) #writingZoneSection #soundEffectsMenu:not(.hidden) {
         transform: translate(calc(-0.075em - 3px), -0.025em) !important;
     }
 }
+
+
+/* =========================================================
+   Final 56: mobile Focus Mode writing-first layout
+   ========================================================= */
+
+/* Desktop/main page behavior remains unchanged. Mobile Focus Mode becomes
+   writing-first: title + X, then the writing area above the keyboard.
+   Sound/Light stay available from the main page only on phones. */
+@media (max-width: 760px) {
+    body.focus-mode {
+        overflow-x: hidden !important;
+    }
+
+    body.focus-mode main {
+        max-width: 100% !important;
+        padding: 76px 10px 36px !important;
+    }
+
+    body.focus-mode #writingZoneSection {
+        min-height: calc(100svh - 88px) !important;
+        margin-top: 0 !important;
+        padding: 3.05rem 0.82rem 0.86rem !important;
+        border-radius: 20px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.62rem !important;
+        scroll-margin-top: 72px !important;
+    }
+
+    /* Hide the Focus Mode Sound/Light controls on mobile.
+       Users can change these from the main Writing Desk before/after focus. */
+    body.focus-mode #writingZoneSection .focus-ambient-controls,
+    body.focus-mode #writingZoneSection .ambient-menu {
+        display: none !important;
+    }
+
+    /* Show the Writing Desk title in mobile Focus Mode. */
+    body.focus-mode #writingZoneSection .section-heading {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        margin: 0 3.1rem 0.1rem 0 !important;
+        padding: 0 !important;
+        min-height: 1.35rem !important;
+    }
+
+    body.focus-mode #writingZoneSection .section-heading .eyebrow {
+        display: block !important;
+        font-size: 0.78rem !important;
+        letter-spacing: 0.12em !important;
+        line-height: 1 !important;
+    }
+
+    body.focus-mode #writeTitle {
+        position: static !important;
+        width: auto !important;
+        height: auto !important;
+        clip: auto !important;
+        overflow: visible !important;
+        white-space: normal !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        font-family: var(--font-ui) !important;
+        font-size: 1.05rem !important;
+        line-height: 1.1 !important;
+        color: var(--paper) !important;
+    }
+
+    body.focus-mode #writingZoneSection .section-heading .eyebrow + #writeTitle {
+        display: none !important;
+    }
+
+    body.focus-mode .focus-close {
+        display: grid !important;
+        top: 0.64rem !important;
+        right: 0.66rem !important;
+        width: 2.34rem !important;
+        height: 2.34rem !important;
+        z-index: 12 !important;
+    }
+
+    /* Put the text area first and keep it tall enough to be usable above the keyboard. */
+    body.focus-mode #mainStoryInput {
+        flex: 1 1 auto !important;
+        min-height: min(58svh, 430px) !important;
+        max-height: none !important;
+        font-size: 1rem !important;
+        line-height: 1.55 !important;
+        padding: 0.9rem !important;
+        resize: none !important;
+        scroll-margin-bottom: 42vh !important;
+    }
+
+    body.focus-mode .writer-tools {
+        margin-top: 0 !important;
+        flex: 0 0 auto !important;
+    }
+
+    /* When the user scrolls down, pen name and Publish sit side-by-side. */
+    body.focus-mode .writer-action-line {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        align-items: center !important;
+        gap: 0.55rem !important;
+        padding-top: 0.62rem !important;
+        margin: 0 !important;
+        flex: 0 0 auto !important;
+    }
+
+    body.focus-mode .writing-actions-left {
+        width: auto !important;
+        min-width: 0 !important;
+        display: block !important;
+    }
+
+    body.focus-mode #guestPenName {
+        width: 100% !important;
+        min-width: 0 !important;
+        padding: 0.72rem 0.78rem !important;
+        font-size: 0.92rem !important;
+    }
+
+    body.focus-mode #publishBtn {
+        width: auto !important;
+        min-width: 6.25rem !important;
+        padding: 0.72rem 0.92rem !important;
+        white-space: nowrap !important;
+        align-self: stretch !important;
+    }
+}
+
+@media (max-width: 390px) {
+    body.focus-mode #writingZoneSection {
+        padding-left: 0.68rem !important;
+        padding-right: 0.68rem !important;
+    }
+
+    body.focus-mode .writer-action-line {
+        gap: 0.42rem !important;
+    }
+
+    body.focus-mode #publishBtn {
+        min-width: 5.6rem !important;
+        padding-left: 0.72rem !important;
+        padding-right: 0.72rem !important;
+        font-size: 0.88rem !important;
+    }
+
+    body.focus-mode #guestPenName {
+        font-size: 0.88rem !important;
+    }
+}
+
+
+/* =========================================================
+   Final 57: Weekly Prompt feather-to-write button
+   ========================================================= */
+
+.prompt-write-btn {
+    display: inline-grid !important;
+    place-items: center !important;
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+    min-width: 2.25rem !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    font-size: 1.05rem !important;
+    line-height: 1 !important;
+}
+
+.prompt-write-btn span {
+    display: block;
+    transform: translateY(-0.02em) rotate(-8deg);
+    pointer-events: none;
+}
+
+.prompt-write-btn:hover span {
+    transform: translateY(-0.05em) rotate(-13deg);
+}
+
+@media (max-width: 640px) {
+    .prompt-write-btn {
+        width: 2.12rem !important;
+        height: 2.12rem !important;
+        min-width: 2.12rem !important;
+        font-size: 1rem !important;
+    }
+}
+
+
+/* =========================================================
+   Final 58: UI sound polish
+   - paper sound on Focus Mode open/close
+   - publish success sound
+   - owl/wing sound on footer contact
+   ========================================================= */
