@@ -8109,3 +8109,401 @@ body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-control
         padding-right: 0.42rem !important;
     }
 }
+
+
+/* =========================================================
+   Final 70: tighter card headroom + centered Writing Desk controls
+   ========================================================= */
+
+/* Use Reader Favorites as the spacing model for the main cards. 
+   Latest Submissions keeps its existing internal layout/refresh behavior. */
+main > section.card {
+    padding-top: 1.12rem !important;
+}
+
+main > section.card > .section-heading,
+main > section.card > .weekly-prompt-heading {
+    min-height: 1.25rem !important;
+    margin: 0 0 0.72rem 0 !important;
+    padding: 0 !important;
+    align-items: center !important;
+}
+
+/* Writing Desk: compact header like Reader Favorites, with the title left
+   and Sound/Light vertically centered on the same header line. */
+body:not(.focus-mode) #writingZoneSection {
+    padding-top: 1.12rem !important;
+}
+
+#writingZoneSection .writing-desk-header {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important;
+    align-items: center !important;
+    min-height: 2.45rem !important;
+    margin: 0 0 0.72rem 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+#writingZoneSection .writing-desk-title {
+    grid-column: 1 !important;
+    justify-self: start !important;
+    align-self: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#writingZoneSection .writing-desk-title .eyebrow {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+    transform: none !important;
+}
+
+/* Desktop controls sit centered in the header row, not below it. */
+body:not(.focus-mode) #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+    grid-column: 2 !important;
+    position: static !important;
+    justify-self: center !important;
+    align-self: center !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.62rem !important;
+    margin: 0 !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .ambient-menu {
+    top: 3.85rem !important;
+}
+
+/* Keep Reader Favorites and similar headers consistent. */
+.leaderboard.card {
+    padding-top: 1.12rem !important;
+}
+
+.leaderboard.card > .section-heading {
+    min-height: 1.25rem !important;
+    margin: 0 0 0.72rem 0 !important;
+}
+
+/* Mobile: title remains left; Sound/Light sit on the same header line at right. */
+@media (max-width: 760px) {
+    main > section.card {
+        padding-top: 1rem !important;
+    }
+
+    main > section.card > .section-heading,
+    main > section.card > .weekly-prompt-heading {
+        min-height: 1.18rem !important;
+        margin-bottom: 0.62rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection {
+        padding-top: 1rem !important;
+    }
+
+    #writingZoneSection .writing-desk-header {
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        min-height: 2.25rem !important;
+        margin-bottom: 0.62rem !important;
+    }
+
+    #writingZoneSection .writing-desk-title {
+        grid-column: 1 !important;
+        justify-self: start !important;
+        max-width: calc(100vw - 11rem) !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+        grid-column: 2 !important;
+        position: static !important;
+        justify-self: end !important;
+        align-self: center !important;
+        max-width: 8.35rem !important;
+        gap: 0.32rem !important;
+        top: auto !important;
+        right: auto !important;
+        left: auto !important;
+        transform: none !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .writing-desk-controls .focus-mini-btn.focus-icon-btn {
+        min-width: 3.92rem !important;
+        padding: 0.46rem 0.5rem !important;
+        font-size: 0.72rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .ambient-menu {
+        top: 3.55rem !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-header {
+        min-height: 1.55rem !important;
+        margin-bottom: 0.16rem !important;
+    }
+}
+
+@media (max-width: 380px) {
+    #writingZoneSection .writing-desk-title {
+        max-width: calc(100vw - 10.4rem) !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+        max-width: 7.7rem !important;
+        gap: 0.24rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .writing-desk-controls .focus-mini-btn.focus-icon-btn {
+        min-width: 3.62rem !important;
+        padding-left: 0.42rem !important;
+        padding-right: 0.42rem !important;
+    }
+}
+
+
+/* =========================================================
+   Final 71: feather focus entry does not auto-play YouTube
+   ========================================================= */
+
+
+/* =========================================================
+   Final 72: mobile Focus Mode duplicate title + compact header
+   ========================================================= */
+
+/* The visible title is the small <p class="eyebrow">Writing desk</p>.
+   Keep the hidden h2 hidden everywhere; older mobile focus rules were making
+   it visible again and creating the doubled title. */
+#writingZoneSection #writeTitle {
+    display: none !important;
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    overflow: hidden !important;
+    clip: rect(0 0 0 0) !important;
+    clip-path: inset(50%) !important;
+    white-space: nowrap !important;
+}
+
+/* Compact the mobile focus header so the writing area starts closer to the top. */
+@media (max-width: 760px) {
+    body.focus-mode main {
+        padding-top: 48px !important;
+    }
+
+    body.focus-mode #writingZoneSection {
+        padding-top: 1.72rem !important;
+        min-height: calc(100svh - 54px) !important;
+        scroll-margin-top: 48px !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-header {
+        min-height: 1.08rem !important;
+        margin: 0 0 0.08rem 0 !important;
+        padding: 0 !important;
+        grid-template-columns: 1fr 2.2rem !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-title {
+        align-self: center !important;
+        justify-self: start !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        max-width: calc(100vw - 4.9rem) !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-title .eyebrow {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+        font-size: 0.72rem !important;
+        letter-spacing: 0.11em !important;
+        text-align: left !important;
+        transform: none !important;
+        white-space: nowrap !important;
+    }
+
+    body.focus-mode .focus-close {
+        top: 0.28rem !important;
+        right: 0.38rem !important;
+        width: 1.95rem !important;
+        height: 1.95rem !important;
+        font-size: 1.15rem !important;
+        z-index: 20 !important;
+    }
+
+    body.focus-mode #mainStoryInput {
+        min-height: min(60svh, 440px) !important;
+        padding-top: 0.82rem !important;
+    }
+}
+
+@media (max-width: 380px) {
+    body.focus-mode #writingZoneSection {
+        padding-top: 1.62rem !important;
+    }
+
+    body.focus-mode .focus-close {
+        top: 0.24rem !important;
+        right: 0.34rem !important;
+        width: 1.88rem !important;
+        height: 1.88rem !important;
+    }
+}
+
+
+/* =========================================================
+   Final 73: Sound/Light flush right and raised in Writing Desk
+   ========================================================= */
+
+/* Main Writing Desk only:
+   Sound/Light now sit flush against the right edge of the Writing Desk box,
+   on the title/header line, and raised about 30px from the prior position. */
+body:not(.focus-mode) #writingZoneSection {
+    position: relative !important;
+    padding-top: 1rem !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .writing-desk-header {
+    position: relative !important;
+    display: block !important;
+    min-height: 2.1rem !important;
+    margin: 0 0 0.58rem 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .writing-desk-title {
+    position: relative !important;
+    z-index: 2 !important;
+    display: block !important;
+    width: auto !important;
+    max-width: calc(100% - 9.4rem) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+    transform: none !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .writing-desk-title .eyebrow {
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    text-align: left !important;
+    transform: none !important;
+    white-space: nowrap !important;
+}
+
+/* Raised and right-flush controls. */
+body:not(.focus-mode) #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+    position: absolute !important;
+    top: -0.34rem !important;
+    right: 0 !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: 0.46rem !important;
+    width: auto !important;
+    max-width: 9rem !important;
+    margin: 0 !important;
+    z-index: 8 !important;
+}
+
+/* Keep popups attached to the raised/right controls. */
+body:not(.focus-mode) #writingZoneSection .ambient-menu {
+    top: 2.55rem !important;
+    right: 0 !important;
+    left: auto !important;
+    transform: none !important;
+}
+
+/* Narrow/mobile: same rule, still flush right, title remains left. */
+@media (max-width: 760px) {
+    body:not(.focus-mode) #writingZoneSection {
+        padding-top: 0.92rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .writing-desk-header {
+        min-height: 2rem !important;
+        margin-bottom: 0.52rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .writing-desk-title {
+        max-width: calc(100% - 8.6rem) !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+        top: -0.28rem !important;
+        right: 0 !important;
+        left: auto !important;
+        transform: none !important;
+        max-width: 8.25rem !important;
+        gap: 0.3rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .writing-desk-controls .focus-mini-btn.focus-icon-btn {
+        min-width: 3.9rem !important;
+        padding: 0.46rem 0.5rem !important;
+        font-size: 0.72rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .ambient-menu {
+        top: 2.48rem !important;
+        right: 0 !important;
+        left: auto !important;
+        transform: none !important;
+    }
+}
+
+@media (max-width: 380px) {
+    body:not(.focus-mode) #writingZoneSection .writing-desk-title {
+        max-width: calc(100% - 7.95rem) !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .writing-desk-controls.focus-ambient-controls {
+        max-width: 7.7rem !important;
+        gap: 0.22rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .writing-desk-controls .focus-mini-btn.focus-icon-btn {
+        min-width: 3.6rem !important;
+        padding-left: 0.42rem !important;
+        padding-right: 0.42rem !important;
+    }
+}
+
+
+/* =========================================================
+   Final 74: weekly prompt title lowered slightly
+   ========================================================= */
+
+.weekly-prompt-heading,
+.compact-inspiration .weekly-prompt-heading {
+    transform: translateY(10px) !important;
+}
+
+.compact-inspiration .prompt-strip {
+    margin-top: 0.75rem !important;
+}
+
+@media (max-width: 760px) {
+    .weekly-prompt-heading,
+    .compact-inspiration .weekly-prompt-heading {
+        transform: translateY(10px) !important;
+    }
+
+    .compact-inspiration .prompt-strip {
+        margin-top: 0.72rem !important;
+    }
+}

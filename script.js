@@ -1450,7 +1450,7 @@
         // focus mode opens. The feather button is already intentional, so let it
         // bypass that guard and enter Focus Mode immediately.
         state.writingTap.intentionalUntil = Date.now() + 1600;
-        enterFocusMode();
+        enterFocusMode({ allowYouTubeResume: false });
 
         const focusAndPlace = () => {
             input.focus({ preventScroll: true });
@@ -1651,17 +1651,18 @@
         return window.matchMedia('(max-width: 760px), (pointer: coarse)').matches;
     }
 
-    function enterFocusMode() {
+    function enterFocusMode(options = {}) {
         const writingZone = $('#writingZoneSection');
         const storyInput = $('#mainStoryInput');
         const isMobile = isMobileWritingViewport();
+        const allowYouTubeResume = options.allowYouTubeResume ?? !isMobile;
 
         if (!document.body.classList.contains('focus-mode')) {
             playMenuPageSound();
             closeRibbonPanel();
             closeAmbientMenus();
             document.body.classList.add('focus-mode');
-            syncFocusAudio({ allowYouTubeResume: !isMobile });
+            syncFocusAudio({ allowYouTubeResume });
         }
 
         if (isMobile) {
