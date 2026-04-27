@@ -1655,7 +1655,7 @@
         const writingZone = $('#writingZoneSection');
         const storyInput = $('#mainStoryInput');
         const isMobile = isMobileWritingViewport();
-        const allowYouTubeResume = options.allowYouTubeResume ?? !isMobile;
+        const allowYouTubeResume = options.allowYouTubeResume ?? false;
 
         if (!document.body.classList.contains('focus-mode')) {
             playMenuPageSound();
@@ -1681,7 +1681,7 @@
         if (document.body.classList.contains('focus-mode')) playMenuPageSound();
         document.body.classList.remove('focus-mode');
         closeAmbientMenus();
-        syncFocusAudio();
+        syncFocusAudio({ allowYouTubeResume: false });
     }
 
     function setCandleIcon() {

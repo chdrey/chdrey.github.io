@@ -8507,3 +8507,45 @@ body:not(.focus-mode) #writingZoneSection .ambient-menu {
         margin-top: 0.72rem !important;
     }
 }
+
+
+/* =========================================================
+   Final 75: prompt top trim + writing title nudge + no focus autoplay
+   ========================================================= */
+
+/* Shorten Weekly Prompt box from the top by about 15px. */
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+    padding-top: 0.45rem !important;
+}
+
+/* Keep the title itself in its slightly lowered position from the previous pass. */
+.weekly-prompt-heading,
+.compact-inspiration .weekly-prompt-heading {
+    transform: translateY(10px) !important;
+}
+
+/* Writing Desk title: keep locked left, but nudge the text down 5px
+   so it sits more visually centered against the Sound/Light controls. */
+#writingZoneSection .writing-desk-title .eyebrow {
+    position: relative !important;
+    top: 5px !important;
+}
+
+/* Keep the overall Writing Desk header compact after the title nudge. */
+#writingZoneSection .writing-desk-header {
+    min-height: 2.24rem !important;
+}
+
+@media (max-width: 760px) {
+    .compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+        padding-top: 0.42rem !important;
+    }
+
+    #writingZoneSection .writing-desk-title .eyebrow {
+        top: 5px !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-title .eyebrow {
+        top: 3px !important;
+    }
+}
