@@ -6,7 +6,7 @@
         adminUsername: 'PenPaleto',
         supabaseUrl: 'https://lypndarukqjtkyhxygwe.supabase.co',
         supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5cG5kYXJ1a3FqdGt5aHh5Z3dlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3Nzc2NzAsImV4cCI6MjA3OTM1MzY3MH0.NE5Q1BFVsBDyKSUxHO--aR-jbSHSLW8klha7C7_VbUA',
-        youtubeSrc: 'https://www.youtube.com/embed/XDvLE7TZBmk?start=699&autoplay=1&mute=1&playsinline=1&controls=1&rel=0&enablejsapi=1&origin=' + encodeURIComponent(window.location.origin || window.location.href.split('/').slice(0,3).join('/')),
+        youtubeSrc: 'https://www.youtube.com/embed/XDvLE7TZBmk?start=699&autoplay=1&mute=0&playsinline=1&controls=1&rel=0&enablejsapi=1&origin=' + encodeURIComponent(window.location.origin || window.location.href.split('/').slice(0,3).join('/')),
         draftKey: 'story-nook:draft:v2',
         guestNameKey: 'story-nook:guest-name:v2',
         prompts: [
@@ -80,6 +80,7 @@
         loadYouTubePlayer();
         playBackgroundVideo();
         updateFocusMuteButton();
+        primeYouTubeAudio();
         initializeSupabase();
     }
 
@@ -1395,19 +1396,41 @@
         if (!player) return;
         if (!player.src) loadYouTubePlayer();
 
-        postYouTubeCommand('setVolume', [54]);
+        // Medium-low background volume. Browsers may still require the first
+        // user interaction before unmuted YouTube audio is allowed.
+        postYouTubeCommand('setVolume', [42]);
         postYouTubeCommand('unMute');
         postYouTubeCommand('playVideo');
+    }
+
+    function primeYouTubeAudio() {
+        resumeYouTubePlayer();
+
+        // Browser autoplay policies can block unmuted playback until the user
+        // touches/clicks once. This keeps the intended behavior ready without
+        // being annoying.
+        const retry = () => {
+            if (!state.ambient.audioMuted && state.ambient.activeSounds.size === 0) {
+                resumeYouTubePlayer();
+            }
+            window.removeEventListener('pointerdown', retry);
+            window.removeEventListener('keydown', retry);
+        };
+
+        window.addEventListener('pointerdown', retry, { once: true });
+        window.addEventListener('keydown', retry, { once: true });
     }
 
     function updateFocusMuteButton() {
         const button = $('#focusMuteBtn');
         if (!button) return;
-        const muted = !!state.ambient.audioMuted;
-        button.setAttribute('aria-pressed', String(muted));
-        button.setAttribute('aria-label', muted ? 'Unmute focus audio' : 'Mute focus audio');
-        button.title = muted ? 'Unmute focus audio' : 'Mute focus audio';
-        button.textContent = muted ? '🔇' : '🔈';
+
+        const soundOn = !state.ambient.audioMuted;
+        button.setAttribute('aria-pressed', String(soundOn));
+        button.setAttribute('aria-label', soundOn ? 'Mute focus audio' : 'Unmute focus audio');
+        button.title = soundOn ? 'Mute focus audio' : 'Unmute focus audio';
+        button.textContent = soundOn ? '🔊' : '🔇';
+        button.classList.toggle('is-muted', !soundOn);
     }
 
     function setAmbientMasterAudible() {
@@ -1419,8 +1442,6 @@
     function syncFocusAudio() {
         updateFocusMuteButton();
         setAmbientMasterAudible();
-
-        if (!document.body.classList.contains('focus-mode')) return;
 
         if (state.ambient.audioMuted) {
             quietYouTubePlayer();
@@ -1456,8 +1477,7 @@
         stopAllAmbientSounds();
         clearLightingEffect();
         closeAmbientMenus();
-        quietYouTubePlayer();
-        updateFocusMuteButton();
+        syncFocusAudio();
     }
 
     function toggleCandleMode() {

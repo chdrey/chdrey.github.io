@@ -5163,3 +5163,64 @@ body:not(.focus-mode) .writing-actions-left {
         font-size: 0.88rem;
     }
 }
+
+
+/* =========================================================
+   Final 45: YouTube background audio default + clearer mute button states
+   ========================================================= */
+
+.focus-audio-mute {
+    display: inline-grid;
+    place-items: center;
+    width: 2.05rem;
+    height: 2.05rem;
+    padding: 0;
+    border: 1px solid rgba(123, 151, 93, 0.56);
+    background: linear-gradient(135deg, var(--sage-soft), var(--sage));
+    color: #0d0d0b;
+    border-radius: 50%;
+    font-size: 0.96rem;
+    line-height: 1;
+    backdrop-filter: blur(10px);
+    box-shadow:
+        0 8px 18px rgba(0,0,0,0.16),
+        0 0 0 3px rgba(139, 162, 99, 0.08);
+    cursor: pointer;
+    transition:
+        background 180ms ease,
+        border-color 180ms ease,
+        transform 180ms ease,
+        color 180ms ease,
+        box-shadow 180ms ease;
+}
+
+.focus-audio-mute:hover {
+    transform: translateY(-1px);
+    border-color: rgba(146, 170, 103, 0.72);
+    box-shadow:
+        0 10px 22px rgba(0,0,0,0.18),
+        0 0 0 4px rgba(139, 162, 99, 0.10);
+}
+
+/* Muted/off: visually matches the quiet Sound/Light controls. */
+.focus-audio-mute.is-muted,
+.focus-audio-mute[aria-pressed="false"] {
+    color: var(--paper-soft);
+    background: rgba(14, 9, 6, 0.56);
+    border-color: rgba(208, 167, 111, 0.24);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.14);
+}
+
+.focus-audio-mute.is-muted:hover,
+.focus-audio-mute[aria-pressed="false"]:hover {
+    background: rgba(34, 22, 14, 0.66);
+    border-color: rgba(208, 167, 111, 0.38);
+}
+
+@media (max-width: 520px) {
+    .focus-audio-mute {
+        width: 1.92rem;
+        height: 1.92rem;
+        font-size: 0.88rem;
+    }
+}
