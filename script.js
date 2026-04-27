@@ -51,6 +51,7 @@
             activeSounds: new Map(),
             effectsEnabled: true,
             audioMuted: false,
+            audioVolume: 0.5,
             activeLighting: null
         }
     };
@@ -80,6 +81,7 @@
         loadYouTubePlayer();
         playBackgroundVideo();
         updateFocusMuteButton();
+        updateFocusVisibility();
         primeYouTubeAudio();
         initializeSupabase();
     }
@@ -191,14 +193,18 @@
         $('#publishBtn')?.addEventListener('click', publishStory);
         $('#clearDraftBtn')?.addEventListener('click', clearDraft);
         $('#copyPromptBtn')?.addEventListener('click', copyPrompt);
-        $('#candleBtn')?.addEventListener('click', toggleCandleMode);
+        $('#candleBtn')?.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            toggleCandleMode();
+        });
         $('#exitFocusBtn')?.addEventListener('click', exitFocusMode);
-        $('#focusEffectsMasterBtn')?.addEventListener('click', toggleFocusEffectsMaster);
-        $('#focusMuteBtn')?.addEventListener('click', toggleFocusMute);
+        $('#siteVolumeSlider')?.addEventListener('input', updateSiteVolumeFromSlider);
         $('#soundEffectsBtn')?.addEventListener('click', () => toggleAmbientMenu('soundEffectsMenu', 'soundEffectsBtn'));
         $('#lightingEffectsBtn')?.addEventListener('click', () => toggleAmbientMenu('lightingEffectsMenu', 'lightingEffectsBtn'));
         $('#soundEffectsMenu')?.addEventListener('click', handleSoundMenuClick);
         $('#lightingEffectsMenu')?.addEventListener('click', handleLightingMenuClick);
+        $('#focusVisibilitySlider')?.addEventListener('input', updateFocusVisibility);
         $('#saveStoryEditBtn')?.addEventListener('click', saveStoryEdit);
 
         $('#storySearch')?.addEventListener('input', renderFeed);
@@ -1309,7 +1315,7 @@
         try {
             if (url.includes('/embed/')) {
                 const joiner = url.includes('?') ? '&' : '?';
-                return `${url}${joiner}autoplay=1&mute=1&playsinline=1&controls=1&rel=0&enablejsapi=1`;
+                return `${url}${joiner}autoplay=1&mute=0&playsinline=1&controls=1&rel=0&enablejsapi=1`;
             }
             const parsed = new URL(url);
             const id = parsed.searchParams.get('v') || parsed.pathname.split('/').filter(Boolean).pop();
@@ -1386,6 +1392,12 @@
         }
     }
 
+    function getSiteVolume() {
+        const raw = Number(state.ambient.audioVolume);
+        if (!Number.isFinite(raw)) return 0.5;
+        return Math.max(0, Math.min(1, raw));
+    }
+
     function quietYouTubePlayer({ pause = true } = {}) {
         postYouTubeCommand('mute');
         if (pause) postYouTubeCommand('pauseVideo');
@@ -1396,9 +1408,14 @@
         if (!player) return;
         if (!player.src) loadYouTubePlayer();
 
-        // Medium-low background volume. Browsers may still require the first
-        // user interaction before unmuted YouTube audio is allowed.
-        postYouTubeCommand('setVolume', [42]);
+        const volume = getSiteVolume();
+
+        if (volume <= 0) {
+            quietYouTubePlayer();
+            return;
+        }
+
+        postYouTubeCommand('setVolume', [Math.round(volume * 100)]);
         postYouTubeCommand('unMute');
         postYouTubeCommand('playVideo');
     }
@@ -1422,28 +1439,43 @@
     }
 
     function updateFocusMuteButton() {
-        const button = $('#focusMuteBtn');
-        if (!button) return;
+        // Backward-compatible name: this now syncs the site-wide volume slider.
+        const slider = $('#siteVolumeSlider');
+        const volume = getSiteVolume();
 
-        const soundOn = !state.ambient.audioMuted;
-        button.setAttribute('aria-pressed', String(soundOn));
-        button.setAttribute('aria-label', soundOn ? 'Mute focus audio' : 'Unmute focus audio');
-        button.title = soundOn ? 'Mute focus audio' : 'Unmute focus audio';
-        button.textContent = soundOn ? '🔊' : '🔇';
-        button.classList.toggle('is-muted', !soundOn);
+        state.ambient.audioMuted = volume <= 0;
+
+        if (slider && document.activeElement !== slider) {
+            slider.value = String(Math.round(volume * 100));
+        }
+
+        slider?.setAttribute('aria-valuetext', volume <= 0 ? 'Muted' : `${Math.round(volume * 100)} percent`);
+    }
+
+    function updateSiteVolumeFromSlider() {
+        const slider = $('#siteVolumeSlider');
+        const value = Math.max(0, Math.min(100, Number(slider?.value) || 0));
+
+        state.ambient.audioVolume = value / 100;
+        state.ambient.audioMuted = value <= 0;
+
+        updateFocusMuteButton();
+        syncFocusAudio();
     }
 
     function setAmbientMasterAudible() {
         if (!state.ambient.master || !state.ambient.ctx) return;
-        const audible = !state.ambient.audioMuted && state.ambient.effectsEnabled;
-        state.ambient.master.gain.setTargetAtTime(audible ? 0.92 : 0, state.ambient.ctx.currentTime, 0.05);
+
+        const volume = getSiteVolume();
+        const audible = volume > 0 && state.ambient.effectsEnabled;
+        state.ambient.master.gain.setTargetAtTime(audible ? 0.92 * volume : 0, state.ambient.ctx.currentTime, 0.05);
     }
 
     function syncFocusAudio() {
         updateFocusMuteButton();
         setAmbientMasterAudible();
 
-        if (state.ambient.audioMuted) {
+        if (getSiteVolume() <= 0) {
             quietYouTubePlayer();
             return;
         }
@@ -1457,7 +1489,10 @@
     }
 
     function toggleFocusMute() {
-        state.ambient.audioMuted = !state.ambient.audioMuted;
+        // Kept as a safety fallback for older cached markup.
+        state.ambient.audioVolume = getSiteVolume() > 0 ? 0 : 0.5;
+        state.ambient.audioMuted = state.ambient.audioVolume <= 0;
+        updateFocusMuteButton();
         syncFocusAudio();
     }
 
@@ -1471,20 +1506,43 @@
     }
 
     function exitFocusMode() {
-        document.body.classList.remove('focus-mode', 'candle-lit', 'effects-off', ...LIGHTING_CLASSES);
-        $('#candleBtn')?.setAttribute('aria-pressed', 'false');
-        setText('#candleBtn', '🕯️ Light candle');
-        stopAllAmbientSounds();
-        clearLightingEffect();
+        document.body.classList.remove('focus-mode');
         closeAmbientMenus();
         syncFocusAudio();
     }
 
+    function setCandleIcon() {
+        const candle = $('#candleBtn');
+        if (!candle) return;
+        candle.innerHTML = '<span class="candle-glyph" aria-hidden="true">🕯️</span>';
+    }
+
     function toggleCandleMode() {
         const lit = !document.body.classList.contains('candle-lit');
+        const candle = $('#candleBtn');
+
+        if (lit) clearLightingEffect();
         document.body.classList.toggle('candle-lit', lit);
-        $('#candleBtn')?.setAttribute('aria-pressed', String(lit));
-        setText('#candleBtn', lit ? '🕯️ Put out candle' : '🕯️ Light candle');
+
+        candle?.setAttribute('aria-pressed', String(lit));
+        candle?.setAttribute('aria-label', lit ? 'Put out candle' : 'Light candle');
+        candle?.setAttribute('title', lit ? 'Put out candle' : 'Light candle');
+        setCandleIcon();
+    }
+
+    function updateFocusVisibility() {
+        const slider = $('#focusVisibilitySlider');
+        if (!slider) return;
+
+        const level = Math.max(48, Math.min(96, Number(slider.value) || 88)) / 100;
+        const secondary = Math.min(0.98, level + 0.05);
+        const textareaAlpha = Math.max(0.10, Math.min(0.42, level - 0.58));
+        const blur = Math.round(5 + level * 10);
+
+        document.body.style.setProperty('--focus-zone-alpha', level.toFixed(2));
+        document.body.style.setProperty('--focus-zone-alpha-2', secondary.toFixed(2));
+        document.body.style.setProperty('--focus-textarea-alpha', textareaAlpha.toFixed(2));
+        document.body.style.setProperty('--focus-zone-blur', `${blur}px`);
     }
 
     function toggleAmbientMenu(menuId, buttonId) {
@@ -1495,6 +1553,7 @@
         closeAmbientMenus();
         menu.classList.toggle('hidden', !willOpen);
         button.setAttribute('aria-expanded', String(willOpen));
+        updateFocusVisibility();
     }
 
     function closeAmbientMenus() {
@@ -1530,6 +1589,9 @@
             return;
         }
 
+        // Only one ambient sound should be active at a time.
+        stopAllAmbientSounds();
+
         button.setAttribute('aria-pressed', 'true');
         const started = await startAmbientSound(soundId);
 
@@ -1543,10 +1605,23 @@
     function handleLightingMenuClick(event) {
         const button = event.target.closest('[data-lighting]');
         if (!button) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
         const lighting = button.dataset.lighting;
         const activeClass = `light-${lighting}`;
         const isAlreadyActive = state.ambient.activeLighting === activeClass;
+
+        // Lighting choices override candle mode and each other.
+        document.body.classList.remove('candle-lit');
+        $('#candleBtn')?.setAttribute('aria-pressed', 'false');
+        $('#candleBtn')?.setAttribute('aria-label', 'Light candle');
+        $('#candleBtn')?.setAttribute('title', 'Light candle');
+        setCandleIcon();
+
         clearLightingEffect();
+
         if (!isAlreadyActive) {
             document.body.classList.add(activeClass);
             state.ambient.activeLighting = activeClass;
@@ -1570,7 +1645,7 @@
 
             state.ambient.ctx = new AudioContextClass();
             state.ambient.master = state.ambient.ctx.createGain();
-            state.ambient.master.gain.value = state.ambient.effectsEnabled ? 0.92 : 0;
+            state.ambient.master.gain.value = state.ambient.effectsEnabled ? 0.92 * getSiteVolume() : 0;
             state.ambient.master.connect(state.ambient.ctx.destination);
         }
 

@@ -93,13 +93,25 @@
 
         <section id="writingZoneSection" class="writing-zone card" aria-labelledby="writeTitle">
             <button id="exitFocusBtn" class="focus-close" type="button" aria-label="Exit focus mode">×</button>
-            <button id="focusEffectsMasterBtn" class="focus-effects-master" type="button" aria-pressed="true" title="Toggle focus effects">Effects</button>
             <div class="focus-ambient-controls" aria-label="Focus room controls">
-                <button id="soundEffectsBtn" class="focus-mini-btn" type="button" aria-expanded="false" aria-controls="soundEffectsMenu">Sound</button>
-                <button id="focusMuteBtn" class="focus-audio-mute" type="button" aria-pressed="false" aria-label="Mute focus audio" title="Mute focus audio">🔈</button>
-                <button id="lightingEffectsBtn" class="focus-mini-btn" type="button" aria-expanded="false" aria-controls="lightingEffectsMenu">Light</button>
+                <button id="soundEffectsBtn" class="focus-mini-btn focus-icon-btn" type="button" aria-expanded="false" aria-controls="soundEffectsMenu">
+                    <span aria-hidden="true">≋</span>
+                    <span>Sound</span>
+                </button>
+                <button id="lightingEffectsBtn" class="focus-mini-btn focus-icon-btn" type="button" aria-expanded="false" aria-controls="lightingEffectsMenu">
+                    <span aria-hidden="true">☀</span>
+                    <span>Light</span>
+                </button>
             </div>
             <div id="soundEffectsMenu" class="ambient-menu sound-menu hidden" role="menu" aria-label="Ambient sounds">
+                <div class="ambient-menu-feature ambient-slider-feature audio-slider-feature">
+                    <span class="ambient-feature-label">Volume</span>
+                    <label class="site-volume-slider" for="siteVolumeSlider">
+                        <span class="slider-soft-label">Off</span>
+                        <input id="siteVolumeSlider" type="range" min="0" max="100" value="50" step="1" aria-label="Website audio volume">
+                        <span class="slider-soft-label">Full</span>
+                    </label>
+                </div>
                 <button type="button" data-sound="white-noise" aria-pressed="false">White noise</button>
                 <button type="button" data-sound="fireplace" aria-pressed="false">Fireplace</button>
                 <button type="button" data-sound="rain" aria-pressed="false">Rain</button>
@@ -112,6 +124,18 @@
                 <button type="button" data-sound="ocean" aria-pressed="false">Ocean</button>
             </div>
             <div id="lightingEffectsMenu" class="ambient-menu lighting-menu hidden" role="menu" aria-label="Ambient lighting">
+                <div class="ambient-menu-feature candle-menu-feature">
+                    <span class="ambient-feature-label">Candle</span>
+                    <button id="candleBtn" class="candle-toggle candle-icon-toggle" type="button" aria-pressed="false" aria-label="Light candle" title="Light candle"><span class="candle-glyph" aria-hidden="true">🕯️</span></button>
+                </div>
+                <div class="ambient-menu-feature ambient-slider-feature">
+                    <span class="ambient-feature-label">Window</span>
+                    <label class="focus-visibility-slider" for="focusVisibilitySlider">
+                        <span class="slider-soft-label">Feather</span>
+                        <input id="focusVisibilitySlider" type="range" min="48" max="96" value="88" step="1" aria-label="Writing window visibility">
+                        <span class="slider-soft-label">Ink</span>
+                    </label>
+                </div>
                 <button type="button" data-lighting="fireplace-glow" aria-pressed="false">Fireplace glow</button>
                 <button type="button" data-lighting="rain-ambience" aria-pressed="false">Rain ambience</button>
                 <button type="button" data-lighting="wind" aria-pressed="false">Wind</button>
@@ -140,8 +164,6 @@
             <div class="action-bar writer-action-line">
                 <div class="writing-actions-left">
                     <input type="text" id="guestPenName" placeholder="Pen Name (Guest)" maxlength="32" autocomplete="nickname">
-                    <button id="candleBtn" class="candle-toggle" type="button" aria-pressed="false"><span aria-hidden="true">🕯️</span> Light candle</button>
-                    <button id="clearDraftBtn" class="text-link clear-draft-link" type="button">Clear draft</button>
                 </div>
                 <button id="publishBtn" class="btn-primary" type="button">Publish Story</button>
             </div>

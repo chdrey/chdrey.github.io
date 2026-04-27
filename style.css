@@ -5224,3 +5224,1136 @@ body:not(.focus-mode) .writing-actions-left {
         font-size: 0.88rem;
     }
 }
+
+
+/* =========================================================
+   Final 46: simplified Focus Mode controls for mobile
+   ========================================================= */
+
+/* Only Sound + Light stay in the top control row. */
+.focus-effects-master {
+    display: none !important;
+}
+
+.focus-ambient-controls {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.62rem !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+}
+
+.focus-icon-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.42rem !important;
+    min-width: 7.2rem !important;
+}
+
+.focus-icon-btn > span:first-child {
+    font-size: 1.08rem;
+    line-height: 1;
+}
+
+/* Mute + candle now live inside their menus, not in the top row. */
+.ambient-menu-feature {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.85rem;
+    padding: 0.52rem 0.52rem 0.68rem;
+    margin-bottom: 0.42rem;
+    border-bottom: 1px solid rgba(215, 165, 111, 0.16);
+}
+
+.ambient-feature-label {
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(248, 233, 207, 0.72);
+}
+
+.sound-menu .focus-audio-mute,
+.lighting-menu .candle-icon-toggle {
+    flex: 0 0 auto;
+}
+
+/* Candle becomes a compact icon-only control inside the Light menu. */
+.candle-icon-toggle {
+    display: inline-grid !important;
+    place-items: center;
+    width: 2.05rem;
+    height: 2.05rem;
+    padding: 0 !important;
+    min-width: 0 !important;
+    border-radius: 50%;
+    border: 1px solid rgba(208, 167, 111, 0.24);
+    background: rgba(14, 9, 6, 0.56);
+    color: var(--paper-soft);
+    font-size: 1rem;
+    line-height: 1;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.14);
+}
+
+.candle-icon-toggle[aria-pressed="true"] {
+    background: linear-gradient(135deg, rgba(239, 205, 143, 0.92), rgba(215, 165, 111, 0.84));
+    color: #130d09;
+    border-color: rgba(239, 205, 143, 0.60);
+    box-shadow:
+        0 8px 18px rgba(0,0,0,0.16),
+        0 0 22px rgba(215, 165, 111, 0.22);
+}
+
+/* Clear draft is removed from the focus/mobile writing controls. */
+#clearDraftBtn {
+    display: none !important;
+}
+
+/* Keep the writing action line clean after removing the extra controls. */
+.writing-actions-left {
+    min-width: min(100%, 18rem);
+}
+
+.writer-action-line {
+    overflow: visible !important;
+}
+
+/* Mobile: make Sound + Light smaller and prevent overlap. */
+@media (max-width: 640px) {
+    .focus-ambient-controls {
+        top: 1.05rem !important;
+        gap: 0.46rem !important;
+        width: auto !important;
+        max-width: calc(100vw - 6.75rem) !important;
+    }
+
+    .focus-mini-btn.focus-icon-btn {
+        min-width: 5.35rem !important;
+        padding: 0.55rem 0.78rem !important;
+        font-size: 0.82rem !important;
+        border-radius: 999px !important;
+    }
+
+    .focus-icon-btn > span:first-child {
+        font-size: 0.96rem;
+    }
+
+    .focus-close {
+        top: 0.82rem !important;
+        right: 0.82rem !important;
+        width: 2.7rem !important;
+        height: 2.7rem !important;
+    }
+
+    .ambient-menu {
+        max-width: min(86vw, 18rem) !important;
+    }
+
+    .writer-action-line {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 0.8rem !important;
+    }
+
+    .writing-actions-left,
+    #publishBtn {
+        width: 100% !important;
+    }
+}
+
+@media (max-width: 390px) {
+    .focus-ambient-controls {
+        gap: 0.36rem !important;
+        max-width: calc(100vw - 5.8rem) !important;
+    }
+
+    .focus-mini-btn.focus-icon-btn {
+        min-width: 4.85rem !important;
+        padding: 0.5rem 0.58rem !important;
+        font-size: 0.76rem !important;
+    }
+}
+
+
+/* =========================================================
+   Final 47: Sound/Light controls available on main page too
+   ========================================================= */
+
+/* Show the same Sound + Light controls on the main Writing Desk card
+   as well as in Focus Mode. */
+#writingZoneSection .focus-ambient-controls {
+    display: inline-flex !important;
+}
+
+#writingZoneSection .ambient-menu:not(.hidden) {
+    display: grid !important;
+}
+
+/* On the main page, keep the controls gently tucked above the Writing Desk
+   without changing the rest of the layout. */
+body:not(.focus-mode) #writingZoneSection {
+    padding-top: 4.4rem;
+}
+
+body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+    top: 1.05rem !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 9;
+}
+
+body:not(.focus-mode) #writingZoneSection .ambient-menu {
+    top: 3.8rem;
+    z-index: 20;
+}
+
+/* Keep the focus version compact and consistent. */
+body.focus-mode #writingZoneSection .focus-ambient-controls {
+    display: inline-flex !important;
+}
+
+/* Candle mode now works globally, not only in Focus Mode. */
+body.candle-lit:not(.focus-mode) {
+    --text-main: #271f18;
+    --text-muted: #6a5844;
+    --paper: #271f18;
+    background:
+        radial-gradient(circle at 50% 8%, rgba(255, 220, 148, 0.42), transparent 26rem),
+        linear-gradient(160deg, #f1e4c9, #d7bc85 62%, #b8915b) !important;
+}
+
+body.candle-lit:not(.focus-mode) .overlay {
+    background: rgba(255, 244, 220, 0.24) !important;
+    backdrop-filter: blur(1px);
+}
+
+body.candle-lit:not(.focus-mode) .page-glow {
+    background: radial-gradient(circle at 50% 15%, rgba(255, 214, 120, 0.38), transparent 28rem) !important;
+}
+
+body.candle-lit:not(.focus-mode) .card,
+body.candle-lit:not(.focus-mode) .story-card,
+body.candle-lit:not(.focus-mode) .writing-zone {
+    color: #271f18;
+    background: linear-gradient(145deg, rgba(255,248,230,0.97), rgba(238,218,178,0.96)) !important;
+    border-color: rgba(80,55,38,0.2) !important;
+}
+
+body.candle-lit:not(.focus-mode) .section-heading,
+body.candle-lit:not(.focus-mode) .section-heading *,
+body.candle-lit:not(.focus-mode) .eyebrow,
+body.candle-lit:not(.focus-mode) .char-meter,
+body.candle-lit:not(.focus-mode) .story-author,
+body.candle-lit:not(.focus-mode) .story-preview,
+body.candle-lit:not(.focus-mode) #weeklyPromptText {
+    color: #3d3024 !important;
+}
+
+body.candle-lit:not(.focus-mode) textarea,
+body.candle-lit:not(.focus-mode) input,
+body.candle-lit:not(.focus-mode) select {
+    color: #271f18 !important;
+    background: rgba(255, 252, 241, 0.82) !important;
+    border-color: rgba(80,55,38,0.2) !important;
+}
+
+body.candle-lit:not(.focus-mode) textarea::placeholder,
+body.candle-lit:not(.focus-mode) input::placeholder {
+    color: rgba(39,31,24,0.48) !important;
+}
+
+/* Sound and Light overwrite each other inside their own categories:
+   this class treatment keeps the active state clear without adding clutter. */
+.ambient-menu button[aria-pressed="true"],
+.candle-icon-toggle[aria-pressed="true"] {
+    outline: 2px solid rgba(226, 244, 206, 0.22);
+    outline-offset: 2px;
+}
+
+/* Mobile: the main-page controls stay compact and do not crowd the card. */
+@media (max-width: 640px) {
+    body:not(.focus-mode) #writingZoneSection {
+        padding-top: 4.15rem;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+        top: 0.92rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .ambient-menu {
+        top: 3.55rem;
+    }
+}
+
+
+/* =========================================================
+   Final 48: main-page light effects + focus feather slider
+   ========================================================= */
+
+:root {
+    --focus-zone-alpha: 0.88;
+    --focus-zone-alpha-2: 0.93;
+    --focus-textarea-alpha: 0.26;
+    --focus-zone-blur: 14px;
+    --ambient-depth-blur: 3px;
+    --ambient-texture: none;
+    --ambient-texture-opacity: 0;
+}
+
+/* The Light menu is now where the focus-only writing-window slider lives. */
+.focus-only-control {
+    display: none !important;
+}
+
+body.focus-mode .focus-only-control {
+    display: flex !important;
+}
+
+.ambient-slider-feature {
+    grid-column: 1 / -1;
+    align-items: center;
+}
+
+.focus-visibility-slider {
+    display: grid;
+    grid-template-columns: auto minmax(100px, 1fr) auto;
+    align-items: center;
+    gap: 0.55rem;
+    width: min(100%, 16rem);
+}
+
+.focus-visibility-slider input[type="range"] {
+    width: 100%;
+    accent-color: var(--accent);
+    padding: 0;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.slider-soft-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    color: rgba(248, 233, 207, 0.58);
+}
+
+/* Smaller focus header area: less empty space above the Writing Desk. */
+body.focus-mode .writing-zone {
+    margin-top: min(4vh, 32px) !important;
+    padding-top: 3.25rem !important;
+    background:
+        linear-gradient(145deg,
+            rgba(27, 19, 13, var(--focus-zone-alpha)),
+            rgba(18, 13, 9, var(--focus-zone-alpha-2))) !important;
+    backdrop-filter: blur(var(--focus-zone-blur));
+    box-shadow:
+        0 28px 80px rgba(0, 0, 0, 0.34),
+        inset 0 0 0 1px rgba(255, 241, 212, 0.04);
+}
+
+body.focus-mode .writing-zone textarea {
+    background:
+        linear-gradient(rgba(255, 245, 223, 0.035), rgba(255, 245, 223, 0.035)),
+        rgba(0, 0, 0, var(--focus-textarea-alpha)) !important;
+}
+
+body.focus-mode .focus-ambient-controls {
+    top: 0.72rem !important;
+}
+
+body.focus-mode .ambient-menu {
+    top: 3.15rem !important;
+}
+
+body.focus-mode .focus-close {
+    top: 0.68rem !important;
+    right: 0.72rem !important;
+    width: 2.25rem !important;
+    height: 2.25rem !important;
+}
+
+/* Shared ambient-light engine.
+   Later, real-life light assets can be dropped into --ambient-texture as a
+   low-opacity image layer without adding heavy DOM or video effects. */
+body.light-fireplace-glow,
+body.light-rain-ambience,
+body.light-wind,
+body.light-thunder-flashes,
+body.light-summer-daylight,
+body.light-twilight,
+body.light-lamplight,
+body.light-moonlit-desk {
+    --ambient-edge: rgba(215, 165, 111, 0.16);
+    --ambient-card-glow: rgba(0, 0, 0, 0.30);
+    --ambient-video-filter: saturate(0.88) blur(var(--ambient-depth-blur));
+    background: var(--ambient-body-bg) !important;
+}
+
+body.light-fireplace-glow { 
+    --ambient-body-bg:
+        radial-gradient(circle at 46% 74%, rgba(168, 78, 38, 0.18), transparent 32rem),
+        linear-gradient(160deg, #1b100b, #28170f 52%, #130b08);
+    --ambient-page-glow:
+        radial-gradient(circle at 54% 72%, rgba(211, 104, 48, 0.43), transparent 31rem),
+        radial-gradient(circle at 42% 14%, rgba(208, 167, 111, 0.20), transparent 34rem);
+    --ambient-overlay-bg: rgba(26, 12, 7, 0.56);
+    --ambient-card-glow: rgba(199, 91, 42, 0.12);
+    --ambient-animation: focusFireGlow 4.6s ease-in-out infinite;
+}
+
+body.light-rain-ambience {
+    --ambient-body-bg:
+        linear-gradient(160deg, #101419, #182126 52%, #0f1114);
+    --ambient-page-glow:
+        linear-gradient(115deg, rgba(145, 160, 172, 0.16), transparent 45%),
+        radial-gradient(circle at 72% 18%, rgba(90, 117, 130, 0.28), transparent 30rem);
+    --ambient-overlay-bg: rgba(10, 14, 18, 0.62);
+    --ambient-edge: rgba(145, 160, 172, 0.18);
+    --ambient-card-glow: rgba(120, 148, 160, 0.10);
+    --ambient-depth-blur: 4px;
+}
+
+body.light-wind {
+    --ambient-body-bg:
+        linear-gradient(160deg, #16130f, #252015 52%, #11100c);
+    --ambient-page-glow:
+        linear-gradient(105deg, transparent 12%, rgba(230, 219, 198, 0.14) 43%, transparent 74%),
+        radial-gradient(circle at 20% 14%, rgba(208, 167, 111, 0.14), transparent 28rem);
+    --ambient-overlay-bg: rgba(18, 14, 10, 0.60);
+    --ambient-card-glow: rgba(230, 219, 198, 0.08);
+    --ambient-animation: focusWindDrift 7s ease-in-out infinite;
+}
+
+body.light-thunder-flashes {
+    --ambient-body-bg:
+        linear-gradient(160deg, #0d0d15, #171720 52%, #09090e);
+    --ambient-page-glow:
+        radial-gradient(circle at 70% 16%, rgba(190, 205, 224, 0.26), transparent 28rem),
+        linear-gradient(180deg, rgba(20, 20, 32, 0.35), transparent);
+    --ambient-overlay-bg: rgba(6, 6, 10, 0.66);
+    --ambient-edge: rgba(190, 205, 224, 0.16);
+    --ambient-card-glow: rgba(190, 205, 224, 0.10);
+    --ambient-animation: focusThunderFlash 8s steps(1, end) infinite;
+    --ambient-depth-blur: 4px;
+}
+
+body.light-summer-daylight {
+    --ambient-body-bg:
+        radial-gradient(circle at 54% 5%, rgba(247, 205, 118, 0.16), transparent 33rem),
+        linear-gradient(160deg, #23180d, #3b2a15 54%, #1a1109);
+    --ambient-page-glow:
+        radial-gradient(circle at 50% 8%, rgba(247, 205, 118, 0.30), transparent 34rem),
+        radial-gradient(circle at 78% 22%, rgba(208, 167, 111, 0.16), transparent 26rem);
+    --ambient-overlay-bg: rgba(28, 16, 6, 0.48);
+    --ambient-card-glow: rgba(247, 205, 118, 0.10);
+}
+
+body.light-twilight {
+    --ambient-body-bg:
+        radial-gradient(circle at 34% 12%, rgba(122, 79, 128, 0.15), transparent 31rem),
+        linear-gradient(160deg, #160f18, #2b1b24 53%, #110b12);
+    --ambient-page-glow:
+        radial-gradient(circle at 34% 12%, rgba(122, 79, 128, 0.24), transparent 32rem),
+        radial-gradient(circle at 80% 26%, rgba(208, 118, 70, 0.20), transparent 30rem);
+    --ambient-overlay-bg: rgba(15, 9, 16, 0.58);
+    --ambient-edge: rgba(185, 128, 151, 0.16);
+    --ambient-card-glow: rgba(208, 118, 70, 0.10);
+}
+
+body.light-lamplight {
+    --ambient-body-bg:
+        radial-gradient(circle at 52% 18%, rgba(228, 183, 105, 0.16), transparent 28rem),
+        linear-gradient(160deg, #1c120a, #302012 55%, #150d08);
+    --ambient-page-glow:
+        radial-gradient(circle at 52% 18%, rgba(228, 183, 105, 0.36), transparent 28rem),
+        radial-gradient(circle at 52% 74%, rgba(92, 57, 30, 0.24), transparent 32rem);
+    --ambient-overlay-bg: rgba(25, 14, 7, 0.54);
+    --ambient-card-glow: rgba(228, 183, 105, 0.11);
+}
+
+body.light-moonlit-desk {
+    --ambient-body-bg:
+        linear-gradient(160deg, #0b0f16, #151b26 54%, #090b10);
+    --ambient-page-glow:
+        radial-gradient(circle at 70% 12%, rgba(177, 193, 211, 0.26), transparent 32rem),
+        linear-gradient(145deg, rgba(12, 17, 26, 0.30), transparent 70%);
+    --ambient-overlay-bg: rgba(6, 8, 12, 0.66);
+    --ambient-edge: rgba(177, 193, 211, 0.16);
+    --ambient-card-glow: rgba(177, 193, 211, 0.09);
+    --ambient-depth-blur: 4px;
+}
+
+body.light-fireplace-glow .page-glow,
+body.light-rain-ambience .page-glow,
+body.light-wind .page-glow,
+body.light-thunder-flashes .page-glow,
+body.light-summer-daylight .page-glow,
+body.light-twilight .page-glow,
+body.light-lamplight .page-glow,
+body.light-moonlit-desk .page-glow {
+    background: var(--ambient-page-glow) !important;
+    animation: var(--ambient-animation, none);
+    opacity: 1;
+}
+
+body.light-fireplace-glow .overlay,
+body.light-rain-ambience .overlay,
+body.light-wind .overlay,
+body.light-thunder-flashes .overlay,
+body.light-summer-daylight .overlay,
+body.light-twilight .overlay,
+body.light-lamplight .overlay,
+body.light-moonlit-desk .overlay {
+    background: var(--ambient-overlay-bg) !important;
+    backdrop-filter: blur(var(--ambient-depth-blur));
+}
+
+body.light-fireplace-glow .video-background video,
+body.light-rain-ambience .video-background video,
+body.light-wind .video-background video,
+body.light-thunder-flashes .video-background video,
+body.light-summer-daylight .video-background video,
+body.light-twilight .video-background video,
+body.light-lamplight .video-background video,
+body.light-moonlit-desk .video-background video {
+    filter: var(--ambient-video-filter);
+    opacity: 0.20;
+}
+
+/* Optional future texture layer: set --ambient-texture to a lightweight image
+   or gradient and it will feather into the background without new markup. */
+body.light-fireplace-glow .page-glow::before,
+body.light-rain-ambience .page-glow::before,
+body.light-wind .page-glow::before,
+body.light-thunder-flashes .page-glow::before,
+body.light-summer-daylight .page-glow::before,
+body.light-twilight .page-glow::before,
+body.light-lamplight .page-glow::before,
+body.light-moonlit-desk .page-glow::before {
+    content: "";
+    position: fixed;
+    inset: -8%;
+    pointer-events: none;
+    background: var(--ambient-texture);
+    background-size: cover;
+    background-position: center;
+    opacity: var(--ambient-texture-opacity);
+    filter: blur(18px);
+    mix-blend-mode: screen;
+}
+
+body.light-fireplace-glow .card,
+body.light-rain-ambience .card,
+body.light-wind .card,
+body.light-thunder-flashes .card,
+body.light-summer-daylight .card,
+body.light-twilight .card,
+body.light-lamplight .card,
+body.light-moonlit-desk .card {
+    border-color: var(--ambient-edge) !important;
+    box-shadow:
+        0 24px 70px rgba(0, 0, 0, 0.24),
+        0 0 52px var(--ambient-card-glow) !important;
+}
+
+/* Mobile: keep focus header compact and menus reachable. */
+@media (max-width: 640px) {
+    body.focus-mode .writing-zone {
+        margin-top: min(3vh, 22px) !important;
+        padding-top: 3rem !important;
+    }
+
+    body.focus-mode .focus-ambient-controls {
+        top: 0.62rem !important;
+    }
+
+    body.focus-mode .ambient-menu {
+        top: 3rem !important;
+    }
+}
+
+
+/* =========================================================
+   Final 49: full main-page candle mode, header/footer preserved
+   ========================================================= */
+
+/* Candle is available as an icon-only control in the Light popup. */
+.candle-icon-toggle {
+    display: inline-grid !important;
+    place-items: center !important;
+    width: 2.05rem !important;
+    height: 2.05rem !important;
+    padding: 0 !important;
+    min-width: 0 !important;
+    border-radius: 50% !important;
+    font-size: 1rem !important;
+    line-height: 1 !important;
+}
+
+/* Main-page candle mode:
+   brighten the page and content sections like Focus Mode candle,
+   while keeping the header, footer, and their controls visually unchanged. */
+body.candle-lit:not(.focus-mode) {
+    background:
+        radial-gradient(circle at 50% 8%, rgba(255, 220, 148, 0.42), transparent 26rem),
+        linear-gradient(160deg, #f1e4c9, #d7bc85 62%, #b8915b) !important;
+}
+
+body.candle-lit:not(.focus-mode) .overlay {
+    background: rgba(255, 244, 220, 0.24) !important;
+    backdrop-filter: blur(1px);
+}
+
+body.candle-lit:not(.focus-mode) .page-glow {
+    background: radial-gradient(circle at 50% 15%, rgba(255, 214, 120, 0.38), transparent 28rem) !important;
+}
+
+/* Keep the fixed header and footer in the dark Story Nook styling. */
+body.candle-lit:not(.focus-mode) .site-nav,
+body.candle-lit:not(.focus-mode) #mainNav,
+body.candle-lit:not(.focus-mode) .site-footer,
+body.candle-lit:not(.focus-mode) footer {
+    color: var(--text-main) !important;
+}
+
+body.candle-lit:not(.focus-mode) .site-nav,
+body.candle-lit:not(.focus-mode) #mainNav {
+    background: rgba(11, 7, 4, 0.74) !important;
+    border-bottom-color: rgba(255, 241, 212, 0.12) !important;
+}
+
+body.candle-lit:not(.focus-mode) .site-footer,
+body.candle-lit:not(.focus-mode) footer {
+    background:
+        linear-gradient(180deg, rgba(18, 12, 8, 0.62), rgba(14, 9, 6, 0.88)),
+        rgba(18, 12, 8, 0.78) !important;
+    border-top-color: rgba(255, 241, 212, 0.12) !important;
+}
+
+/* Lighten the main content cards/sections to match focus-mode candle. */
+body.candle-lit:not(.focus-mode) main .card,
+body.candle-lit:not(.focus-mode) main .welcome-card,
+body.candle-lit:not(.focus-mode) main .story-card,
+body.candle-lit:not(.focus-mode) main .stat-card,
+body.candle-lit:not(.focus-mode) main .my-stories-container,
+body.candle-lit:not(.focus-mode) main .story-accordion,
+body.candle-lit:not(.focus-mode) main .comments-section-wrapper,
+body.candle-lit:not(.focus-mode) main .comment-item,
+body.candle-lit:not(.focus-mode) main .writing-zone {
+    color: #271f18 !important;
+    background: linear-gradient(145deg, rgba(255,248,230,0.97), rgba(238,218,178,0.96)) !important;
+    border-color: rgba(80,55,38,0.20) !important;
+    box-shadow:
+        0 24px 70px rgba(93, 61, 34, 0.18),
+        inset 0 1px 0 rgba(255,255,255,0.36) !important;
+}
+
+/* Main content typography in candle mode. */
+body.candle-lit:not(.focus-mode) main,
+body.candle-lit:not(.focus-mode) main p,
+body.candle-lit:not(.focus-mode) main span,
+body.candle-lit:not(.focus-mode) main h1,
+body.candle-lit:not(.focus-mode) main h2,
+body.candle-lit:not(.focus-mode) main h3,
+body.candle-lit:not(.focus-mode) main h4,
+body.candle-lit:not(.focus-mode) main label,
+body.candle-lit:not(.focus-mode) main .eyebrow,
+body.candle-lit:not(.focus-mode) main .section-label-title,
+body.candle-lit:not(.focus-mode) main .section-heading,
+body.candle-lit:not(.focus-mode) main .section-heading *,
+body.candle-lit:not(.focus-mode) main .char-meter,
+body.candle-lit:not(.focus-mode) main .story-author,
+body.candle-lit:not(.focus-mode) main .story-preview,
+body.candle-lit:not(.focus-mode) main #weeklyPromptText,
+body.candle-lit:not(.focus-mode) main #feedTitle,
+body.candle-lit:not(.focus-mode) main #topStoriesTitle {
+    color: #3d3024 !important;
+}
+
+body.candle-lit:not(.focus-mode) main .story-meta,
+body.candle-lit:not(.focus-mode) main .muted,
+body.candle-lit:not(.focus-mode) main small {
+    color: rgba(61, 48, 36, 0.70) !important;
+}
+
+/* Writing/input surfaces in main candle mode. */
+body.candle-lit:not(.focus-mode) main textarea,
+body.candle-lit:not(.focus-mode) main input,
+body.candle-lit:not(.focus-mode) main select {
+    color: #271f18 !important;
+    background: rgba(255, 252, 241, 0.82) !important;
+    border-color: rgba(80,55,38,0.20) !important;
+}
+
+body.candle-lit:not(.focus-mode) main textarea::placeholder,
+body.candle-lit:not(.focus-mode) main input::placeholder {
+    color: rgba(39,31,24,0.48) !important;
+}
+
+/* Buttons on main content stay readable against the lighter cards. */
+body.candle-lit:not(.focus-mode) main .btn-secondary,
+body.candle-lit:not(.focus-mode) main .btn-ghost,
+body.candle-lit:not(.focus-mode) main .btn-tiny,
+body.candle-lit:not(.focus-mode) main .focus-mini-btn,
+body.candle-lit:not(.focus-mode) main .text-link {
+    color: #3d3024 !important;
+    background: rgba(255, 252, 241, 0.56) !important;
+    border-color: rgba(80,55,38,0.22) !important;
+}
+
+/* Keep publish button accent treatment clear and intentional. */
+body.candle-lit:not(.focus-mode) main #publishBtn,
+body.candle-lit:not(.focus-mode) main .btn-primary {
+    color: #10100a !important;
+}
+
+/* Candle-on icon styling inside the Light popup. */
+.candle-icon-toggle[aria-pressed="true"] {
+    background: linear-gradient(135deg, rgba(239, 205, 143, 0.96), rgba(215, 165, 111, 0.88)) !important;
+    color: #130d09 !important;
+    border-color: rgba(239, 205, 143, 0.66) !important;
+    box-shadow:
+        0 8px 18px rgba(0,0,0,0.16),
+        0 0 22px rgba(215, 165, 111, 0.24) !important;
+}
+
+
+/* =========================================================
+   Final 50: candle affects panels/windows only, not page background
+   ========================================================= */
+
+/* Candle should NOT replace the site background. Keep the main/focus
+   background, overlay, and ambient glow in the regular Story Nook mood. */
+body.candle-lit,
+body.candle-lit:not(.focus-mode),
+body.focus-mode.candle-lit {
+    background:
+        radial-gradient(circle at 18% 10%, rgba(156, 175, 136, 0.22), transparent 34rem),
+        radial-gradient(circle at 84% 20%, rgba(215, 165, 111, 0.18), transparent 32rem),
+        linear-gradient(160deg, var(--warm-bg), var(--warm-bg-2) 46%, #17261d) !important;
+}
+
+body.candle-lit .overlay,
+body.candle-lit:not(.focus-mode) .overlay,
+body.focus-mode.candle-lit .overlay {
+    background: rgba(18, 10, 5, 0.58) !important;
+    backdrop-filter: blur(2px) !important;
+}
+
+body.candle-lit .page-glow,
+body.candle-lit:not(.focus-mode) .page-glow,
+body.focus-mode.candle-lit .page-glow {
+    background:
+        radial-gradient(circle at 18% 10%, rgba(156, 175, 136, 0.18), transparent 34rem),
+        radial-gradient(circle at 84% 20%, rgba(215, 165, 111, 0.14), transparent 32rem) !important;
+}
+
+/* Header and footer always remain unchanged/dark. */
+body.candle-lit .site-nav,
+body.candle-lit #mainNav,
+body.candle-lit .site-footer,
+body.candle-lit footer {
+    color: var(--text-main) !important;
+}
+
+body.candle-lit .site-nav,
+body.candle-lit #mainNav {
+    background: rgba(11, 7, 4, 0.74) !important;
+    border-bottom-color: rgba(255, 241, 212, 0.12) !important;
+}
+
+body.candle-lit .site-footer,
+body.candle-lit footer {
+    background:
+        linear-gradient(180deg, rgba(18, 12, 8, 0.62), rgba(14, 9, 6, 0.88)),
+        rgba(18, 12, 8, 0.78) !important;
+    border-top-color: rgba(255, 241, 212, 0.12) !important;
+}
+
+/* Candle lights up only the main content windows/cards and popups. */
+body.candle-lit main .card,
+body.candle-lit main .welcome-card,
+body.candle-lit main .story-card,
+body.candle-lit main .stat-card,
+body.candle-lit main .my-stories-container,
+body.candle-lit main .story-accordion,
+body.candle-lit main .comments-section-wrapper,
+body.candle-lit main .comment-item,
+body.candle-lit main .writing-zone,
+body.candle-lit .modal-content.book-style,
+body.candle-lit .modal-content.narrow,
+body.candle-lit .passport-guide-style,
+body.candle-lit .ambient-menu {
+    color: #271f18 !important;
+    background:
+        linear-gradient(145deg, rgba(255,248,230,0.97), rgba(238,218,178,0.96)) !important;
+    border-color: rgba(80,55,38,0.20) !important;
+    box-shadow:
+        0 24px 70px rgba(93, 61, 34, 0.18),
+        inset 0 1px 0 rgba(255,255,255,0.36) !important;
+}
+
+/* Focus mode candle: only the writing window changes, not the page background. */
+body.focus-mode.candle-lit .writing-zone {
+    color: #271f18 !important;
+    background:
+        linear-gradient(145deg, rgba(255,248,230,0.97), rgba(238,218,178,0.96)) !important;
+    border-color: rgba(80,55,38,0.20) !important;
+    box-shadow:
+        0 28px 80px rgba(93, 61, 34, 0.22),
+        inset 0 1px 0 rgba(255,255,255,0.36) !important;
+}
+
+/* Dark readable text inside candle-lit windows. */
+body.candle-lit main .card *,
+body.candle-lit main .writing-zone *,
+body.candle-lit main .story-card *,
+body.candle-lit main .stat-card *,
+body.candle-lit .modal-content.book-style *,
+body.candle-lit .modal-content.narrow *,
+body.candle-lit .passport-guide-style *,
+body.candle-lit .ambient-menu *,
+body.focus-mode.candle-lit .writing-zone * {
+    color: #271f18 !important;
+}
+
+body.candle-lit main .eyebrow,
+body.candle-lit main .section-label-title,
+body.candle-lit main .story-meta,
+body.candle-lit main .muted,
+body.candle-lit main small,
+body.candle-lit .modal-content.book-style small,
+body.candle-lit .ambient-feature-label,
+body.focus-mode.candle-lit .char-meter {
+    color: rgba(61, 48, 36, 0.72) !important;
+}
+
+/* Inputs/textareas inside candle-lit windows. */
+body.candle-lit main textarea,
+body.candle-lit main input,
+body.candle-lit main select,
+body.candle-lit .modal-content.book-style input,
+body.candle-lit .modal-content.book-style textarea,
+body.candle-lit .modal-content.narrow input,
+body.candle-lit .modal-content.narrow textarea,
+body.focus-mode.candle-lit .writing-zone textarea,
+body.focus-mode.candle-lit .writing-zone input {
+    color: #271f18 !important;
+    background: rgba(255, 252, 241, 0.82) !important;
+    border-color: rgba(80,55,38,0.20) !important;
+}
+
+body.candle-lit main textarea::placeholder,
+body.candle-lit main input::placeholder,
+body.candle-lit .modal-content.book-style textarea::placeholder,
+body.candle-lit .modal-content.book-style input::placeholder,
+body.focus-mode.candle-lit .writing-zone textarea::placeholder {
+    color: rgba(39,31,24,0.48) !important;
+}
+
+/* Keep buttons legible on the lighter panels. */
+body.candle-lit main .btn-secondary,
+body.candle-lit main .btn-ghost,
+body.candle-lit main .btn-tiny,
+body.candle-lit main .focus-mini-btn,
+body.candle-lit main .text-link,
+body.candle-lit .ambient-menu button:not(.focus-audio-mute):not(.candle-icon-toggle) {
+    color: #3d3024 !important;
+    background: rgba(255, 252, 241, 0.56) !important;
+    border-color: rgba(80,55,38,0.22) !important;
+}
+
+/* Keep primary buttons accented and readable. */
+body.candle-lit main .btn-primary,
+body.candle-lit main #publishBtn {
+    color: #10100a !important;
+}
+
+/* Keep close button and focus controls visually clear. */
+body.focus-mode.candle-lit .focus-close,
+body.candle-lit .focus-audio-mute,
+body.candle-lit .candle-icon-toggle {
+    color: #130d09 !important;
+}
+
+
+/* =========================================================
+   Final 51: Feather/Ink slider works on main page + candle mode
+   ========================================================= */
+
+/* The Feather / Ink slider is no longer focus-only. It appears in the Light
+   popup on both the main Writing Desk and Focus Mode. */
+.focus-only-control {
+    display: flex !important;
+}
+
+/* Shared "window visibility" surface. The slider controls these variables
+   globally, so it works with normal, light-effect, and candle states. */
+#writingZoneSection,
+body.focus-mode #writingZoneSection,
+body.candle-lit #writingZoneSection {
+    background:
+        linear-gradient(145deg,
+            rgba(27, 19, 13, var(--focus-zone-alpha)),
+            rgba(18, 13, 9, var(--focus-zone-alpha-2))) !important;
+    backdrop-filter: blur(var(--focus-zone-blur));
+}
+
+/* Main page writing area becomes more/less transparent with Feather / Ink. */
+body:not(.focus-mode):not(.candle-lit) #writingZoneSection textarea,
+body:not(.focus-mode):not(.candle-lit) #writingZoneSection input {
+    background:
+        linear-gradient(rgba(255, 245, 223, 0.035), rgba(255, 245, 223, 0.035)),
+        rgba(0, 0, 0, var(--focus-textarea-alpha)) !important;
+}
+
+/* Candle mode keeps its warm paper look, but Feather / Ink now controls
+   how solid or translucent that paper window feels. */
+body.candle-lit #writingZoneSection,
+body.focus-mode.candle-lit #writingZoneSection {
+    color: #271f18 !important;
+    background:
+        linear-gradient(145deg,
+            rgba(255,248,230, var(--focus-zone-alpha)),
+            rgba(238,218,178, var(--focus-zone-alpha-2))) !important;
+    border-color: rgba(80,55,38,0.20) !important;
+    box-shadow:
+        0 28px 80px rgba(93, 61, 34, 0.20),
+        inset 0 1px 0 rgba(255,255,255,0.36) !important;
+}
+
+/* Candle mode textarea/input also respond to Feather / Ink. */
+body.candle-lit #writingZoneSection textarea,
+body.candle-lit #writingZoneSection input,
+body.focus-mode.candle-lit #writingZoneSection textarea,
+body.focus-mode.candle-lit #writingZoneSection input {
+    color: #271f18 !important;
+    background:
+        rgba(255, 252, 241, calc(var(--focus-textarea-alpha) + 0.42)) !important;
+    border-color: rgba(80,55,38,0.20) !important;
+}
+
+/* Light effects on the main page now share the same writing-window treatment
+   used in Focus Mode: the background mood changes, while Feather / Ink controls
+   how strongly the writing window floats above it. */
+body.light-fireplace-glow #writingZoneSection,
+body.light-rain-ambience #writingZoneSection,
+body.light-wind #writingZoneSection,
+body.light-thunder-flashes #writingZoneSection,
+body.light-summer-daylight #writingZoneSection,
+body.light-twilight #writingZoneSection,
+body.light-lamplight #writingZoneSection,
+body.light-moonlit-desk #writingZoneSection {
+    border-color: var(--ambient-edge) !important;
+    box-shadow:
+        0 28px 80px rgba(0, 0, 0, 0.30),
+        0 0 52px var(--ambient-card-glow) !important;
+}
+
+/* Keep the Light popup slider compact on the main page and mobile. */
+.ambient-slider-feature {
+    display: flex !important;
+}
+
+body:not(.focus-mode) .ambient-slider-feature {
+    padding-top: 0.48rem;
+}
+
+@media (max-width: 640px) {
+    .focus-visibility-slider {
+        grid-template-columns: auto minmax(92px, 1fr) auto;
+        gap: 0.45rem;
+    }
+
+    .slider-soft-label {
+        font-size: 0.64rem;
+    }
+}
+
+
+/* =========================================================
+   Final 52: site-wide volume slider in Sound popup
+   ========================================================= */
+
+.audio-slider-feature {
+    grid-column: 1 / -1;
+}
+
+.site-volume-slider {
+    display: grid;
+    grid-template-columns: auto minmax(118px, 1fr) auto;
+    align-items: center;
+    gap: 0.55rem;
+    width: min(100%, 16rem);
+}
+
+.site-volume-slider input[type="range"] {
+    width: 100%;
+    padding: 0;
+    accent-color: var(--accent);
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Keep the slider compact on phones. */
+@media (max-width: 640px) {
+    .site-volume-slider {
+        grid-template-columns: auto minmax(92px, 1fr) auto;
+        gap: 0.45rem;
+    }
+}
+
+
+/* =========================================================
+   Final 53: candle button visible in Light popup + centered icon
+   ========================================================= */
+
+/* The candle row appears in the Light popup on both the main page and Focus Mode. */
+.candle-menu-feature {
+    display: flex !important;
+}
+
+/* Make the candle button a true centered icon circle. */
+#candleBtn.candle-icon-toggle,
+.candle-icon-toggle {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 2.08rem !important;
+    height: 2.08rem !important;
+    min-width: 2.08rem !important;
+    min-height: 2.08rem !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    vertical-align: middle !important;
+    font-size: 0 !important; /* prevents emoji baseline drift */
+}
+
+#candleBtn.candle-icon-toggle span,
+.candle-icon-toggle span {
+    display: block !important;
+    width: 1em !important;
+    height: 1em !important;
+    line-height: 1 !important;
+    font-size: 1.05rem !important;
+    transform: translateY(-0.02em) !important;
+    text-align: center !important;
+}
+
+/* If the browser renders the emoji slightly tall, this keeps it visually centered. */
+#candleBtn.candle-icon-toggle::before,
+.candle-icon-toggle::before {
+    content: none !important;
+}
+
+/* Keep the centered circle consistent on small screens. */
+@media (max-width: 640px) {
+    #candleBtn.candle-icon-toggle,
+    .candle-icon-toggle {
+        width: 2rem !important;
+        height: 2rem !important;
+        min-width: 2rem !important;
+        min-height: 2rem !important;
+    }
+
+    #candleBtn.candle-icon-toggle span,
+    .candle-icon-toggle span {
+        font-size: 1rem !important;
+    }
+}
+
+
+/* =========================================================
+   Final 54: candle button visibility + centered icon + no focus exit
+   ========================================================= */
+
+/* Earlier rules hid #candleBtn outside focus mode. Override that so the
+   candle row is visible inside the main-page Light popup too. */
+body:not(.focus-mode) #lightingEffectsMenu #candleBtn,
+body:not(.focus-mode) #lightingEffectsMenu .candle-icon-toggle,
+body:not(.focus-mode) #lightingEffectsMenu .candle-menu-feature {
+    display: inline-flex !important;
+}
+
+body:not(.focus-mode) #lightingEffectsMenu .candle-menu-feature {
+    display: flex !important;
+}
+
+/* Make sure the main-page Light popup can show its full contents when open. */
+body:not(.focus-mode) #writingZoneSection #lightingEffectsMenu:not(.hidden),
+body:not(.focus-mode) #writingZoneSection #soundEffectsMenu:not(.hidden) {
+    display: grid !important;
+}
+
+/* Center the candle glyph precisely inside the round button.
+   The emoji's visual center skews right, so this nudges it very slightly left. */
+#candleBtn.candle-icon-toggle,
+.candle-icon-toggle {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 2.08rem !important;
+    height: 2.08rem !important;
+    min-width: 2.08rem !important;
+    min-height: 2.08rem !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    line-height: 1 !important;
+    text-align: center !important;
+    font-size: 0 !important;
+    overflow: visible !important;
+}
+
+#candleBtn .candle-glyph,
+.candle-icon-toggle .candle-glyph {
+    display: block !important;
+    width: 1em !important;
+    height: 1em !important;
+    line-height: 1 !important;
+    font-size: 1.05rem !important;
+    text-align: center !important;
+    transform: translate(-0.075em, -0.025em) !important;
+    pointer-events: none !important;
+}
+
+/* Keep the same centering on mobile. */
+@media (max-width: 640px) {
+    #candleBtn.candle-icon-toggle,
+    .candle-icon-toggle {
+        width: 2rem !important;
+        height: 2rem !important;
+        min-width: 2rem !important;
+        min-height: 2rem !important;
+    }
+
+    #candleBtn .candle-glyph,
+    .candle-icon-toggle .candle-glyph {
+        font-size: 1rem !important;
+        transform: translate(-0.075em, -0.025em) !important;
+    }
+}
+
+
+/* =========================================================
+   Final 55: nudge candle glyph 3px farther left
+   ========================================================= */
+
+#candleBtn .candle-glyph,
+.candle-icon-toggle .candle-glyph {
+    transform: translate(calc(-0.075em - 3px), -0.025em) !important;
+}
+
+@media (max-width: 640px) {
+    #candleBtn .candle-glyph,
+    .candle-icon-toggle .candle-glyph {
+        transform: translate(calc(-0.075em - 3px), -0.025em) !important;
+    }
+}
