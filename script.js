@@ -10,9 +10,9 @@
         draftKey: 'story-nook:draft:v2',
         guestNameKey: 'story-nook:guest-name:v2',
         prompts: [
-            'A traveler finds a floating library where every unwritten story is waiting on a shelf.',
+            'A knight stands at a distance, gazing toward the entrance of a citadel he has finally returned to. Something has happened before this moment—something the reader does not yet know. Write the story of what led him here, what he has lost or gained, and why he hesitates before entering.',
             'At midnight, the fireplace starts whispering memories that do not belong to anyone in the room.',
-            'A tiny green door appears under an old desk, and only tired writers can see it.',
+            'A narrow hidden door appears under an old desk, and only tired writers can see it.',
             'Someone mails a letter to the moon and receives a reply written in pressed leaves.',
             'The last train of the evening stops at a station that was erased from every map.',
             'A character wakes up with a glowing bookmark tucked behind their ear.',
@@ -28,6 +28,8 @@
         ]
     };
 
+    const enableMenuSound = true;
+
     const state = {
         db: null,
         currentUser: null,
@@ -42,8 +44,26 @@
         feedLimit: 30,
         feedStories: [],
         topStories: [],
-        initialized: false
+        initialized: false,
+        ambient: {
+            ctx: null,
+            master: null,
+            activeSounds: new Map(),
+            effectsEnabled: true,
+            activeLighting: null
+        }
     };
+
+    const LIGHTING_CLASSES = [
+        'light-fireplace-glow',
+        'light-rain-ambience',
+        'light-wind',
+        'light-thunder-flashes',
+        'light-summer-daylight',
+        'light-twilight',
+        'light-lamplight',
+        'light-moonlit-desk'
+    ];
 
     const $ = (selector, root = document) => root.querySelector(selector);
     const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
@@ -51,7 +71,7 @@
     document.addEventListener('DOMContentLoaded', boot);
 
     function boot() {
-        document.body.classList.remove('focus-mode', 'candle-lit', 'quiet-room');
+        document.body.classList.remove('focus-mode', 'candle-lit', 'quiet-room', 'effects-off', ...LIGHTING_CLASSES);
         wireStaticEvents();
         restoreDraft();
         updateCharCounter();
@@ -91,19 +111,49 @@
 
     function wireStaticEvents() {
         const nav = $('#mainNav');
-        window.addEventListener('scroll', () => nav?.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
+        window.addEventListener('scroll', () => {
+            if (!nav) return;
+            const shouldScroll = window.scrollY > 40;
+            const wasScrolled = nav.classList.contains('scrolled');
+            if (wasScrolled !== shouldScroll) {
+                nav.classList.toggle('scrolled', shouldScroll);
+                if (isRibbonPanelOpen()) requestAnimationFrame(syncStoryRibbonLength);
+            }
+        }, { passive: true });
 
         $('#navLogo')?.addEventListener('click', scrollToTop);
         $('#enterBtn')?.addEventListener('click', () => enterNook());
         $('#browseBtn')?.addEventListener('click', () => enterNook('storyFeed'));
         $('#navLoginBtn')?.addEventListener('click', () => openAuth('login'));
-        $('#bookmarkMenuBtn')?.addEventListener('click', toggleRibbonPanel);
+        wireLogoBackToTop();
+        wireRibbonPullMenu();
+        window.addEventListener('resize', () => {
+            if (isRibbonPanelOpen()) syncStoryRibbonLength();
+        }, { passive: true });
+        $('#nookRibbonPanel')?.addEventListener('click', handleRibbonPanelClick);
         $('#navProfileBtn')?.addEventListener('click', () => {
             openModal('profileModal');
             resetProfileModalToMyView();
         });
         $('#footerFeedbackBtn')?.addEventListener('click', openFeedback);
         $$('[data-open]').forEach((button) => button.addEventListener('click', () => openModal(button.dataset.open)));
+        $$('[data-scroll-target]').forEach((button) => {
+            button.addEventListener('click', () => {
+                const targetId = button.dataset.scrollTarget;
+
+                if (targetId === 'mainNav' || targetId === 'top') {
+                    if (typeof window.scrollToTop === 'function') {
+                        window.scrollToTop();
+                    } else {
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                    return;
+                }
+
+                const target = document.getElementById(targetId);
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
         $$('[data-close]').forEach((button) => button.addEventListener('click', () => closeModal(button.dataset.close)));
 
         $$('.modal').forEach((modal) => {
@@ -140,8 +190,12 @@
         $('#copyPromptBtn')?.addEventListener('click', copyPrompt);
         $('#candleBtn')?.addEventListener('click', toggleCandleMode);
         $('#exitFocusBtn')?.addEventListener('click', exitFocusMode);
+        $('#focusEffectsMasterBtn')?.addEventListener('click', toggleFocusEffectsMaster);
+        $('#soundEffectsBtn')?.addEventListener('click', () => toggleAmbientMenu('soundEffectsMenu', 'soundEffectsBtn'));
+        $('#lightingEffectsBtn')?.addEventListener('click', () => toggleAmbientMenu('lightingEffectsMenu', 'lightingEffectsBtn'));
+        $('#soundEffectsMenu')?.addEventListener('click', handleSoundMenuClick);
+        $('#lightingEffectsMenu')?.addEventListener('click', handleLightingMenuClick);
         $('#saveStoryEditBtn')?.addEventListener('click', saveStoryEdit);
-        $('#saveSiteSettingsBtn')?.addEventListener('click', saveSiteSettings);
 
         $('#storySearch')?.addEventListener('input', renderFeed);
         $('#feedSort')?.addEventListener('change', () => fetchStories({ resetLimit: true }));
@@ -181,6 +235,15 @@
             }
             if (!event.target.closest('#nookRibbonPanel') && !event.target.closest('#bookmarkMenuBtn')) {
                 closeRibbonPanel();
+            }
+            if (!event.target.closest('.focus-ambient-controls') && !event.target.closest('.ambient-menu') && !event.target.closest('#focusEffectsMasterBtn')) {
+                closeAmbientMenus();
+            }
+            if (document.body.classList.contains('focus-mode') &&
+                !event.target.closest('#writingZoneSection') &&
+                !event.target.closest('.modal') &&
+                !event.target.closest('.toast-region')) {
+                exitFocusMode();
             }
         });
     }
@@ -279,7 +342,9 @@
         }
 
         adminButton?.classList.toggle('hidden', !state.isAdmin);
+        setText('#journeyNote', state.currentUser ? 'Your story is still unfolding.' : 'Sign in to reveal your journey.');
         $('#feedbackEmail')?.classList.toggle('hidden', !!state.currentUser);
+        $$('.logged-in-only').forEach((item) => item.classList.toggle('hidden', !state.currentUser));
     }
 
     function updateAvatars(profile) {
@@ -303,7 +368,7 @@
 
     function createAvatarDataUrl(seed) {
         const letter = encodeURIComponent(String(seed || 'N').charAt(0).toUpperCase());
-        const bg = '%239caf88';
+        const bg = '%23d8b989';
         const ink = '%2320150f';
         return `data:image/svg+xml;charset=UTF-8,<svg xmlns='http://www.w3.org/2000/svg' width='96' height='96'><rect width='96' height='96' rx='48' fill='${bg}'/><text x='50%' y='55%' text-anchor='middle' font-family='Arial' font-size='42' font-weight='700' fill='${ink}'>${letter}</text></svg>`;
     }
@@ -928,7 +993,6 @@
         $$('.admin-tab-content').forEach((panel) => panel.classList.add('hidden'));
         $$('.tab-btn').forEach((button) => button.classList.toggle('active', button.dataset.adminTab === tabName));
         $(`#adminTab${capitalize(tabName)}`)?.classList.remove('hidden');
-        if (tabName === 'settings') populateSiteSettingsForm();
     }
 
     async function viewUserProfile(userId) {
@@ -1304,17 +1368,41 @@
         }
     }
 
+    function getYouTubePlayer() {
+        return $('#youtubePlayer');
+    }
+
+    function postYouTubeCommand(func, args = []) {
+        const player = getYouTubePlayer();
+        if (!player?.contentWindow) return;
+        try {
+            player.contentWindow.postMessage(JSON.stringify({ event: 'command', func, args }), '*');
+        } catch (error) {
+            console.info('YouTube command skipped:', error);
+        }
+    }
+
+    function quietYouTubePlayer() {
+        postYouTubeCommand('mute');
+        postYouTubeCommand('pauseVideo');
+    }
+
     function enterFocusMode() {
         if (!document.body.classList.contains('focus-mode')) {
+            closeRibbonPanel();
+            quietYouTubePlayer();
             document.body.classList.add('focus-mode');
             $('#writingZoneSection')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     }
 
     function exitFocusMode() {
-        document.body.classList.remove('focus-mode', 'candle-lit');
+        document.body.classList.remove('focus-mode', 'candle-lit', 'effects-off', ...LIGHTING_CLASSES);
         $('#candleBtn')?.setAttribute('aria-pressed', 'false');
         setText('#candleBtn', '🕯️ Light candle');
+        stopAllAmbientSounds();
+        clearLightingEffect();
+        closeAmbientMenus();
     }
 
     function toggleCandleMode() {
@@ -1324,18 +1412,479 @@
         setText('#candleBtn', lit ? '🕯️ Put out candle' : '🕯️ Light candle');
     }
 
-    function toggleRibbonPanel(event) {
-        event?.stopPropagation();
+    function toggleAmbientMenu(menuId, buttonId) {
+        const menu = document.getElementById(menuId);
+        const button = document.getElementById(buttonId);
+        if (!menu || !button) return;
+        const willOpen = menu.classList.contains('hidden');
+        closeAmbientMenus();
+        menu.classList.toggle('hidden', !willOpen);
+        button.setAttribute('aria-expanded', String(willOpen));
+    }
+
+    function closeAmbientMenus() {
+        $('#soundEffectsMenu')?.classList.add('hidden');
+        $('#lightingEffectsMenu')?.classList.add('hidden');
+        $('#soundEffectsBtn')?.setAttribute('aria-expanded', 'false');
+        $('#lightingEffectsBtn')?.setAttribute('aria-expanded', 'false');
+    }
+
+    function toggleFocusEffectsMaster() {
+        state.ambient.effectsEnabled = !state.ambient.effectsEnabled;
+        const enabled = state.ambient.effectsEnabled;
+        document.body.classList.toggle('effects-off', !enabled);
+        $('#focusEffectsMasterBtn')?.setAttribute('aria-pressed', String(enabled));
+        setText('#focusEffectsMasterBtn', enabled ? 'Effects' : 'Effects off');
+        if (state.ambient.master && state.ambient.ctx) {
+            const target = enabled ? 0.85 : 0;
+            state.ambient.master.gain.setTargetAtTime(target, state.ambient.ctx.currentTime, 0.04);
+        }
+    }
+
+    async function handleSoundMenuClick(event) {
+        const button = event.target.closest('[data-sound]');
+        if (!button) return;
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const soundId = button.dataset.sound;
+        const isActive = state.ambient.activeSounds.has(soundId);
+
+        if (isActive) {
+            stopAmbientSound(soundId);
+            button.setAttribute('aria-pressed', 'false');
+            return;
+        }
+
+        button.setAttribute('aria-pressed', 'true');
+        const started = await startAmbientSound(soundId);
+
+        if (!started) {
+            button.setAttribute('aria-pressed', 'false');
+        }
+    }
+
+    function handleLightingMenuClick(event) {
+        const button = event.target.closest('[data-lighting]');
+        if (!button) return;
+        const lighting = button.dataset.lighting;
+        const activeClass = `light-${lighting}`;
+        const isAlreadyActive = state.ambient.activeLighting === activeClass;
+        clearLightingEffect();
+        if (!isAlreadyActive) {
+            document.body.classList.add(activeClass);
+            state.ambient.activeLighting = activeClass;
+            button.setAttribute('aria-pressed', 'true');
+        }
+    }
+
+    function clearLightingEffect() {
+        LIGHTING_CLASSES.forEach((className) => document.body.classList.remove(className));
+        state.ambient.activeLighting = null;
+        $$('[data-lighting]').forEach((button) => button.setAttribute('aria-pressed', 'false'));
+    }
+
+    async function ensureAudioContext() {
+        if (!state.ambient.ctx) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContextClass) {
+                toast('This browser does not support generated ambient audio.', 'error');
+                return null;
+            }
+
+            state.ambient.ctx = new AudioContextClass();
+            state.ambient.master = state.ambient.ctx.createGain();
+            state.ambient.master.gain.value = state.ambient.effectsEnabled ? 0.92 : 0;
+            state.ambient.master.connect(state.ambient.ctx.destination);
+        }
+
+        if (state.ambient.ctx.state === 'suspended') {
+            try {
+                await state.ambient.ctx.resume();
+            } catch (error) {
+                console.warn('Audio resume blocked:', error);
+                toast('Tap once more to start sound in this browser.', 'error');
+                return null;
+            }
+        }
+
+        return state.ambient.ctx;
+    }
+
+    function createNoiseSource(ctx, seconds = 2) {
+        const bufferSize = Math.max(1, Math.floor(ctx.sampleRate * seconds));
+        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i += 1) {
+            data[i] = Math.random() * 2 - 1;
+        }
+        const source = ctx.createBufferSource();
+        source.buffer = buffer;
+        source.loop = true;
+        return source;
+    }
+
+    function connectNoiseVoice(ctx, destination, { gain = 0.08, type = 'lowpass', frequency = 900, q = 0.5, seconds = 2 }) {
+        const source = createNoiseSource(ctx, seconds);
+        const filter = ctx.createBiquadFilter();
+        const gainNode = ctx.createGain();
+        filter.type = type;
+        filter.frequency.value = frequency;
+        filter.Q.value = q;
+        gainNode.gain.value = gain;
+        source.connect(filter).connect(gainNode).connect(destination);
+        source.start();
+        return [source, filter, gainNode];
+    }
+
+    function connectToneVoice(ctx, destination, { gain = 0.03, frequency = 220, type = 'sine' }) {
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        oscillator.type = type;
+        oscillator.frequency.value = frequency;
+        gainNode.gain.value = gain;
+        oscillator.connect(gainNode).connect(destination);
+        oscillator.start();
+        return [oscillator, gainNode];
+    }
+
+    async function startAmbientSound(soundId) {
+        if (state.ambient.activeSounds.has(soundId)) return true;
+
+        const ctx = await ensureAudioContext();
+        if (!ctx || !state.ambient.master) return false;
+
+        quietYouTubePlayer();
+
+        const groupGain = ctx.createGain();
+        groupGain.gain.value = 0.001;
+        groupGain.connect(state.ambient.master);
+        groupGain.gain.setTargetAtTime(1, ctx.currentTime, 0.08);
+
+        const nodes = [groupGain];
+
+        switch (soundId) {
+            case 'white-noise':
+                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.12, type: 'lowpass', frequency: 1450, q: 0.4 }));
+                break;
+            case 'fireplace':
+                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.09, type: 'bandpass', frequency: 700, q: 0.8, seconds: 1.1 }));
+                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.032, type: 'highpass', frequency: 2600, q: 0.4, seconds: 0.8 }));
+                break;
+            case 'rain':
+                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.10, type: 'bandpass', frequency: 1800, q: 0.55 }));
+                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.045, type: 'highpass', frequency: 3600, q: 0.35, seconds: 1.3 }));
+                break;
+            case 'distant-thunder':
+                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.06, type: 'lowpass', frequency: 120, q: 0.7, seconds: 2.6 }));
+                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.042, frequency: 48, type: 'sine' }));
+                break;
+            case 'tranquil-park':
+                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.035, type: 'lowpass', frequency: 950, q: 0.4 }));
+                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.014, frequency: 523, type: 'sine' }));
+                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.010, frequency: 784, type: 'sine' }));
+                break;
+            case 'summer-day':
+                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.036, type: 'bandpass', frequency: 4200, q: 0.55, seconds: 1.6 }));
+                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.012, frequency: 660, type: 'triangle' }));
+                break;
+            case 'autumn-day':
+                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.058, type: 'bandpass', frequency: 650, q: 0.35, seconds: 1.8 }));
+                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.013, frequency: 196, type: 'sine' }));
+                break;
+            case 'winter-night':
+                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.055, type: 'lowpass', frequency: 360, q: 0.5, seconds: 2.4 }));
+                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.014, frequency: 92, type: 'sine' }));
+                break;
+            case 'night-by-the-lake':
+                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.052, type: 'lowpass', frequency: 620, q: 0.35, seconds: 2.2 }));
+                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.014, frequency: 130, type: 'sine' }));
+                break;
+            case 'ocean':
+                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.105, type: 'lowpass', frequency: 520, q: 0.28, seconds: 3.2 }));
+                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.052, type: 'bandpass', frequency: 930, q: 0.35, seconds: 2.8 }));
+                nodes.push(...connectToneVoice(ctx, groupGain, { gain: 0.014, frequency: 72, type: 'sine' }));
+                break;
+            default:
+                nodes.push(...connectNoiseVoice(ctx, groupGain, { gain: 0.06, type: 'lowpass', frequency: 900, q: 0.45 }));
+        }
+
+        state.ambient.activeSounds.set(soundId, nodes);
+        return true;
+    }
+
+    function stopAmbientSound(soundId) {
+        const nodes = state.ambient.activeSounds.get(soundId);
+        if (!nodes) return;
+        const ctx = state.ambient.ctx;
+        const groupGain = nodes[0];
+        if (ctx && groupGain?.gain) groupGain.gain.setTargetAtTime(0.001, ctx.currentTime, 0.05);
+        window.setTimeout(() => {
+            nodes.forEach((node) => {
+                try {
+                    if (typeof node.stop === 'function') node.stop();
+                    if (typeof node.disconnect === 'function') node.disconnect();
+                } catch {
+                    // Already stopped or disconnected.
+                }
+            });
+        }, 180);
+        state.ambient.activeSounds.delete(soundId);
+        $(`[data-sound="${soundId}"]`)?.setAttribute('aria-pressed', 'false');
+    }
+
+    function stopAllAmbientSounds() {
+        Array.from(state.ambient.activeSounds.keys()).forEach(stopAmbientSound);
+    }
+
+
+    function wireLogoBackToTop() {
+        const logo = document.getElementById('navLogo');
+        if (!logo || logo.dataset.scrollTopReady === 'true') return;
+        logo.dataset.scrollTopReady = 'true';
+        logo.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            if (typeof window.scrollToTop === 'function') {
+                window.scrollToTop();
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+    }
+
+    function wireRibbonPullMenu() {
+        const button = $('#bookmarkMenuBtn');
+        if (!button) return;
+
+        let startY = 0;
+        let startX = 0;
+        let isDragging = false;
+        let handledAsDrag = false;
+
+        const resetRibbonDrag = () => {
+            button.style.removeProperty('--pull-distance');
+            button.classList.remove('is-dragging');
+            isDragging = false;
+            window.setTimeout(() => { handledAsDrag = false; }, 120);
+        };
+
+        button.addEventListener('click', (event) => {
+            event.stopPropagation();
+            if (handledAsDrag) return;
+            setRibbonPanelOpen(!isRibbonPanelOpen(), { pulled: true });
+        });
+
+        button.addEventListener('pointerdown', (event) => {
+            if (event.pointerType === 'mouse' && event.button !== 0) return;
+            startY = event.clientY;
+            startX = event.clientX;
+            isDragging = true;
+            handledAsDrag = false;
+            button.classList.add('is-dragging');
+            button.setPointerCapture?.(event.pointerId);
+        });
+
+        button.addEventListener('pointermove', (event) => {
+            if (!isDragging) return;
+            const deltaY = Math.max(-10, Math.min(74, event.clientY - startY));
+            const deltaX = Math.abs(event.clientX - startX);
+            if (Math.abs(deltaY) > 4 || deltaX > 8) {
+                handledAsDrag = true;
+                event.preventDefault();
+                button.style.setProperty('--pull-distance', `${Math.max(0, deltaY)}px`);
+            }
+        });
+
+        button.addEventListener('pointerup', (event) => {
+            if (!isDragging) return;
+            const deltaY = event.clientY - startY;
+            const deltaX = Math.abs(event.clientX - startX);
+            if (deltaY > 24 && deltaX < 90) {
+                handledAsDrag = true;
+                setRibbonPanelOpen(true, { pulled: true });
+            } else if (deltaY < -16) {
+                handledAsDrag = true;
+                setRibbonPanelOpen(false);
+            }
+            resetRibbonDrag();
+        });
+
+        button.addEventListener('pointercancel', resetRibbonDrag);
+    }
+
+
+    function syncStoryRibbonLength() {
         const panel = $('#nookRibbonPanel');
         const button = $('#bookmarkMenuBtn');
+        const shell = button?.closest('.bookmark-menu-shell');
+        if (!panel || !shell) return;
+
+        const styles = window.getComputedStyle(shell);
+        const tipTop = parseFloat(styles.getPropertyValue('--story-ribbon-tip-top')) || 124;
+
+        // The panel is shown before measuring. The ribbon body extends to the
+        // panel bottom; the pointed tip is the only part that hangs below it.
+        const panelBottom = panel.offsetTop + panel.offsetHeight;
+        const openDistance = Math.max(88, Math.round(panelBottom - tipTop));
+
+        shell.style.setProperty('--story-ribbon-open', `${openDistance}px`);
+    }
+
+    function isRibbonPanelOpen() {
+        return $('#bookmarkMenuBtn')?.getAttribute('aria-expanded') === 'true';
+    }
+
+    function setRibbonPanelOpen(open, options = {}) {
+        const panel = $('#nookRibbonPanel');
+        const button = $('#bookmarkMenuBtn');
+        const shell = button?.closest('.bookmark-menu-shell');
         if (!panel || !button) return;
-        const isOpen = panel.classList.toggle('hidden') === false;
-        button.setAttribute('aria-expanded', String(isOpen));
+
+        const wasOpen = button.getAttribute('aria-expanded') === 'true';
+
+        if (open) {
+            panel.classList.remove('hidden');
+            syncStoryRibbonLength();
+            panel.classList.remove('is-closing');
+            panel.classList.add('is-open');
+            button.setAttribute('aria-expanded', 'true');
+            shell?.classList.add('is-open');
+
+            if (!wasOpen && enableMenuSound) {
+                playMenuPageSound();
+            }
+
+            if (options.pulled) {
+                button.classList.remove('pulled-once');
+                void button.offsetWidth;
+                button.classList.add('pulled-once');
+            }
+        } else {
+            if (panel.classList.contains('hidden')) {
+                button.setAttribute('aria-expanded', 'false');
+                shell?.classList.remove('is-open');
+                return;
+            }
+            panel.classList.remove('is-open');
+            panel.classList.add('is-closing');
+            button.setAttribute('aria-expanded', 'false');
+            shell?.classList.remove('is-open');
+            window.setTimeout(() => {
+                if (button.getAttribute('aria-expanded') === 'false') {
+                    panel.classList.add('hidden');
+                    panel.classList.remove('is-closing');
+                }
+            }, 760);
+        }
+    }
+
+    function playMenuPageSound() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+
+            const ctx = state.ambient.ctx || new AudioContext();
+            state.ambient.ctx = ctx;
+            if (ctx.state === 'suspended') ctx.resume();
+
+            const duration = 0.16;
+            const now = ctx.currentTime;
+            const bufferSize = Math.max(1, Math.floor(ctx.sampleRate * duration));
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < bufferSize; i += 1) {
+                const t = i / bufferSize;
+                const softFade = Math.sin(Math.PI * t);
+                data[i] = (Math.random() * 2 - 1) * softFade * (1 - t * 0.45);
+            }
+
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(850, now);
+            filter.frequency.exponentialRampToValueAtTime(1450, now + duration);
+            filter.Q.setValueAtTime(0.72, now);
+
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0.0001, now);
+            gain.gain.linearRampToValueAtTime(0.032, now + 0.025);
+            gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            noise.start(now);
+            noise.stop(now + duration + 0.02);
+        } catch (error) {
+            console.warn('Menu page sound skipped:', error);
+        }
+    }
+
+    function toggleRibbonPanel(event) {
+        event?.stopPropagation();
+        setRibbonPanelOpen(!isRibbonPanelOpen(), { pulled: true });
     }
 
     function closeRibbonPanel() {
-        $('#nookRibbonPanel')?.classList.add('hidden');
-        $('#bookmarkMenuBtn')?.setAttribute('aria-expanded', 'false');
+        setRibbonPanelOpen(false);
+    }
+
+
+    function handleRibbonPanelClick(event) {
+        const pollButton = event.target.closest('[data-poll-link]');
+        if (pollButton) {
+            event.stopPropagation();
+            closeRibbonPanel();
+
+            if (!state.currentUser) {
+                openAuth('login');
+                return;
+            }
+
+            window.open(pollButton.dataset.pollLink || 'https://strawpoll.com', '_blank', 'noopener,noreferrer');
+            return;
+        }
+
+        const journeyButton = event.target.closest('[data-journey-action]');
+        if (journeyButton) {
+            event.stopPropagation();
+            closeRibbonPanel();
+
+            if (!state.currentUser) {
+                openAuth('login');
+                return;
+            }
+
+            openModal('profileModal');
+            resetProfileModalToMyView();
+
+            const action = journeyButton.dataset.journeyAction;
+            window.setTimeout(() => {
+                const profileModal = $('#profileModal .modal-content');
+                if (!profileModal) return;
+
+                const targetMap = {
+                    collection: '#flairGrid',
+                    milestones: '.passport-section',
+                    flair: '#flairGrid',
+                    stories: '#myStoriesList'
+                };
+                const target = $(targetMap[action] || '.passport-section', profileModal);
+                target?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 260);
+            return;
+        }
+
+        const button = event.target.closest('[data-scroll-target]');
+        if (!button) return;
+        const target = document.getElementById(button.dataset.scrollTarget);
+        closeRibbonPanel();
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     function toggleMenu(button) {
