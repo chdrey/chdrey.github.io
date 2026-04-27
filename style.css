@@ -5052,3 +5052,70 @@ body:not(.focus-mode) .writing-actions-left {
 .sound-menu [data-sound][aria-pressed="true"] {
     filter: saturate(1.08);
 }
+
+
+/* =========================================================
+   Final 42: center Story Nook text logo on narrow/mobile screens
+   ========================================================= */
+
+/* When the screen gets narrow, detach the wordmark from the left logo
+   visually and let it slide into the center of the header. */
+@media (max-width: 900px) {
+    #navLogo span,
+    #navLogo.brand-lockup.nav-logo span {
+        display: inline-block !important;
+        position: fixed !important;
+        top: 42px !important;
+        left: 50vw !important;
+        transform: translate(-50%, -50%) !important;
+        margin: 0 !important;
+        max-width: 42vw !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        text-align: center !important;
+        font-size: clamp(1.02rem, 3.2vw, 1.34rem) !important;
+        line-height: 1 !important;
+        z-index: 1000000 !important;
+        pointer-events: auto !important;
+        transition:
+            top 400ms cubic-bezier(.2,.78,.22,1.04),
+            left 400ms cubic-bezier(.2,.78,.22,1.04),
+            transform 400ms cubic-bezier(.2,.78,.22,1.04),
+            font-size 400ms cubic-bezier(.2,.78,.22,1.04),
+            opacity 260ms ease !important;
+    }
+
+    .site-nav.scrolled #navLogo span,
+    .site-nav.scrolled #navLogo.brand-lockup.nav-logo span,
+    #mainNav.scrolled #navLogo span,
+    #mainNav.scrolled #navLogo.brand-lockup.nav-logo span {
+        top: 36px !important;
+        left: 50vw !important;
+        transform: translate(-50%, -50%) !important;
+        font-size: clamp(0.98rem, 3vw, 1.24rem) !important;
+    }
+}
+
+/* Phone sizing: keep it centered, readable, and away from the right controls. */
+@media (max-width: 520px) {
+    #navLogo span,
+    #navLogo.brand-lockup.nav-logo span {
+        top: 39px !important;
+        left: 50vw !important;
+        transform: translate(-50%, -50%) !important;
+        max-width: 46vw !important;
+        font-size: clamp(0.95rem, 4.2vw, 1.16rem) !important;
+        letter-spacing: 0.01em !important;
+    }
+
+    .site-nav.scrolled #navLogo span,
+    .site-nav.scrolled #navLogo.brand-lockup.nav-logo span,
+    #mainNav.scrolled #navLogo span,
+    #mainNav.scrolled #navLogo.brand-lockup.nav-logo span {
+        top: 34px !important;
+        left: 50vw !important;
+        transform: translate(-50%, -50%) !important;
+        font-size: clamp(0.9rem, 3.9vw, 1.08rem) !important;
+    }
+}
