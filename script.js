@@ -201,6 +201,8 @@
         $('#guestPenName')?.addEventListener('input', saveGuestName);
         $('#publishBtn')?.addEventListener('click', publishStory);
         $('#clearDraftBtn')?.addEventListener('click', clearDraft);
+        $('#eraseStoryBtn')?.addEventListener('click', openClearStoryConfirm);
+        $('#confirmEraseStoryBtn')?.addEventListener('click', eraseStoryDraft);
         $('#copyPromptBtn')?.addEventListener('click', startWritingFromPrompt);
         $('#candleBtn')?.addEventListener('click', (event) => {
             event.preventDefault();
@@ -730,6 +732,7 @@
         textArea.value = '';
         localStorage.removeItem(CONFIG.draftKey);
         updateCharCounter();
+        syncPromptPlaceholder();
         setText('#draftStatus', 'Published and draft cleared');
         toast('Story published. The shelf just got warmer.');
         await fetchStories({ resetLimit: true });
@@ -1241,11 +1244,51 @@
         openModal('feedbackModal');
     }
 
+    function getPromptPlaceholder() {
+        const prompt = (state.currentPrompt || $('#weeklyPromptText')?.textContent || CONFIG.prompts?.[0] || '').trim();
+        return prompt || 'Start with a sentence you would keep in a notebook...';
+    }
+
+    function syncPromptPlaceholder() {
+        const input = $('#mainStoryInput');
+        if (!input) return;
+        input.placeholder = getPromptPlaceholder();
+    }
+
+    function openClearStoryConfirm(event) {
+        event?.preventDefault();
+        event?.stopPropagation();
+
+        const input = $('#mainStoryInput');
+        const hasDraft = !!input?.value || !!localStorage.getItem(CONFIG.draftKey);
+
+        if (!hasDraft) {
+            syncPromptPlaceholder();
+            toast('The writing area is already clear.');
+            return;
+        }
+
+        openModal('clearStoryModal');
+    }
+
+    function eraseStoryDraft() {
+        const input = $('#mainStoryInput');
+        if (input) input.value = '';
+        localStorage.removeItem(CONFIG.draftKey);
+        updateCharCounter();
+        syncPromptPlaceholder();
+        setText('#draftStatus', 'Draft cleared');
+        closeModal('clearStoryModal');
+        toast('Writing area cleared.');
+        requestAnimationFrame(() => input?.focus({ preventScroll: true }));
+    }
+
     function restoreDraft() {
         const draft = localStorage.getItem(CONFIG.draftKey);
         const guestName = localStorage.getItem(CONFIG.guestNameKey);
         if (draft && $('#mainStoryInput')) $('#mainStoryInput').value = draft;
         if (guestName && $('#guestPenName')) $('#guestPenName').value = guestName;
+        syncPromptPlaceholder();
     }
 
     function saveDraft() {
@@ -1260,11 +1303,7 @@
 
     function clearDraft() {
         if (!$('#mainStoryInput')?.value && !localStorage.getItem(CONFIG.draftKey)) return;
-        if (!window.confirm('Clear your local draft?')) return;
-        $('#mainStoryInput').value = '';
-        localStorage.removeItem(CONFIG.draftKey);
-        updateCharCounter();
-        setText('#draftStatus', 'Draft cleared');
+        openClearStoryConfirm();
     }
 
     function updateCharCounter() {
@@ -1361,6 +1400,7 @@
     function setWeeklyPrompt(prompt) {
         state.currentPrompt = prompt || '';
         setText('#weeklyPromptText', state.currentPrompt);
+        syncPromptPlaceholder();
     }
 
     function loadYouTubePlayer(src = CONFIG.youtubeSrc) {
@@ -1392,7 +1432,10 @@
         }
     }
 
-    function startWritingFromPrompt() {
+    function startWritingFromPrompt(event) {
+        event?.preventDefault();
+        event?.stopPropagation();
+
         const input = $('#mainStoryInput');
         const promptText = ($('#weeklyPromptText')?.textContent || '').trim();
 
@@ -1403,14 +1446,25 @@
         // and return automatically if the textarea is cleared.
         input.placeholder = promptText;
 
+        // The mobile Writing Desk normally requires an intentional tap before
+        // focus mode opens. The feather button is already intentional, so let it
+        // bypass that guard and enter Focus Mode immediately.
+        state.writingTap.intentionalUntil = Date.now() + 1600;
         enterFocusMode();
 
-        requestAnimationFrame(() => {
+        const focusAndPlace = () => {
             input.focus({ preventScroll: true });
             input.scrollIntoView({
                 behavior: isMobileWritingViewport() ? 'auto' : 'smooth',
                 block: isMobileWritingViewport() ? 'nearest' : 'center'
             });
+        };
+
+        requestAnimationFrame(() => {
+            focusAndPlace();
+            if (isMobileWritingViewport()) {
+                setTimeout(focusAndPlace, 180);
+            }
         });
     }
 
@@ -1749,15 +1803,31 @@
         $$('[data-lighting]').forEach((button) => button.setAttribute('aria-pressed', 'false'));
     }
 
-    async function ensureAudioContext() {
-        if (!state.ambient.ctx) {
-            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContextClass) {
-                toast('This browser does not support generated ambient audio.', 'error');
-                return null;
-            }
 
+    function repairAmbientMasterForSharedContext() {
+        if (!state.ambient.ctx) return;
+        if (!state.ambient.master || state.ambient.master.context !== state.ambient.ctx) {
+            state.ambient.master = state.ambient.ctx.createGain();
+            state.ambient.master.gain.value = state.ambient.effectsEnabled ? 0.92 * getSiteVolume() : 0;
+            state.ambient.master.connect(state.ambient.ctx.destination);
+        }
+    }
+
+    async function ensureAudioContext() {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        if (!AudioContextClass) {
+            toast('This browser does not support generated ambient audio.', 'error');
+            return null;
+        }
+
+        if (!state.ambient.ctx) {
             state.ambient.ctx = new AudioContextClass();
+        }
+
+        // UI sounds like the paper flip can create state.ambient.ctx before
+        // ambient sound effects are started. In that case the context exists,
+        // but the ambient master gain does not. Create/repair it here every time.
+        if (!state.ambient.master || state.ambient.master.context !== state.ambient.ctx) {
             state.ambient.master = state.ambient.ctx.createGain();
             state.ambient.master.gain.value = state.ambient.effectsEnabled ? 0.92 * getSiteVolume() : 0;
             state.ambient.master.connect(state.ambient.ctx.destination);
@@ -2060,6 +2130,7 @@
 
             const ctx = state.ambient.ctx || new AudioContext();
             state.ambient.ctx = ctx;
+            repairAmbientMasterForSharedContext();
             if (ctx.state === 'suspended') ctx.resume();
 
             const duration = 0.16;
@@ -2108,6 +2179,7 @@
 
             const ctx = state.ambient.ctx || new AudioContext();
             state.ambient.ctx = ctx;
+            repairAmbientMasterForSharedContext();
             if (ctx.state === 'suspended') ctx.resume();
 
             const now = ctx.currentTime;
@@ -2152,6 +2224,7 @@
 
             const ctx = state.ambient.ctx || new AudioContext();
             state.ambient.ctx = ctx;
+            repairAmbientMasterForSharedContext();
             if (ctx.state === 'suspended') ctx.resume();
 
             const now = ctx.currentTime;

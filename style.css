@@ -7467,3 +7467,464 @@ body:not(.focus-mode) #writingZoneSection .ambient-menu {
         padding-right: 0.42rem !important;
     }
 }
+
+
+/* =========================================================
+   Final 63: persistent prompt placeholder + eraser clear control
+   ========================================================= */
+
+/* The Weekly Prompt now stays as the textarea example text whenever the
+   writing area is empty. This wrapper lets the eraser sit inside the field. */
+.story-input-wrap {
+    position: relative;
+    width: 100%;
+}
+
+.story-input-wrap #mainStoryInput {
+    display: block;
+    padding-right: 3.25rem !important;
+}
+
+.textarea-eraser {
+    position: absolute;
+    right: 0.78rem;
+    bottom: 0.78rem;
+    display: inline-grid;
+    place-items: center;
+    width: 2.18rem;
+    height: 2.18rem;
+    padding: 0;
+    border-radius: 50%;
+    border: 1px solid rgba(223, 191, 131, 0.26);
+    background: rgba(14, 9, 6, 0.50);
+    color: var(--paper-soft);
+    box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+    backdrop-filter: blur(8px);
+    z-index: 5;
+    transition: transform 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.textarea-eraser:hover {
+    transform: translateY(-1px);
+    background: rgba(223, 191, 131, 0.12);
+    border-color: rgba(223, 191, 131, 0.42);
+}
+
+.textarea-eraser svg {
+    width: 1.08rem;
+    height: 1.08rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.clear-story-modal {
+    text-align: center;
+}
+
+.clear-story-icon {
+    display: inline-grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    margin: 0 auto 0.75rem;
+    color: var(--accent-2);
+    background: rgba(215, 165, 111, 0.10);
+    border: 1px solid rgba(215, 165, 111, 0.24);
+}
+
+.clear-story-icon svg {
+    width: 1.42rem;
+    height: 1.42rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.85;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.clear-story-modal .modal-actions-row {
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+body.candle-lit .textarea-eraser {
+    color: #3d3024 !important;
+    background: rgba(255, 252, 241, 0.58);
+    border-color: rgba(80,55,38,0.22);
+}
+
+@media (max-width: 760px) {
+    .story-input-wrap #mainStoryInput {
+        padding-right: 3rem !important;
+    }
+
+    .textarea-eraser {
+        right: 0.62rem;
+        bottom: 0.62rem;
+        width: 2.04rem;
+        height: 2.04rem;
+    }
+
+    .textarea-eraser svg {
+        width: 1rem;
+        height: 1rem;
+    }
+}
+
+
+/* =========================================================
+   Final 64: ambient sound repair
+   ========================================================= */
+
+
+/* =========================================================
+   Final 65: feather prompt button glow + glass shine
+   ========================================================= */
+
+/* Make the feather prompt button more inviting on desktop without changing
+   the weekly prompt layout too much. */
+.prompt-write-btn {
+    position: relative !important;
+    overflow: hidden !important;
+    width: 2.65rem !important;
+    height: 2.65rem !important;
+    min-width: 2.65rem !important;
+    border-radius: 50% !important;
+    isolation: isolate;
+    box-shadow:
+        0 10px 24px rgba(0, 0, 0, 0.18),
+        0 0 0 3px rgba(215, 165, 111, 0.08),
+        0 0 24px rgba(215, 165, 111, 0.16) !important;
+    animation: featherInvitePulse 4.8s ease-in-out infinite;
+}
+
+.prompt-write-btn::before {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border-radius: inherit;
+    background:
+        radial-gradient(circle at 32% 22%, rgba(255, 255, 255, 0.32), transparent 34%),
+        linear-gradient(135deg, rgba(255,255,255,0.20), transparent 42%);
+    opacity: 0.72;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.prompt-write-btn::after {
+    content: "";
+    position: absolute;
+    top: -45%;
+    left: -85%;
+    width: 58%;
+    height: 190%;
+    transform: rotate(28deg);
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,0.12),
+        rgba(255,255,255,0.52),
+        rgba(255,255,255,0.10),
+        transparent
+    );
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1;
+    animation: featherGlassShine 5.4s ease-in-out infinite;
+}
+
+.prompt-write-btn span {
+    position: relative;
+    z-index: 2;
+    font-size: 1.18rem;
+    filter: drop-shadow(0 1px 3px rgba(0,0,0,0.18));
+    transition: transform 180ms ease, filter 180ms ease;
+}
+
+.prompt-write-btn:hover {
+    transform: translateY(-1px);
+    box-shadow:
+        0 14px 30px rgba(0, 0, 0, 0.22),
+        0 0 0 4px rgba(215, 165, 111, 0.10),
+        0 0 34px rgba(215, 165, 111, 0.22) !important;
+}
+
+.prompt-write-btn:hover span {
+    transform: translateY(-0.07em) rotate(-15deg) scale(1.06);
+}
+
+.prompt-write-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+@keyframes featherGlassShine {
+    0%, 58% {
+        left: -85%;
+        opacity: 0;
+    }
+    66% {
+        opacity: 0.8;
+    }
+    78% {
+        left: 128%;
+        opacity: 0;
+    }
+    100% {
+        left: 128%;
+        opacity: 0;
+    }
+}
+
+@keyframes featherInvitePulse {
+    0%, 100% {
+        box-shadow:
+            0 10px 24px rgba(0, 0, 0, 0.18),
+            0 0 0 3px rgba(215, 165, 111, 0.08),
+            0 0 24px rgba(215, 165, 111, 0.16);
+    }
+    50% {
+        box-shadow:
+            0 12px 26px rgba(0, 0, 0, 0.20),
+            0 0 0 4px rgba(215, 165, 111, 0.10),
+            0 0 30px rgba(215, 165, 111, 0.22);
+    }
+}
+
+/* Keep it slightly smaller on mobile so the prompt row stays tidy. */
+@media (max-width: 640px) {
+    .prompt-write-btn {
+        width: 2.26rem !important;
+        height: 2.26rem !important;
+        min-width: 2.26rem !important;
+    }
+
+    .prompt-write-btn span {
+        font-size: 1.04rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .prompt-write-btn,
+    .prompt-write-btn::after {
+        animation: none !important;
+    }
+}
+
+
+/* =========================================================
+   Final 66: locked-left main titles, stable Writing Desk title
+   ========================================================= */
+
+/* Main-page box titles: same left anchor, same basic behavior.
+   Latest Submissions/feed is intentionally excluded per request. */
+main > section:not(.feed) > .section-heading,
+main > section:not(.feed) > .weekly-prompt-heading,
+main > section:not(.feed) > .section-heading.split {
+    width: 100% !important;
+    max-width: none !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    text-align: left !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+}
+
+main > section:not(.feed) > .section-heading > div,
+main > section:not(.feed) > .section-heading h2,
+main > section:not(.feed) > .section-heading p,
+main > section:not(.feed) > .section-heading .eyebrow,
+main > section:not(.feed) > .section-label-title {
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    text-align: left !important;
+    transform: none !important;
+}
+
+/* Writing Desk: lock the title to the left edge of the content area.
+   Do not reserve right-side space in the title row; the Sound/Light controls
+   float independently, so they cannot push or visually center the title. */
+body:not(.focus-mode) #writingZoneSection {
+    position: relative !important;
+    padding-top: 4.35rem !important;
+}
+
+body:not(.focus-mode) #writingZoneSection > .section-heading,
+body:not(.focus-mode) #writingZoneSection > .section-heading.split {
+    position: relative !important;
+    left: auto !important;
+    right: auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0 !important;
+    margin: 0 0 0.58rem 0 !important;
+    padding: 0 !important;
+    min-height: 1.28rem !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    text-align: left !important;
+    transform: none !important;
+}
+
+body:not(.focus-mode) #writingZoneSection > .section-heading > div {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+    transform: none !important;
+}
+
+body:not(.focus-mode) #writingZoneSection > .section-heading .eyebrow {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    text-align: left !important;
+    transform: none !important;
+    white-space: nowrap !important;
+}
+
+/* Desktop controls: lower Sound/Light about 20px from the earlier placement,
+   with comfortable top/bottom breathing room inside the Writing Desk header. */
+body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+    position: absolute !important;
+    top: 2.08rem !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+}
+
+/* Keep their popups attached to the lowered controls. */
+body:not(.focus-mode) #writingZoneSection .ambient-menu {
+    top: 4.32rem !important;
+}
+
+/* Reader Favorites should match the left-title behavior. Do not touch
+   Latest Submissions/feed title or its refresh button layout. */
+.leaderboard.card > .section-heading {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 0 0.72rem 0 !important;
+    padding: 0 !important;
+    min-height: 1.25rem !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    text-align: left !important;
+}
+
+.leaderboard.card > .section-heading h2 {
+    margin: 0 !important;
+    padding: 0 !important;
+    text-align: left !important;
+    transform: none !important;
+    line-height: 1 !important;
+}
+
+/* Mobile/narrow: the Writing Desk title stays hard-left.
+   Sound/Light move to the right of that header without changing title layout. */
+@media (max-width: 760px) {
+    main > section:not(.feed) > .section-heading,
+    main > section:not(.feed) > .weekly-prompt-heading,
+    main > section:not(.feed) > .section-heading.split {
+        width: 100% !important;
+        max-width: none !important;
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection {
+        padding-top: 3.02rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection > .section-heading,
+    body:not(.focus-mode) #writingZoneSection > .section-heading.split {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 0 0.48rem 0 !important;
+        padding: 0 !important;
+        min-height: 1.64rem !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
+        transform: none !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection > .section-heading > div,
+    body:not(.focus-mode) #writingZoneSection > .section-heading .eyebrow {
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: left !important;
+        transform: none !important;
+        white-space: nowrap !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+        position: absolute !important;
+        top: 1.28rem !important;
+        right: 0.68rem !important;
+        left: auto !important;
+        transform: none !important;
+        margin: 0 !important;
+        max-width: 8.3rem !important;
+        justify-content: flex-end !important;
+        gap: 0.32rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        min-width: 3.92rem !important;
+        padding: 0.46rem 0.5rem !important;
+        font-size: 0.72rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .ambient-menu {
+        top: 3.48rem !important;
+    }
+
+    /* Focus Mode mobile: title still locked left, X controls the right edge. */
+    body.focus-mode #writingZoneSection > .section-heading,
+    body.focus-mode #writingZoneSection > .section-heading.split {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 0 0.12rem 0 !important;
+        padding: 0 !important;
+        justify-content: flex-start !important;
+        text-align: left !important;
+        transform: none !important;
+    }
+
+    body.focus-mode #writingZoneSection > .section-heading > div,
+    body.focus-mode #writingZoneSection > .section-heading .eyebrow {
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: left !important;
+        transform: none !important;
+        white-space: nowrap !important;
+    }
+}
+
+@media (max-width: 380px) {
+    body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+        right: 0.52rem !important;
+        max-width: 7.7rem !important;
+        gap: 0.24rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        min-width: 3.62rem !important;
+        padding-left: 0.42rem !important;
+        padding-right: 0.42rem !important;
+    }
+}
+
+
+/* =========================================================
+   Final 67: feather button enters mobile Focus Mode
+   ========================================================= */
