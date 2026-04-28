@@ -13029,3 +13029,115 @@ body.writing-has-content.focus-mode #writingZoneSection #mainStoryInput::placeho
         width: min(92vw, 390px) !important;
     }
 }
+
+
+/* =========================================================
+   Final 35: steady header on scroll + centered mobile wordmark
+   ========================================================= */
+
+/* Stop the header/logo from contracting, bouncing, or changing spacing on scroll. */
+.site-nav,
+#mainNav {
+    transition: none !important;
+}
+
+.site-nav.scrolled,
+#mainNav.scrolled {
+    padding-top: 18px !important;
+    padding-bottom: 18px !important;
+    padding-left: 176px !important;
+    padding-right: 40px !important;
+    min-height: unset !important;
+    box-shadow: none !important;
+}
+
+/* Keep the desktop logo image and wordmark identical whether scrolling or not. */
+.site-nav.scrolled #navLogo .brand-logo-img,
+.site-nav.scrolled #navLogo.brand-lockup.nav-logo .brand-logo-img,
+#mainNav.scrolled #navLogo .brand-logo-img,
+#mainNav.scrolled #navLogo.brand-lockup.nav-logo .brand-logo-img {
+    width: 176px !important;
+    height: 176px !important;
+    transform: none !important;
+    filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.42)) !important;
+}
+
+.site-nav.scrolled #navLogo span,
+.site-nav.scrolled #navLogo.brand-lockup.nav-logo span,
+#mainNav.scrolled #navLogo span,
+#mainNav.scrolled #navLogo.brand-lockup.nav-logo span {
+    transform: translate(-20px, 68px) !important;
+    font-size: 1.46rem !important;
+    max-width: none !important;
+    opacity: 1 !important;
+}
+
+/* Remove scroll-related logo/header transitions so the header stays visually still. */
+#navLogo,
+#navLogo.brand-lockup,
+#navLogo.brand-lockup.nav-logo,
+#navLogo .brand-logo-img,
+#navLogo.brand-lockup.nav-logo .brand-logo-img,
+#navLogo span,
+#navLogo.brand-lockup.nav-logo span,
+.nav-actions,
+.nav-group,
+.quote-of-day,
+#navLoginBtn {
+    transition: none !important;
+}
+
+/* Mobile: keep header steady and center the text wordmark in the header. */
+@media (max-width: 760px) {
+    .site-nav,
+    #mainNav,
+    .site-nav.scrolled,
+    #mainNav.scrolled {
+        min-height: 82px !important;
+        padding-top: 14px !important;
+        padding-bottom: 14px !important;
+        padding-left: 112px !important;
+        padding-right: 16px !important;
+        box-shadow: none !important;
+        transition: none !important;
+    }
+
+    .site-nav.scrolled #navLogo .brand-logo-img,
+    .site-nav.scrolled #navLogo.brand-lockup.nav-logo .brand-logo-img,
+    #mainNav.scrolled #navLogo .brand-logo-img,
+    #mainNav.scrolled #navLogo.brand-lockup.nav-logo .brand-logo-img,
+    #navLogo .brand-logo-img,
+    #navLogo.brand-lockup.nav-logo .brand-logo-img {
+        width: 132px !important;
+        height: 132px !important;
+        transform: none !important;
+    }
+
+    #navLogo span,
+    #navLogo.brand-lockup.nav-logo span,
+    .site-nav.scrolled #navLogo span,
+    .site-nav.scrolled #navLogo.brand-lockup.nav-logo span,
+    #mainNav.scrolled #navLogo span,
+    #mainNav.scrolled #navLogo.brand-lockup.nav-logo span {
+        display: block !important;
+        position: fixed !important;
+        left: 50% !important;
+        top: 31px !important;
+        transform: translateX(-50%) !important;
+        margin: 0 !important;
+        max-width: 48vw !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        text-align: center !important;
+        font-size: clamp(1rem, 4.5vw, 1.24rem) !important;
+        line-height: 1 !important;
+        z-index: 1000000 !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+    }
+
+    .quote-of-day {
+        display: none !important;
+    }
+}

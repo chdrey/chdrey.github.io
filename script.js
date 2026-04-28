@@ -155,14 +155,12 @@
 
     function wireStaticEvents() {
         const nav = $('#mainNav');
+        nav?.classList.remove('scrolled');
         window.addEventListener('scroll', () => {
-            if (!nav) return;
-            const shouldScroll = window.scrollY > 40;
-            const wasScrolled = nav.classList.contains('scrolled');
-            if (wasScrolled !== shouldScroll) {
-                nav.classList.toggle('scrolled', shouldScroll);
-                if (isRibbonPanelOpen()) requestAnimationFrame(syncStoryRibbonLength);
-            }
+            // Keep the header steady while scrolling. The ribbon still syncs if open,
+            // but the nav/logo/quote/login no longer contract or bounce.
+            nav?.classList.remove('scrolled');
+            if (isRibbonPanelOpen()) requestAnimationFrame(syncStoryRibbonLength);
         }, { passive: true });
 
         $('#navLogo')?.addEventListener('click', scrollToTop);
