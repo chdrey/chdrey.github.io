@@ -723,7 +723,7 @@
         if (top) top.innerHTML = '<div class="loading-state">Counting hearts...</div>';
 
         try {
-            const storySelect = '*, profiles(username, avatar_url, selected_flair_id), comments(count)';
+            const storySelect = '*, profiles!stories_user_id_fkey(username, avatar_url, selected_flair_id), comments(count)';
 
             const [{ data: topStories, error: topError }, { data: feedStories, error: feedError }] = await Promise.all([
                 state.db
@@ -973,7 +973,7 @@
         if (!state.db) return toast('Reading stories needs Supabase to be connected.', 'error');
         const { data: story, error } = await state.db
             .from('stories')
-            .select('*, profiles(username, avatar_url)')
+            .select('*, profiles!stories_user_id_fkey(username, avatar_url)')
             .eq('id', storyId)
             .maybeSingle();
         if (error || !story) return toast('Could not open that story.', 'error');
@@ -1005,7 +1005,7 @@
         list.innerHTML = '<div class="loading-state">Listening for whispers...</div>';
         const { data: comments, error } = await state.db
             .from('comments')
-            .select('*, profiles(username, avatar_url)')
+            .select('*, profiles!comments_user_id_fkey(username, avatar_url)')
             .eq('story_id', storyId)
             .is('deleted_at', null)
             .order('created_at', { ascending: true });
