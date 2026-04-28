@@ -157,8 +157,7 @@
         const nav = $('#mainNav');
         nav?.classList.remove('scrolled');
         window.addEventListener('scroll', () => {
-            // Keep the header steady while scrolling. The ribbon still syncs if open,
-            // but the nav/logo/quote/login no longer contract or bounce.
+            // Header is intentionally steady now: no shrink/contract effect while scrolling.
             nav?.classList.remove('scrolled');
             if (isRibbonPanelOpen()) requestAnimationFrame(syncStoryRibbonLength);
         }, { passive: true });

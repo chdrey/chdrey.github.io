@@ -13141,3 +13141,108 @@ body.writing-has-content.focus-mode #writingZoneSection #mainStoryInput::placeho
         display: none !important;
     }
 }
+
+
+/* =========================================================
+   Final 36: completely disable scroll-shrinking header
+   ========================================================= */
+
+/* The header should look exactly the same at rest and while scrolling. */
+#mainNav,
+.site-nav {
+    transition: none !important;
+}
+
+#mainNav.scrolled,
+.site-nav.scrolled {
+    padding-top: 18px !important;
+    padding-bottom: 18px !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+/* Neutralize any scroll-only changes on every visible header element. */
+#mainNav.scrolled *,
+.site-nav.scrolled *,
+#mainNav *,
+.site-nav * {
+    transition-property: color, background-color, border-color, box-shadow, opacity !important;
+}
+
+/* Keep the logo image, wordmark, quote, login/profile controls, and menu steady. */
+#mainNav.scrolled #navLogo,
+#mainNav.scrolled .nav-logo,
+#mainNav.scrolled .brand-logo-img,
+#mainNav.scrolled #navLogo span,
+#mainNav.scrolled .quote-of-day,
+#mainNav.scrolled #navLoginBtn,
+#mainNav.scrolled #loggedOutNav,
+#mainNav.scrolled #loggedInNav,
+#mainNav.scrolled .nav-actions,
+#mainNav.scrolled .nav-group,
+#mainNav.scrolled .bookmark-menu-shell,
+#mainNav.scrolled #bookmarkMenuBtn {
+    transform: none !important;
+    scale: 1 !important;
+    opacity: 1 !important;
+    margin-top: inherit;
+    margin-bottom: inherit;
+}
+
+/* Restore the original nav padding and logo placement if any scrolled class appears. */
+@media (min-width: 761px) {
+    #mainNav.scrolled,
+    .site-nav.scrolled {
+        padding-left: 42px !important;
+        padding-right: 42px !important;
+    }
+
+    #mainNav.scrolled #navLogo .brand-logo-img,
+    .site-nav.scrolled #navLogo .brand-logo-img {
+        width: 176px !important;
+        height: 176px !important;
+    }
+
+    #mainNav.scrolled #navLogo span,
+    .site-nav.scrolled #navLogo span {
+        transform: none !important;
+        font-size: inherit !important;
+        max-width: inherit !important;
+    }
+}
+
+/* Mobile stays steady too, with only the wordmark centered as requested. */
+@media (max-width: 760px) {
+    #mainNav,
+    .site-nav,
+    #mainNav.scrolled,
+    .site-nav.scrolled {
+        transition: none !important;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    #mainNav.scrolled #navLogo,
+    #mainNav.scrolled .nav-actions,
+    #mainNav.scrolled .nav-group,
+    #mainNav.scrolled #navLoginBtn,
+    #mainNav.scrolled .brand-logo-img {
+        transform: none !important;
+        scale: 1 !important;
+        opacity: 1 !important;
+    }
+
+    #navLogo span,
+    #navLogo.brand-lockup.nav-logo span,
+    #mainNav.scrolled #navLogo span,
+    #mainNav.scrolled #navLogo.brand-lockup.nav-logo span {
+        position: fixed !important;
+        left: 50% !important;
+        top: 31px !important;
+        transform: translateX(-50%) !important;
+        margin: 0 !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+        z-index: 1000000 !important;
+    }
+}
