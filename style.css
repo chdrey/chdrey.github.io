@@ -13246,3 +13246,70 @@ body.writing-has-content.focus-mode #writingZoneSection #mainStoryInput::placeho
         z-index: 1000000 !important;
     }
 }
+/* =========================================================
+   Backend/Profile phase 1 polish: profile home + stats
+   ========================================================= */
+.profile-info { min-width: 0; }
+.profile-bio-display {
+    max-width: 440px;
+    margin-top: 0.35rem;
+    color: #7b634a;
+    font: italic 1.02rem/1.45 var(--font-body);
+}
+.profile-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.65rem;
+    margin: 0.95rem 0 1rem;
+}
+.profile-stat-card {
+    padding: 0.8rem 0.65rem;
+    border-radius: 16px;
+    text-align: center;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(238, 218, 182, 0.72));
+    border: 1px solid rgba(139, 94, 60, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+.profile-stat-card strong {
+    display: block;
+    color: #5c3d25;
+    font-size: 1.25rem;
+    line-height: 1;
+}
+.profile-stat-card span {
+    display: block;
+    margin-top: 0.32rem;
+    color: #806a50;
+    font-size: 0.76rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.profile-settings-fields {
+    display: grid;
+    gap: 0.58rem;
+    margin-top: 0.75rem;
+}
+.profile-field-label {
+    color: #5c3d25;
+    font-size: 0.76rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+.profile-bio-input {
+    min-height: 92px;
+    resize: vertical;
+    line-height: 1.45;
+}
+.password-settings-grid { margin-top: 0.9rem; }
+.profile-stats-error {
+    grid-column: 1 / -1;
+    color: #806a50;
+    background: rgba(255, 255, 255, 0.45);
+}
+@media (max-width: 640px) {
+    .profile-header { align-items: flex-start; }
+    .profile-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .profile-bio-display { font-size: 0.98rem; }
+}

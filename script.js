@@ -4,8 +4,8 @@
     const CONFIG = {
         adminEmail: 'chdrey@gmail.com',
         adminUsername: 'PenPaleto',
-        supabaseUrl: 'https://lypndarukqjtkyhxygwe.supabase.co',
-        supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imx5cG5kYXJ1a3FqdGt5aHh5Z3dlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM3Nzc2NzAsImV4cCI6MjA3OTM1MzY3MH0.NE5Q1BFVsBDyKSUxHO--aR-jbSHSLW8klha7C7_VbUA',
+        supabaseUrl: 'https://pflgpjywwovlrvtpwgfi.supabase.co',
+        supabaseKey: 'sb_publishable_yij9AdnvenadfIts9zvj_A_FPNUAVf2',
         youtubeSrc: 'https://www.youtube.com/embed/XDvLE7TZBmk?start=699&autoplay=0&mute=0&playsinline=1&controls=1&rel=0&enablejsapi=1&origin=' + encodeURIComponent(window.location.origin || window.location.href.split('/').slice(0,3).join('/')),
         draftKey: 'story-nook:draft:v2',
         guestNameKey: 'story-nook:guest-name:v2',
@@ -220,6 +220,7 @@
         $('#forgotPasswordBtn')?.addEventListener('click', sendPasswordReset);
         $('#logoutBtn')?.addEventListener('click', logout);
         $('#changePasswordBtn')?.addEventListener('click', changePassword);
+        $('#saveProfileBtn')?.addEventListener('click', saveProfileSettings);
         $('#deleteAccountBtn')?.addEventListener('click', deleteProfileData);
 
         $('#mainStoryInput')?.addEventListener('input', () => {
@@ -600,6 +601,98 @@
         await fetchStories();
     }
 
+    function setProfileDetails(profile = {}, options = {}) {
+        const username = profile?.username || 'Writer';
+        const bio = (profile?.bio || '').trim();
+        setText('#profileNameDisplay', username);
+        setText('#profileBioDisplay', bio || (options.readOnly ? 'This writer has not added an author note yet.' : 'Tell readers a little about your writing voice.'));
+
+        const usernameInput = $('#profileUsernameInput');
+        const bioInput = $('#profileBioInput');
+        if (usernameInput) usernameInput.value = username;
+        if (bioInput) bioInput.value = bio;
+    }
+
+    async function saveProfileSettings() {
+        if (!state.db || !state.currentUser) return openAuth('login');
+        const username = cleanUsername($('#profileUsernameInput')?.value || state.currentProfile?.username || 'Writer');
+        const bio = String($('#profileBioInput')?.value || '').trim().slice(0, 220);
+        if (!username) return toast('Choose a pen name first.', 'error');
+
+        if (username !== state.currentProfile?.username) {
+            const { data: existing, error: nameError } = await state.db
+                .from('profiles')
+                .select('id')
+                .eq('username', username)
+                .neq('id', state.currentUser.id)
+                .maybeSingle();
+            if (nameError) return toast(`Could not check that pen name: ${nameError.message}`, 'error');
+            if (existing) return toast('That pen name is already taken.', 'error');
+        }
+
+        setButtonLoading('#saveProfileBtn', true, 'Saving...');
+        const { error } = await state.db
+            .from('profiles')
+            .update({ username, bio })
+            .eq('id', state.currentUser.id);
+        setButtonLoading('#saveProfileBtn', false);
+
+        if (error) return toast(`Profile update failed: ${error.message}. If this mentions bio, run the Supabase setup SQL first.`, 'error');
+        state.currentProfile = await getProfileById(state.currentUser.id);
+        setProfileDetails(state.currentProfile);
+        updateUI();
+        await fetchStories();
+        toast('Profile saved.');
+    }
+
+    async function loadProfileStatsForUser(targetId) {
+        const grid = $('#profileStatsGrid');
+        if (!grid || !state.db || !targetId) return;
+        grid.innerHTML = `
+            <div class="profile-stat-card"><strong>…</strong><span>Stories</span></div>
+            <div class="profile-stat-card"><strong>…</strong><span>Hearts</span></div>
+            <div class="profile-stat-card"><strong>…</strong><span>Comments</span></div>
+            <div class="profile-stat-card"><strong>…</strong><span>Words</span></div>`;
+
+        try {
+            const { data: stories, error } = await state.db
+                .from('stories')
+                .select('id, content, votes')
+                .eq('user_id', targetId)
+                .is('deleted_at', null);
+            if (error) throw error;
+
+            const storyIds = (stories || []).map((story) => story.id);
+            const storyCount = stories?.length || 0;
+            const heartCount = (stories || []).reduce((sum, story) => sum + Number(story.votes || 0), 0);
+            const wordCount = (stories || []).reduce((sum, story) => sum + countWords(story.content || ''), 0);
+            let commentCount = 0;
+
+            if (storyIds.length) {
+                const { count, error: commentError } = await state.db
+                    .from('comments')
+                    .select('id', { count: 'exact', head: true })
+                    .in('story_id', storyIds)
+                    .is('deleted_at', null);
+                if (commentError) throw commentError;
+                commentCount = count || 0;
+            }
+
+            grid.innerHTML = `
+                <div class="profile-stat-card"><strong>${storyCount}</strong><span>Stories</span></div>
+                <div class="profile-stat-card"><strong>${heartCount}</strong><span>Hearts</span></div>
+                <div class="profile-stat-card"><strong>${commentCount}</strong><span>Comments</span></div>
+                <div class="profile-stat-card"><strong>${wordCount}</strong><span>Words</span></div>`;
+        } catch (error) {
+            console.warn('Profile stats unavailable:', error);
+            grid.innerHTML = '<div class="empty-state profile-stats-error">Stats will appear once the Supabase setup is complete.</div>';
+        }
+    }
+
+    function countWords(value) {
+        return String(value || '').trim().split(/\s+/).filter(Boolean).length;
+    }
+
     async function changePassword() {
         if (!state.db || !state.currentUser) return openAuth('login');
         const newPassword = $('#newPasswordInput')?.value;
@@ -788,6 +881,7 @@
         showPublishMoment();
         toast('Your story now lives in the Nook ✨');
         await fetchStories({ resetLimit: true });
+        if (state.currentUser) loadProfileStatsForUser(state.currentUser.id);
     }
 
     async function voteStory(storyId, currentVotes = 0) {
@@ -796,13 +890,23 @@
             openAuth('login');
             return toast('Log in to vote on stories.', 'error');
         }
-        const newVotes = (currentVotes || 0) + 1;
-        const { error } = await state.db.from('stories').update({ votes: newVotes }).eq('id', storyId);
-        if (error) return toast(`Could not vote: ${error.message}`, 'error');
+
+        let newVotes = (currentVotes || 0) + 1;
+        const { data, error } = await state.db.rpc('like_story', { p_story_id: storyId });
+
+        if (error) {
+            console.warn('like_story RPC unavailable or blocked. Falling back to legacy vote update.', error);
+            const fallback = await state.db.from('stories').update({ votes: newVotes }).eq('id', storyId);
+            if (fallback.error) return toast(`Could not vote: ${fallback.error.message}`, 'error');
+        } else {
+            newVotes = Number(data ?? newVotes);
+        }
+
         toast('Heart added.');
         if (state.activeStoryId === storyId && state.activeStory) state.activeStory.votes = newVotes;
         await fetchStories();
         if (state.activeStoryId === storyId) renderReadActions(state.activeStory);
+        if (state.currentUser) loadProfileStatsForUser(state.currentUser.id);
     }
 
     async function deleteStory(storyId) {
@@ -1086,8 +1190,9 @@
 
         const { data: targetUser, error } = await state.db.from('profiles').select('*').eq('id', userId).maybeSingle();
         if (error || !targetUser) return toast('User data missing.', 'error');
-        setText('#profileNameDisplay', targetUser.username || 'Unnamed');
+        setProfileDetails(targetUser, { readOnly: true });
         $('#profileAvatar').src = targetUser.avatar_url || createAvatarDataUrl(targetUser.username);
+        await loadProfileStatsForUser(userId);
         await loadPassportForUser(userId);
         await loadStoriesForUser(userId);
     }
@@ -1101,8 +1206,9 @@
         $('#adminDashboardBtn')?.classList.toggle('hidden', !state.isAdmin);
 
         if (!state.currentUser || !state.currentProfile) return;
-        setText('#profileNameDisplay', state.currentProfile.username || 'Writer');
+        setProfileDetails(state.currentProfile);
         $('#profileAvatar').src = state.currentProfile.avatar_url || createAvatarDataUrl(state.currentProfile.username);
+        loadProfileStatsForUser(state.currentUser.id);
         loadPassportForUser(state.currentUser.id);
         loadStoriesForUser(state.currentUser.id);
     }

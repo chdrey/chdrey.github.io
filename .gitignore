@@ -1,0 +1,6 @@
+*.exe
+*.winmd
+*.zip
+*password*.txt
+Supabase/*password*.txt
+how to update from console.txt

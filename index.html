@@ -429,10 +429,18 @@
                 <div class="profile-info">
                     <p class="eyebrow dark">Author profile</p>
                     <h2 id="profileNameDisplay">Loading...</h2>
+                    <p id="profileBioDisplay" class="profile-bio-display">A quiet corner for stories, comments, and late-night ideas.</p>
                 </div>
             </div>
 
             <button id="adminDashboardBtn" class="btn-primary full-width hidden" type="button">👑 Control Panel</button>
+
+            <div id="profileStatsGrid" class="profile-stats-grid" aria-label="Profile statistics">
+                <div class="profile-stat-card"><strong>—</strong><span>Stories</span></div>
+                <div class="profile-stat-card"><strong>—</strong><span>Hearts</span></div>
+                <div class="profile-stat-card"><strong>—</strong><span>Comments</span></div>
+                <div class="profile-stat-card"><strong>—</strong><span>Words</span></div>
+            </div>
 
             <div class="passport-section">
                 <div class="passport-header-row">
@@ -444,7 +452,14 @@
 
             <div id="settingsSection" class="settings-section">
                 <h3>⚙️ Settings</h3>
-                <div class="settings-grid">
+                <div class="profile-settings-fields">
+                    <label class="profile-field-label" for="profileUsernameInput">Pen name</label>
+                    <input type="text" id="profileUsernameInput" maxlength="24" placeholder="Your pen name" autocomplete="nickname">
+                    <label class="profile-field-label" for="profileBioInput">About your writing</label>
+                    <textarea id="profileBioInput" class="profile-bio-input" maxlength="220" rows="3" placeholder="A small note about your voice, genres, or favorite late-night ideas..."></textarea>
+                    <button id="saveProfileBtn" class="btn-primary full-width" type="button">Save Profile</button>
+                </div>
+                <div class="settings-grid password-settings-grid">
                     <input type="password" id="newPasswordInput" placeholder="New Password" autocomplete="new-password">
                     <button id="changePasswordBtn" class="btn-secondary small" type="button">Update Password</button>
                 </div>
