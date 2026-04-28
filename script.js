@@ -29,6 +29,9 @@
     };
 
     const enableMenuSound = true;
+    const writingStyleKey = 'story-nook:writing-style:v1';
+    const typingSoundKey = 'story-nook:typing-sound:v1';
+
 
     const state = {
         db: null,
@@ -95,7 +98,11 @@
     function boot() {
         document.body.classList.remove('focus-mode', 'candle-lit', 'candle-brightness-active', 'quiet-room', 'effects-off', ...LIGHTING_CLASSES);
         wireStaticEvents();
+        inviteWritingDeskOnLoad();
         restoreDraft();
+        restoreWritingStyle();
+        restoreTypingSoundToggle();
+        updateWritingMoodState();
         updateCharCounter();
         setWeeklyPrompt(CONFIG.prompts[0]);
         loadYouTubePlayer();
@@ -103,9 +110,19 @@
         updateFocusMuteButton();
         updateFocusVisibility();
         updateCandleBrightness();
+        updateFocusToggleButton();
         updateAmbientTriggerStates();
         primeYouTubeAudio();
         initializeSupabase();
+    }
+
+    function inviteWritingDeskOnLoad() {
+        const desk = $('#writingZoneSection');
+        if (!desk) return;
+        requestAnimationFrame(() => {
+            desk.classList.add('writing-desk-invite');
+            window.setTimeout(() => desk.classList.remove('writing-desk-invite'), 2400);
+        });
     }
 
     function initializeSupabase() {
@@ -211,7 +228,15 @@
         $('#mainStoryInput')?.addEventListener('input', () => {
             updateCharCounter();
             saveDraft();
+            updateWritingMoodState();
+            playTypingInputSound();
         });
+        $('#writingFontSelect')?.addEventListener('change', updateWritingStyleFromTools);
+        $('#writingSizeSelect')?.addEventListener('change', updateWritingStyleFromTools);
+        $('#writingBoldBtn')?.addEventListener('click', toggleWritingBold);
+        $('#writingItalicBtn')?.addEventListener('click', toggleWritingItalic);
+        $('#typingSoundToggleBtn')?.addEventListener('click', toggleTypingSound);
+        $('#mainStoryInput')?.addEventListener('keydown', playTypingKeySound);
         wireIntentionalWritingFocus();
         $('#guestPenName')?.addEventListener('input', saveGuestName);
         $('#publishBtn')?.addEventListener('click', publishStory);
@@ -219,6 +244,7 @@
         $('#eraseStoryBtn')?.addEventListener('click', openClearStoryConfirm);
         $('#confirmEraseStoryBtn')?.addEventListener('click', eraseStoryDraft);
         $('#copyPromptBtn')?.addEventListener('click', startWritingFromPrompt);
+        $('#toggleVideoBtn')?.addEventListener('click', toggleWeeklyVideo);
         $('#candleBrightnessSlider')?.addEventListener('input', updateCandleBrightness);
         $('#candleBrightnessSlider')?.addEventListener('change', updateCandleBrightness);
         $('#exitFocusBtn')?.addEventListener('click', (event) => {
@@ -227,13 +253,25 @@
             exitFocusMode();
         });
         $('#siteVolumeSlider')?.addEventListener('input', updateSiteVolumeFromSlider);
-        $('#soundEffectsBtn')?.addEventListener('click', () => toggleAmbientMenu('soundEffectsMenu', 'soundEffectsBtn'));
-        $('#lightingEffectsBtn')?.addEventListener('click', () => toggleAmbientMenu('lightingEffectsMenu', 'lightingEffectsBtn'));
+        $('#soundEffectsBtn')?.addEventListener('click', (event) => toggleAmbientMenu('soundEffectsMenu', 'soundEffectsBtn', event));
+        $('#lightingEffectsBtn')?.addEventListener('click', (event) => toggleAmbientMenu('lightingEffectsMenu', 'lightingEffectsBtn', event));
+        $('#focusModeToggleBtn')?.addEventListener('click', toggleFocusModeFromButton);
         $('#soundEffectsMenu')?.addEventListener('click', handleSoundMenuClick);
         $('#soundEffectsMenu')?.addEventListener('input', handleSoundVolumeInput);
         $('#soundEffectsMenu')?.addEventListener('change', handleSoundVolumeInput);
         $('#soundEffectsMenu')?.addEventListener('keydown', handleSoundMenuKeydown);
         $('#lightingEffectsMenu')?.addEventListener('click', handleLightingMenuClick);
+
+        // Mobile Safari/Chrome can create ghost taps while Focus Mode is resizing.
+        // Keep ambient popups from swallowing the next tap, and close them on viewport shifts.
+        ['soundEffectsBtn', 'lightingEffectsBtn', 'soundEffectsMenu', 'lightingEffectsMenu'].forEach((id) => {
+            const element = document.getElementById(id);
+            element?.addEventListener('pointerdown', (event) => event.stopPropagation());
+            element?.addEventListener('touchstart', (event) => event.stopPropagation(), { passive: true });
+        });
+        window.visualViewport?.addEventListener('resize', closeAmbientMenus, { passive: true });
+        window.addEventListener('orientationchange', () => setTimeout(closeAmbientMenus, 80), { passive: true });
+
         $('#focusVisibilitySlider')?.addEventListener('input', updateFocusVisibility);
         $('#saveStoryEditBtn')?.addEventListener('click', saveStoryEdit);
 
@@ -749,7 +787,9 @@
         updateCharCounter();
         syncPromptPlaceholder();
         setText('#draftStatus', 'Published and draft cleared');
-        toast('Story published. The shelf just got warmer.');
+        updateWritingMoodState();
+        showPublishMoment();
+        toast('Your story now lives in the Nook ✨');
         await fetchStories({ resetLimit: true });
     }
 
@@ -1261,7 +1301,11 @@
 
     function getPromptPlaceholder() {
         const prompt = (state.currentPrompt || $('#weeklyPromptText')?.textContent || CONFIG.prompts?.[0] || '').trim();
-        return prompt || 'Start with a sentence you would keep in a notebook...';
+        const defaultPlaceholder = 'Begin writing your story here...';
+        if (document.body.classList.contains('focus-mode')) {
+            return prompt || defaultPlaceholder;
+        }
+        return defaultPlaceholder;
     }
 
     function syncPromptPlaceholder() {
@@ -1293,23 +1337,102 @@
         updateCharCounter();
         syncPromptPlaceholder();
         setText('#draftStatus', 'Draft cleared');
+        updateWritingMoodState();
         closeModal('clearStoryModal');
         toast('Writing area cleared.');
         requestAnimationFrame(() => input?.focus({ preventScroll: true }));
     }
 
+    function getDefaultWritingStyle() {
+        return {
+            fontFamily: "'Cormorant Garamond', Georgia, serif",
+            fontSize: '1.42rem',
+            bold: false,
+            italic: false
+        };
+    }
+
+    function getSavedWritingStyle() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(writingStyleKey) || 'null');
+            return { ...getDefaultWritingStyle(), ...(saved || {}) };
+        } catch (_error) {
+            return getDefaultWritingStyle();
+        }
+    }
+
+    function restoreWritingStyle() {
+        applyWritingStyle(getSavedWritingStyle(), { syncControls: true, persist: false });
+    }
+
+    function updateWritingStyleFromTools() {
+        const current = getSavedWritingStyle();
+        const next = {
+            ...current,
+            fontFamily: $('#writingFontSelect')?.value || current.fontFamily,
+            fontSize: $('#writingSizeSelect')?.value || current.fontSize
+        };
+        applyWritingStyle(next);
+        $('#mainStoryInput')?.focus({ preventScroll: true });
+    }
+
+    function toggleWritingBold() {
+        const current = getSavedWritingStyle();
+        const next = { ...current, bold: !current.bold };
+        applyWritingStyle(next);
+        $('#mainStoryInput')?.focus({ preventScroll: true });
+    }
+
+    function toggleWritingItalic() {
+        const current = getSavedWritingStyle();
+        const next = { ...current, italic: !current.italic };
+        applyWritingStyle(next);
+        $('#mainStoryInput')?.focus({ preventScroll: true });
+    }
+
+    function applyWritingStyle(style, options = {}) {
+        const normalized = { ...getDefaultWritingStyle(), ...(style || {}) };
+        document.documentElement.style.setProperty('--writing-user-font-family', normalized.fontFamily);
+        document.documentElement.style.setProperty('--writing-user-font-size', normalized.fontSize);
+        document.documentElement.style.setProperty('--writing-user-font-weight', normalized.bold ? '700' : '500');
+        document.documentElement.style.setProperty('--writing-user-font-style', normalized.italic ? 'italic' : 'normal');
+        document.body.classList.toggle('writing-style-bold', !!normalized.bold);
+        document.body.classList.toggle('writing-style-italic', !!normalized.italic);
+
+        if (options.syncControls !== false) {
+            const fontSelect = $('#writingFontSelect');
+            const sizeSelect = $('#writingSizeSelect');
+            const boldBtn = $('#writingBoldBtn');
+            const italicBtn = $('#writingItalicBtn');
+            if (fontSelect) fontSelect.value = normalized.fontFamily;
+            if (sizeSelect) sizeSelect.value = normalized.fontSize;
+            boldBtn?.setAttribute('aria-pressed', String(!!normalized.bold));
+            italicBtn?.setAttribute('aria-pressed', String(!!normalized.italic));
+        }
+
+        if (options.persist !== false) {
+            localStorage.setItem(writingStyleKey, JSON.stringify(normalized));
+        }
+    }
+
     function restoreDraft() {
         const draft = localStorage.getItem(CONFIG.draftKey);
+        const input = $('#mainStoryInput');
         const guestName = localStorage.getItem(CONFIG.guestNameKey);
-        if (draft && $('#mainStoryInput')) $('#mainStoryInput').value = draft;
+        if (draft && input) {
+            input.value = draft;
+            setText('#draftStatus', 'Draft restored from this browser');
+        }
         if (guestName && $('#guestPenName')) $('#guestPenName').value = guestName;
         syncPromptPlaceholder();
+        updateWritingMoodState();
     }
 
     function saveDraft() {
         const value = $('#mainStoryInput')?.value || '';
         localStorage.setItem(CONFIG.draftKey, value);
         setText('#draftStatus', value ? 'Draft saved locally' : 'Draft is empty');
+        updateWritingMoodState();
     }
 
     function saveGuestName() {
@@ -1418,6 +1541,21 @@
         syncPromptPlaceholder();
     }
 
+
+    function toggleWeeklyVideo() {
+        const button = $('#toggleVideoBtn');
+        const dropdown = $('#videoDropdown');
+        if (!button || !dropdown) return;
+
+        const opening = !dropdown.classList.contains('open');
+        dropdown.classList.toggle('open', opening);
+        dropdown.setAttribute('aria-hidden', String(!opening));
+        button.setAttribute('aria-expanded', String(opening));
+        setText('.video-toggle-text', opening ? 'Hide video inspiration' : 'Tap for video inspiration');
+
+        if (opening && !$('#youtubePlayer')?.src) loadYouTubePlayer();
+    }
+
     function loadYouTubePlayer(src = CONFIG.youtubeSrc) {
         const player = $('#youtubePlayer');
         if (!player) return;
@@ -1456,9 +1594,8 @@
 
         if (!input || !promptText) return;
 
-        // Use the prompt as example text, not actual draft content.
-        // Browser placeholder behavior makes it disappear when the writer types
-        // and return automatically if the textarea is cleared.
+        // Use the prompt as example text only once Focus Mode opens.
+        // The main page keeps a simpler, cleaner writing placeholder.
         input.placeholder = promptText;
 
         // The mobile Writing Desk normally requires an intentional tap before
@@ -1602,60 +1739,48 @@
         if (!input || input.dataset.intentionalFocusReady === 'true') return;
         input.dataset.intentionalFocusReady = 'true';
 
-        input.addEventListener('pointerdown', (event) => {
-            if (!isMobileWritingViewport()) return;
-            state.writingTap.startX = event.clientX;
-            state.writingTap.startY = event.clientY;
-            state.writingTap.startTime = Date.now();
-            state.writingTap.moved = false;
-        }, { passive: true });
-
-        input.addEventListener('pointermove', (event) => {
-            if (!isMobileWritingViewport() || !state.writingTap.startTime) return;
-            const distance = Math.hypot(
-                event.clientX - state.writingTap.startX,
-                event.clientY - state.writingTap.startY
-            );
-            if (distance > 10) state.writingTap.moved = true;
-        }, { passive: true });
-
-        input.addEventListener('pointerup', (event) => {
-            if (!isMobileWritingViewport()) return;
-            const distance = Math.hypot(
-                event.clientX - state.writingTap.startX,
-                event.clientY - state.writingTap.startY
-            );
-            const duration = Date.now() - state.writingTap.startTime;
-            const deliberateTap = !state.writingTap.moved && distance <= 10 && duration <= 900;
-
-            state.writingTap.startTime = 0;
-
-            if (deliberateTap) {
-                state.writingTap.intentionalUntil = Date.now() + 900;
-                enterFocusMode();
-            }
-        }, { passive: true });
-
+        // The writing desk is now fully usable on the main page.
+        // Focus Mode opens only from the dedicated circular expand/retract button
+        // or from the feather inspiration button.
         input.addEventListener('focus', () => {
-            if (!isMobileWritingViewport() || Date.now() <= state.writingTap.intentionalUntil) {
-                enterFocusMode();
-            }
+            $('#writingZoneSection')?.classList.add('is-writing-active');
         });
 
-        input.addEventListener('click', () => {
-            if (!isMobileWritingViewport()) {
-                enterFocusMode();
-                return;
-            }
-
-            if (Date.now() <= state.writingTap.intentionalUntil) {
-                enterFocusMode();
-            }
+        input.addEventListener('blur', () => {
+            $('#writingZoneSection')?.classList.remove('is-writing-active');
         });
     }
 
     function isMobileWritingViewport() {
         return window.matchMedia('(max-width: 760px), (pointer: coarse)').matches;
+    }
+
+    function toggleFocusModeFromButton(event) {
+        event?.preventDefault();
+        event?.stopPropagation();
+
+        if (document.body.classList.contains('focus-mode')) {
+            exitFocusMode();
+        } else {
+            state.writingTap.intentionalUntil = Date.now() + 1200;
+            enterFocusMode({ allowYouTubeResume: false });
+            requestAnimationFrame(() => $('#mainStoryInput')?.focus({ preventScroll: true }));
+        }
+    }
+
+    function updateFocusToggleButton() {
+        const button = $('#focusModeToggleBtn');
+        if (!button) return;
+        const isFocus = document.body.classList.contains('focus-mode');
+        const icon = $('.focus-mode-toggle-icon', button);
+        const label = $('.focus-mode-toggle-label', button);
+        const text = isFocus ? 'Exit focus mode' : 'Enter focus mode';
+
+        button.setAttribute('aria-label', text);
+        button.setAttribute('title', text);
+        button.setAttribute('aria-pressed', String(isFocus));
+        if (icon) icon.textContent = isFocus ? '↙' : '⛶';
+        if (label) label.textContent = text;
     }
 
     function enterFocusMode(options = {}) {
@@ -1665,10 +1790,12 @@
         const allowYouTubeResume = options.allowYouTubeResume ?? false;
 
         if (!document.body.classList.contains('focus-mode')) {
-            playMenuPageSound();
             closeRibbonPanel();
             closeAmbientMenus();
             document.body.classList.add('focus-mode');
+            closeAmbientMenus();
+            updateFocusToggleButton();
+            syncPromptPlaceholder();
             syncFocusAudio({ allowYouTubeResume });
         }
 
@@ -1685,8 +1812,9 @@
     }
 
     function exitFocusMode() {
-        if (document.body.classList.contains('focus-mode')) playMenuPageSound();
         document.body.classList.remove('focus-mode');
+        updateFocusToggleButton();
+        syncPromptPlaceholder();
         closeAmbientMenus();
         syncFocusAudio({ allowYouTubeResume: false });
     }
@@ -1741,9 +1869,14 @@
         const slider = $('#candleBrightnessSlider');
         if (!slider) return;
 
-        const level = getCandleBrightnessLevel();
-        const eased = level <= 0 ? 0 : 1 - Math.pow(1 - level, 1.35);
-        const active = level > 0.01;
+        // The candle slider now uses 50% as the neutral/default page mood.
+        // Sliding down makes the room darker; sliding up brightens panels and
+        // pushes the writing paper toward clean white.
+        const rawLevel = clamp01((Number(slider.value) || 0) / 100, 0.5);
+        const dim = clamp01((0.5 - rawLevel) / 0.5, 0);
+        const bright = clamp01((rawLevel - 0.5) / 0.5, 0);
+        const eased = bright <= 0 ? 0 : 1 - Math.pow(1 - bright, 1.35);
+        const active = Math.abs(rawLevel - 0.5) > 0.01;
         const inkFactor = getFocusInkFactor();
         const surfaceStrength = 0.42 + (0.58 * inkFactor);
         const inputStrength = 0.48 + (0.52 * inkFactor);
@@ -1751,34 +1884,46 @@
         document.body.classList.remove('candle-lit');
         document.body.classList.toggle('candle-brightness-active', active);
 
-        document.body.style.setProperty('--candle-level', level.toFixed(3));
+        const dimText = mixColor([246, 234, 212], [178, 164, 132], dim);
+        const brightText = mixColor([246, 234, 212], [39, 31, 24], eased);
+        const finalText = bright > 0 ? brightText : dimText;
+        const finalMuted = bright > 0
+            ? mixColor([200, 195, 165], [61, 48, 36], eased)
+            : mixColor([200, 195, 165], [150, 138, 110], dim);
+
+        document.body.style.setProperty('--candle-level', rawLevel.toFixed(3));
+        document.body.style.setProperty('--candle-bright', bright.toFixed(3));
+        document.body.style.setProperty('--candle-dim', dim.toFixed(3));
         document.body.style.setProperty('--candle-ease', eased.toFixed(3));
         document.body.style.setProperty('--focus-ink-factor', inkFactor.toFixed(3));
         document.body.style.setProperty('--candle-page-alpha', eased.toFixed(3));
         document.body.style.setProperty('--candle-glow-alpha', (0.42 * eased).toFixed(3));
-        document.body.style.setProperty('--candle-overlay-alpha', (0.54 + (0.04 * eased)).toFixed(3));
+        document.body.style.setProperty('--candle-overlay-alpha', (0.42 + (0.22 * dim) - (0.12 * eased)).toFixed(3));
         document.body.style.setProperty('--candle-panel-alpha-1', ((0.08 + (0.86 * eased)) * surfaceStrength).toFixed(3));
         document.body.style.setProperty('--candle-panel-alpha-2', ((0.07 + (0.82 * eased)) * surfaceStrength).toFixed(3));
-        document.body.style.setProperty('--candle-border-alpha', (0.10 + (0.20 * eased * inputStrength)).toFixed(3));
+        document.body.style.setProperty('--candle-border-alpha', (0.10 + (0.20 * eased * inputStrength) + (0.04 * dim)).toFixed(3));
         document.body.style.setProperty('--candle-input-alpha', ((0.08 + (0.64 * eased)) * inputStrength).toFixed(3));
-        document.body.style.setProperty('--candle-control-alpha', (0.05 + (0.51 * eased)).toFixed(3));
-        document.body.style.setProperty('--candle-text-color', mixColor([246, 234, 212], [39, 31, 24], eased));
-        document.body.style.setProperty('--candle-muted-color', mixColor([200, 195, 165], [61, 48, 36], eased));
-        document.body.style.setProperty('--candle-track-alpha', (0.05 + (0.06 * eased)).toFixed(3));
+        document.body.style.setProperty('--candle-control-alpha', (0.05 + (0.51 * eased) + (0.08 * dim)).toFixed(3));
+        document.body.style.setProperty('--candle-text-color', finalText);
+        document.body.style.setProperty('--candle-muted-color', finalMuted);
+        document.body.style.setProperty('--candle-track-alpha', (0.08 + (0.10 * eased) + (0.08 * dim)).toFixed(3));
         document.body.style.setProperty('--candle-range-progress-alpha', (0.42 + (0.18 * eased)).toFixed(3));
-        document.body.style.setProperty('--candle-control-hover-alpha', Math.min(0.78, 0.13 + (0.51 * eased)).toFixed(3));
+        document.body.style.setProperty('--candle-control-hover-alpha', Math.min(0.78, 0.13 + (0.51 * eased) + (0.08 * dim)).toFixed(3));
         document.body.style.setProperty('--candle-focus-inset-alpha', (0.22 * eased).toFixed(3));
-        document.body.style.setProperty('--candle-focus-shadow-alpha', (0.26 + (0.10 * (1 - inkFactor))).toFixed(3));
-        document.body.style.setProperty('--candle-char-track-alpha', (0.14 + (0.08 * eased)).toFixed(3));
-        document.body.style.setProperty('--candle-char-border-alpha', (0.12 + (0.10 * eased)).toFixed(3));
+        document.body.style.setProperty('--candle-focus-shadow-alpha', (0.26 + (0.10 * (1 - inkFactor)) + (0.18 * dim)).toFixed(3));
+        document.body.style.setProperty('--candle-char-track-alpha', (0.14 + (0.08 * eased) + (0.08 * dim)).toFixed(3));
+        document.body.style.setProperty('--candle-char-border-alpha', (0.12 + (0.10 * eased) + (0.08 * dim)).toFixed(3));
         document.body.style.setProperty('--candle-char-glow-alpha', (0.16 + (0.12 * eased)).toFixed(3));
-        document.body.style.setProperty('--candle-room-overlay-alpha', (0.40 - (0.12 * eased)).toFixed(3));
-        document.body.style.setProperty('--candle-room-overlay-saturation', (0.96 + (0.10 * eased)).toFixed(3));
-        document.body.style.setProperty('--story-room-candle-brightness', (0.72 + (0.18 * eased)).toFixed(3));
-        document.body.style.setProperty('--story-room-candle-saturation', (0.92 + (0.12 * eased)).toFixed(3));
-        document.body.style.setProperty('--story-room-candle-blur', `${(3.8 - (0.8 * eased)).toFixed(2)}px`);
+        document.body.style.setProperty('--candle-room-overlay-alpha', (0.40 + (0.24 * dim) - (0.12 * eased)).toFixed(3));
+        document.body.style.setProperty('--candle-room-overlay-saturation', (0.96 - (0.08 * dim) + (0.10 * eased)).toFixed(3));
+        document.body.style.setProperty('--story-room-candle-brightness', (0.72 - (0.22 * dim) + (0.18 * eased)).toFixed(3));
+        document.body.style.setProperty('--story-room-candle-saturation', (0.92 - (0.10 * dim) + (0.12 * eased)).toFixed(3));
+        document.body.style.setProperty('--story-room-candle-blur', `${(3.8 + (1.0 * dim) - (0.8 * eased)).toFixed(2)}px`);
+        document.body.style.setProperty('--candle-paper-alpha', (0.92 * eased).toFixed(3));
+        document.body.style.setProperty('--candle-writing-dim-alpha', (0.34 * dim).toFixed(3));
+        document.body.style.setProperty('--candle-panel-dim-alpha', (0.22 * dim).toFixed(3));
 
-        slider.setAttribute('aria-valuetext', `${Math.round(level * 100)}% candle brightness`);
+        slider.setAttribute('aria-valuetext', `${Math.round(rawLevel * 100)}% candle brightness`);
         updateAmbientTriggerStates();
     }
 
@@ -1791,30 +1936,87 @@
         const textareaAlpha = Math.max(0.10, Math.min(0.42, level - 0.58));
         const blur = Math.round(5 + level * 10);
 
+        // Feather / Ink now affects the writing paper itself, not only the
+        // surrounding writing window. Feather makes the paper translucent so
+        // the room shows through; Ink restores the opaque old-page surface.
+        const min = Number(slider.min) || 48;
+        const max = Number(slider.max) || 96;
+        const value = Number(slider.value) || 88;
+        const inkFactor = clamp01((value - min) / Math.max(1, max - min));
+        const featherFactor = 1 - inkFactor;
+        const useLightInk = inkFactor < 0.5;
+
+        const paperAlpha = 0.18 + (0.82 * inkFactor);
+        const highlightAlpha = 0.12 + (0.80 * inkFactor);
+        const glowAlpha = 0.08 + (0.30 * inkFactor);
+        const borderAlpha = useLightInk
+            ? 0.24 + (0.16 * featherFactor)
+            : 0.20 + (0.22 * inkFactor);
+        const shadowAlpha = 0.08 + (0.14 * inkFactor);
+        const paperBlur = 0.15 + (1.35 * featherFactor);
+
         document.body.style.setProperty('--focus-zone-alpha', level.toFixed(2));
         document.body.style.setProperty('--focus-zone-alpha-2', secondary.toFixed(2));
         document.body.style.setProperty('--focus-textarea-alpha', textareaAlpha.toFixed(2));
         document.body.style.setProperty('--focus-zone-blur', `${blur}px`);
+        document.body.style.setProperty('--nook-writing-ink-factor', inkFactor.toFixed(3));
+        document.body.style.setProperty('--nook-writing-feather-factor', featherFactor.toFixed(3));
+        document.body.style.setProperty('--nook-writing-paper-alpha', paperAlpha.toFixed(3));
+        document.body.style.setProperty('--nook-writing-highlight-alpha', highlightAlpha.toFixed(3));
+        document.body.style.setProperty('--nook-writing-glow-alpha', glowAlpha.toFixed(3));
+        document.body.style.setProperty('--nook-writing-border-alpha', borderAlpha.toFixed(3));
+        document.body.style.setProperty('--nook-writing-shadow-alpha', shadowAlpha.toFixed(3));
+        document.body.style.setProperty('--nook-writing-paper-blur', `${paperBlur.toFixed(2)}px`);
+        document.body.style.setProperty('--nook-writing-text-color', useLightInk ? '#fff8e8' : '#2c1d12');
+        document.body.style.setProperty('--nook-writing-placeholder-color', useLightInk ? 'rgba(255, 248, 232, 0.62)' : 'rgba(62, 43, 27, 0.52)');
+        document.body.style.setProperty('--nook-writing-caret-color', useLightInk ? '#fff8e8' : '#2c1d12');
+        document.body.style.setProperty('--nook-writing-text-shadow', useLightInk ? '0 1px 2px rgba(0, 0, 0, 0.62)' : 'none');
+        document.body.classList.toggle('writing-paper-feathered', useLightInk);
 
         updateCandleBrightness();
     }
 
-    function toggleAmbientMenu(menuId, buttonId) {
+    function toggleAmbientMenu(menuId, buttonId, event) {
+        event?.preventDefault?.();
+        event?.stopPropagation?.();
+
         const menu = document.getElementById(menuId);
         const button = document.getElementById(buttonId);
         if (!menu || !button) return;
+
         const willOpen = menu.classList.contains('hidden');
         closeAmbientMenus();
-        menu.classList.toggle('hidden', !willOpen);
-        button.setAttribute('aria-expanded', String(willOpen));
+
+        if (willOpen) {
+            menu.classList.remove('hidden');
+            menu.removeAttribute('inert');
+            menu.setAttribute('aria-hidden', 'false');
+            button.setAttribute('aria-expanded', 'true');
+        } else {
+            menu.classList.add('hidden');
+            menu.setAttribute('inert', '');
+            menu.setAttribute('aria-hidden', 'true');
+            button.setAttribute('aria-expanded', 'false');
+        }
+
         updateFocusVisibility();
         updateCandleBrightness();
+        updateFocusToggleButton();
         updateAmbientTriggerStates();
     }
 
     function closeAmbientMenus() {
-        $('#soundEffectsMenu')?.classList.add('hidden');
-        $('#lightingEffectsMenu')?.classList.add('hidden');
+        ['soundEffectsMenu', 'lightingEffectsMenu'].forEach((id) => {
+            const menu = document.getElementById(id);
+            if (!menu) return;
+            menu.classList.add('hidden');
+            menu.setAttribute('aria-hidden', 'true');
+            menu.setAttribute('inert', '');
+            menu.style.display = '';
+            menu.style.visibility = '';
+            menu.style.pointerEvents = '';
+        });
+
         $('#soundEffectsBtn')?.setAttribute('aria-expanded', 'false');
         $('#lightingEffectsBtn')?.setAttribute('aria-expanded', 'false');
         updateAmbientTriggerStates();
@@ -2348,6 +2550,128 @@
         } catch (error) {
             console.warn('Menu page sound skipped:', error);
         }
+    }
+
+
+    function updateWritingMoodState() {
+        const input = $('#mainStoryInput');
+        const hasContent = !!input?.value?.trim();
+        document.body.classList.toggle('writing-has-content', hasContent);
+        input?.classList.toggle('has-writing', hasContent);
+    }
+
+    function restoreTypingSoundToggle() {
+        const enabled = localStorage.getItem(typingSoundKey) === 'on';
+        const button = $('#typingSoundToggleBtn');
+        button?.setAttribute('aria-pressed', String(enabled));
+        button?.classList.toggle('active', enabled);
+        if (button) button.title = enabled ? 'Typing sound on' : 'Typing sound off';
+    }
+
+    function toggleTypingSound(event) {
+        event?.preventDefault();
+        const enabled = localStorage.getItem(typingSoundKey) === 'on';
+        localStorage.setItem(typingSoundKey, enabled ? 'off' : 'on');
+        restoreTypingSoundToggle();
+        if (localStorage.getItem(typingSoundKey) === 'on') playTypingClickSound(0.8);
+        $('#mainStoryInput')?.focus({ preventScroll: true });
+    }
+
+    function playTypingKeySound(event) {
+        if (localStorage.getItem(typingSoundKey) !== 'on') return;
+        if (event.ctrlKey || event.metaKey || event.altKey) return;
+        const allowed = event.key.length === 1 || ['Backspace', 'Enter', 'Space', 'Delete'].includes(event.key);
+        if (!allowed) return;
+        const now = performance.now();
+        if (playTypingKeySound.lastAt && now - playTypingKeySound.lastAt < 38) return;
+        playTypingKeySound.lastAt = now;
+        playTypingClickSound(event.key === 'Backspace' || event.key === 'Delete' ? 0.72 : 1);
+    }
+
+    function playTypingInputSound() {
+        if (localStorage.getItem(typingSoundKey) !== 'on') return;
+        const now = performance.now();
+
+        // Mobile keyboards do not always fire keydown reliably. This input fallback
+        // keeps the typing toggle audible on phones without double-playing on desktop.
+        if (playTypingKeySound.lastAt && now - playTypingKeySound.lastAt < 95) return;
+        if (playTypingInputSound.lastAt && now - playTypingInputSound.lastAt < 62) return;
+
+        playTypingInputSound.lastAt = now;
+        playTypingClickSound(0.9);
+    }
+
+    function playTypingClickSound(intensity = 1) {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+
+            const ctx = state.ambient.ctx || new AudioContext();
+            state.ambient.ctx = ctx;
+            repairAmbientMasterForSharedContext();
+            if (ctx.state === 'suspended') {
+                ctx.resume().catch(() => {});
+            }
+
+            // Keep this independent enough from the ambient mixer that the keyboard
+            // toggle is actually audible, while still staying soft and cozy.
+            const siteVolume = Number.isFinite(getSiteVolume()) ? getSiteVolume() : 0.5;
+            const volume = Math.max(0.16, siteVolume) * 0.42 * intensity;
+            if (volume <= 0) return;
+
+            const now = ctx.currentTime;
+            const master = ctx.createGain();
+            master.gain.setValueAtTime(0.0001, now);
+            master.gain.linearRampToValueAtTime(0.11 * volume, now + 0.006);
+            master.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+            master.connect(ctx.destination);
+
+            const osc = ctx.createOscillator();
+            const oscFilter = ctx.createBiquadFilter();
+            const oscGain = ctx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(210 + Math.random() * 65, now);
+            oscFilter.type = 'lowpass';
+            oscFilter.frequency.setValueAtTime(1450, now);
+            oscFilter.Q.setValueAtTime(0.55, now);
+            oscGain.gain.setValueAtTime(0.0001, now);
+            oscGain.gain.linearRampToValueAtTime(0.42, now + 0.005);
+            oscGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.055);
+            osc.connect(oscFilter).connect(oscGain).connect(master);
+            osc.start(now);
+            osc.stop(now + 0.06);
+
+            // A tiny paper/key texture makes it easier to hear than the old pure tone.
+            const bufferSize = Math.max(1, Math.floor(ctx.sampleRate * 0.045));
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i += 1) {
+                data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+            }
+            const noise = ctx.createBufferSource();
+            const noiseFilter = ctx.createBiquadFilter();
+            const noiseGain = ctx.createGain();
+            noise.buffer = buffer;
+            noiseFilter.type = 'bandpass';
+            noiseFilter.frequency.setValueAtTime(1800 + Math.random() * 340, now);
+            noiseFilter.Q.setValueAtTime(0.9, now);
+            noiseGain.gain.setValueAtTime(0.0001, now);
+            noiseGain.gain.linearRampToValueAtTime(0.32, now + 0.004);
+            noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.038);
+            noise.connect(noiseFilter).connect(noiseGain).connect(master);
+            noise.start(now);
+            noise.stop(now + 0.05);
+        } catch (error) {
+            console.warn('Typing sound skipped:', error);
+        }
+    }
+
+    function showPublishMoment() {
+        const modal = $('#publishMomentModal');
+        if (!modal) return;
+        openModal('publishMomentModal');
+        window.clearTimeout(showPublishMoment.timer);
+        showPublishMoment.timer = window.setTimeout(() => closeModal('publishMomentModal'), 2350);
     }
 
     function playPublishSound() {

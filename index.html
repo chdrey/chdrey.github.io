@@ -75,15 +75,23 @@
     <main>
         <section class="hero card compact-inspiration" aria-labelledby="weeklyPromptTitle">
             <div class="section-heading weekly-prompt-heading">
-                <h2 id="weeklyPromptTitle" class="eyebrow section-label-title">Weekly Prompt</h2>
+                <h2 id="weeklyPromptTitle" class="eyebrow section-label-title">Weekly Inspiration</h2>
             </div>
             <div class="prompt-strip">
                 <p id="weeklyPromptText">A knight stands at a distance, gazing toward the entrance of a citadel he has finally returned to. Something has happened before this moment—something the reader does not yet know. Write the story of what led him here, what he has lost or gained, and why he hesitates before entering.</p>
-                <button id="copyPromptBtn" class="btn-tiny prompt-write-btn" type="button" aria-label="Start writing from this prompt" title="Start writing from this prompt"><span aria-hidden="true">🪶</span></button>
+                <button id="copyPromptBtn" class="btn-primary prompt-write-btn feather-prompt-btn" type="button" aria-label="Start writing from this inspiration" title="Start writing from this inspiration"><span aria-hidden="true">🪶</span></button>
             </div>
 
-            <div class="video-wrapper">
-                <iframe id="youtubePlayer" src="" title="Inspiration video" frameborder="0" allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            <div class="video-toggle-wrapper">
+                <button id="toggleVideoBtn" class="video-toggle-btn" type="button" aria-expanded="false" aria-controls="videoDropdown">
+                    <span aria-hidden="true">🎬</span>
+                    <span class="video-toggle-text">Tap for video inspiration</span>
+                </button>
+                <div id="videoDropdown" class="video-dropdown" aria-hidden="true">
+                    <div class="video-wrapper">
+                        <iframe id="youtubePlayer" src="" title="Inspiration video" frameborder="0" allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -103,9 +111,13 @@
                         <span aria-hidden="true">☀</span>
                         <span>Light</span>
                     </button>
+                    <button id="focusModeToggleBtn" class="focus-mode-toggle" type="button" aria-label="Enter focus mode" title="Enter focus mode" aria-pressed="false">
+                        <span class="focus-mode-toggle-icon" aria-hidden="true">⛶</span>
+                        <span class="sr-only focus-mode-toggle-label">Enter focus mode</span>
+                    </button>
                 </div>
             </div>
-            <div id="soundEffectsMenu" class="ambient-menu sound-menu hidden" role="menu" aria-label="Ambient sounds">
+            <div id="soundEffectsMenu" class="ambient-menu sound-menu hidden" role="menu" aria-label="Ambient sounds" aria-hidden="true" inert>
                 <div class="ambient-menu-feature ambient-slider-feature audio-slider-feature">
                     <span class="ambient-feature-label">Volume</span>
                     <label class="site-volume-slider" for="siteVolumeSlider">
@@ -178,15 +190,7 @@
                     </label>
                 </div>
             </div>
-            <div id="lightingEffectsMenu" class="ambient-menu lighting-menu hidden" role="menu" aria-label="Ambient lighting">
-                <div class="ambient-menu-feature ambient-slider-feature candle-brightness-feature">
-                    <span class="ambient-feature-label">Candle</span>
-                    <label class="candle-brightness-slider" for="candleBrightnessSlider">
-                        <span class="slider-soft-label">Dim</span>
-                        <input id="candleBrightnessSlider" type="range" min="0" max="100" value="0" step="1" aria-label="Candle brightness">
-                        <span class="slider-soft-label">Bright</span>
-                    </label>
-                </div>
+            <div id="lightingEffectsMenu" class="ambient-menu lighting-menu hidden" role="menu" aria-label="Ambient lighting" aria-hidden="true" inert>
                 <div class="ambient-menu-feature ambient-slider-feature">
                     <span class="ambient-feature-label">Window</span>
                     <label class="focus-visibility-slider" for="focusVisibilitySlider">
@@ -205,13 +209,43 @@
                 <button type="button" data-lighting="moonlit-desk" aria-pressed="false">Moonlit desk</button>
             </div>
             <div class="story-input-wrap">
-                <textarea id="mainStoryInput" maxlength="2000" placeholder="Start with a sentence you would keep in a notebook..."></textarea>
+                <textarea id="mainStoryInput" maxlength="2000" placeholder="Begin writing your story here..."></textarea>
                 <button id="eraseStoryBtn" class="textarea-eraser" type="button" aria-label="Clear writing area" title="Clear writing area">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M4.2 15.9 13.7 6.4a2 2 0 0 1 2.8 0l3.1 3.1a2 2 0 0 1 0 2.8l-7.2 7.2H6.7L4.2 17a.8.8 0 0 1 0-1.1Z"></path>
                         <path d="M11.7 19.5h8.1"></path>
                     </svg>
                 </button>
+            </div>
+
+            <div class="typing-toolbar" role="toolbar" aria-label="Writing tools">
+                <div class="typing-toolbar-group typing-toolbar-selects">
+                    <label class="typing-control" for="writingFontSelect">
+                        <span>Font</span>
+                        <select id="writingFontSelect" aria-label="Writing font">
+                            <option value="'Cormorant Garamond', Georgia, serif">Storybook</option>
+                            <option value="Georgia, 'Times New Roman', serif">Classic Serif</option>
+                            <option value="Garamond, 'Cormorant Garamond', Georgia, serif">Garamond</option>
+                            <option value="'Source Sans 3', system-ui, sans-serif">Clean Sans</option>
+                            <option value="'Courier New', Courier, monospace">Typewriter</option>
+                        </select>
+                    </label>
+                    <label class="typing-control" for="writingSizeSelect">
+                        <span>Size</span>
+                        <select id="writingSizeSelect" aria-label="Writing text size">
+                            <option value="1.12rem">Small</option>
+                            <option value="1.25rem">Comfort</option>
+                            <option value="1.42rem">Cozy</option>
+                            <option value="1.62rem">Large</option>
+                            <option value="1.82rem">Storyteller</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="typing-toolbar-group typing-format-toggles" aria-label="Text style">
+                    <button id="writingBoldBtn" class="typing-tool-btn" type="button" aria-pressed="false" aria-label="Toggle bold text"><strong>B</strong></button>
+                    <button id="writingItalicBtn" class="typing-tool-btn" type="button" aria-pressed="false" aria-label="Toggle italic text"><em>I</em></button>
+                    <button id="typingSoundToggleBtn" class="typing-tool-btn typing-sound-toggle" type="button" aria-pressed="false" aria-label="Toggle gentle typing sound" title="Typing sound off"><span aria-hidden="true">⌨</span></button>
+                </div>
             </div>
 
             <div class="writer-tools">
@@ -266,14 +300,14 @@
                     <img src="story-nook-logo.png" alt="" class="brand-logo-img" aria-hidden="true">
                     <span>The Story Nook</span>
                 </div>
-                <p class="footer-note">Made with care for writers, readers, and late-night ideas.</p>
+                <p class="footer-note">A cozy place for writers, readers, and creative minds to share late-night ideas.</p>
             </div>
 
             <nav class="footer-nav" aria-label="Footer links">
                 <a href="https://www.youtube.com/@TheStoryNook-YT" target="_blank" rel="noopener noreferrer">The Story Nook YT</a>
                 <button type="button" data-open="aboutModal">About Us</button>
-                <button type="button" data-scroll-target="weeklyPromptTitle">Weekly Prompt</button>
-                <button type="button" data-scroll-target="writingZoneSection">Writing Desk</button>
+                <button type="button" data-open="guidelinesModal">Guidelines</button>
+                <button type="button" data-open="comingSoonModal">Coming Soon</button>
                 <button type="button" data-scroll-target="top">Back to Top</button>
             </nav>
 
@@ -302,6 +336,16 @@
                 <button id="cancelEraseStoryBtn" class="btn-secondary" type="button" data-close="clearStoryModal">Cancel</button>
                 <button id="confirmEraseStoryBtn" class="btn-primary" type="button">Clear it</button>
             </div>
+        </div>
+    </div>
+
+
+    <div id="publishMomentModal" class="modal hidden publish-moment-modal" role="dialog" aria-modal="true" aria-labelledby="publishMomentTitle">
+        <div class="modal-content narrow cozy-panel publish-moment-card">
+            <button class="close-modal" type="button" data-close="publishMomentModal" aria-label="Close">&times;</button>
+            <div class="publish-moment-icon" aria-hidden="true">✨</div>
+            <h2 id="publishMomentTitle">Your story now lives in the Nook</h2>
+            <p class="modal-intro">A new page has been tucked onto the shelf.</p>
         </div>
     </div>
 
@@ -338,11 +382,37 @@
         <div class="modal-content narrow cozy-panel">
             <button class="close-modal" type="button" data-close="feedbackModal" aria-label="Close">&times;</button>
             <h2 id="feedbackTitle">🦉 Send an Owl</h2>
-            <p class="modal-intro">Suggestions, bug reports, praise for the fireplace—drop it here.</p>
+            <p class="modal-intro">Suggestions, bug reports, or a quick hello—send your owl here.</p>
             <div class="auth-form-container">
                 <input type="email" id="feedbackEmail" placeholder="Your Email (so we can reply)">
                 <textarea id="feedbackText" placeholder="Write your missive here..." rows="5"></textarea>
                 <button id="submitFeedbackBtn" class="btn-primary full-width" type="button">Send to The High Council</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="guidelinesModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="guidelinesTitle">
+        <div class="modal-content narrow cozy-panel footer-info-modal">
+            <button class="close-modal" type="button" data-close="guidelinesModal" aria-label="Close">&times;</button>
+            <h2 id="guidelinesTitle">📜 Community Guidelines</h2>
+            <p class="modal-intro footer-modal-intro">Keep the Nook kind, curious, and welcoming. Share original writing, encourage other writers, and leave feedback that helps stories grow.</p>
+            <div class="footer-modal-list">
+                <p><strong>Be generous.</strong> Celebrate effort, not just polish.</p>
+                <p><strong>Be thoughtful.</strong> Comment with care and avoid personal attacks.</p>
+                <p><strong>Be original.</strong> Post your own work and credit inspiration when needed.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="comingSoonModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="comingSoonTitle">
+        <div class="modal-content narrow cozy-panel footer-info-modal">
+            <button class="close-modal" type="button" data-close="comingSoonModal" aria-label="Close">&times;</button>
+            <h2 id="comingSoonTitle">✨ Coming Soon</h2>
+            <p class="modal-intro footer-modal-intro">The Nook is growing toward weekly spotlights, reader milestones, collectible flair, and cozy community challenges.</p>
+            <div class="footer-modal-list">
+                <p><strong>Weekly spotlights</strong> for loved, discussed, and discovered stories.</p>
+                <p><strong>Writer titles</strong> earned through participation and creativity.</p>
+                <p><strong>Flair rewards</strong> to decorate profiles as the community grows.</p>
             </div>
         </div>
     </div>

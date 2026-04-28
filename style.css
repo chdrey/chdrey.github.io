@@ -11072,3 +11072,1960 @@ body.focus-mode.candle-brightness-active #writingZoneSection #guestPenName:focus
         0 0 0 4px rgba(125, 139, 109, 0.14),
         inset 0 1px 0 rgba(255, 255, 255, var(--candle-focus-inset-alpha)) !important;
 }
+
+
+/* Phase 1 polish: weekly inspiration CTA, collapsible video, and writing desk invitation */
+.compact-inspiration .weekly-prompt-heading .section-label-title,
+#weeklyPromptTitle {
+    letter-spacing: 0.14em;
+}
+
+.compact-inspiration .prompt-strip {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+}
+
+.prompt-write-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    min-width: 142px;
+    white-space: nowrap;
+    box-shadow: 0 12px 28px rgba(215, 165, 111, 0.2);
+}
+
+.prompt-write-btn span:last-child {
+    display: inline;
+}
+
+.video-toggle-wrapper {
+    margin-top: 0.85rem;
+}
+
+.video-toggle-btn {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.48rem;
+    padding: 0.78rem 1rem;
+    border-radius: 999px;
+    border: 1px solid rgba(220, 229, 201, 0.18);
+    background: rgba(255, 241, 212, 0.045);
+    color: var(--sage-soft);
+    font-weight: 900;
+    letter-spacing: 0.01em;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.video-toggle-btn:hover,
+.video-toggle-btn[aria-expanded="true"] {
+    color: var(--accent-2);
+    background: rgba(215, 165, 111, 0.12);
+    border-color: rgba(215, 165, 111, 0.36);
+    transform: translateY(-1px);
+}
+
+.video-dropdown {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transform: translateY(-10px);
+    overflow: hidden;
+    margin-top: 0;
+    transition: grid-template-rows 0.44s ease, opacity 0.32s ease, transform 0.44s ease, margin-top 0.32s ease;
+}
+
+.video-dropdown.open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    transform: translateY(0);
+    margin-top: 0.85rem;
+}
+
+.video-dropdown > .video-wrapper {
+    min-height: 0;
+}
+
+.writing-desk-invite {
+    animation: writingDeskInvite 2.25s ease both;
+}
+
+@keyframes writingDeskInvite {
+    0% {
+        border-color: rgba(255, 241, 212, 0.12);
+        box-shadow: var(--shadow);
+        transform: translateY(0);
+    }
+    36% {
+        border-color: rgba(223, 191, 131, 0.48);
+        box-shadow: var(--shadow), 0 0 0 1px rgba(223, 191, 131, 0.18), 0 0 34px rgba(223, 191, 131, 0.18);
+        transform: translateY(-2px);
+    }
+    100% {
+        border-color: rgba(255, 241, 212, 0.12);
+        box-shadow: var(--shadow);
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 720px) {
+    .compact-inspiration .prompt-strip {
+        grid-template-columns: 1fr;
+    }
+
+    .prompt-write-btn {
+        width: 100%;
+    }
+}
+
+/* =========================================================
+   Final 104: full-project weekly inspiration bottom trim
+   ========================================================= */
+/* Keep the collapsed Weekly Inspiration card compact: the bottom edge
+   now sits about 30px below the Tap for video inspiration button. */
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+    padding-bottom: 30px !important;
+}
+
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"] .video-toggle-wrapper {
+    margin-bottom: 0 !important;
+}
+
+/* When the video is closed, fully collapse the embedded player surface so
+   its aspect-ratio padding cannot leave invisible blank space. */
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"] .video-dropdown:not(.open) {
+    margin-top: 0 !important;
+    max-height: 0 !important;
+}
+
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"] .video-dropdown:not(.open) > .video-wrapper {
+    padding-bottom: 0 !important;
+    border-width: 0 !important;
+}
+
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"] .video-dropdown.open > .video-wrapper {
+    padding-bottom: 56.25% !important;
+    border-width: 1px !important;
+}
+
+@media (max-width: 760px) {
+    .compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+        padding-bottom: 30px !important;
+    }
+}
+
+
+/* =========================================================
+   Final 105: feather prompt button + warmer main writing page
+   ========================================================= */
+/* Bring back the feather CTA inside Weekly Inspiration and make it
+   about 20% larger, while keeping the full accessible label for screen readers. */
+.compact-inspiration .prompt-strip {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+}
+
+.prompt-write-btn.feather-prompt-btn {
+    width: 3.85rem !important;
+    min-width: 3.85rem !important;
+    height: 3.85rem !important;
+    padding: 0 !important;
+    border-radius: 999px !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    font-size: 1.55rem !important;
+    line-height: 1 !important;
+    box-shadow:
+        0 12px 28px rgba(215, 165, 111, 0.24),
+        inset 0 1px 0 rgba(255, 255, 255, 0.24) !important;
+}
+
+.prompt-write-btn.feather-prompt-btn span {
+    display: inline-block !important;
+    transform: rotate(-8deg);
+    transition: transform 0.22s ease;
+}
+
+.prompt-write-btn.feather-prompt-btn:hover span {
+    transform: rotate(-8deg) translateY(-1px) scale(1.08);
+}
+
+@media (max-width: 720px) {
+    .prompt-write-btn.feather-prompt-btn {
+        width: 4.1rem !important;
+        min-width: 4.1rem !important;
+        height: 4.1rem !important;
+        justify-self: end;
+    }
+}
+
+/* Make the main-page writing surface feel more like an old, creamy page.
+   Focus Mode keeps its immersive prompt-aware surface. */
+body:not(.focus-mode) #writingZoneSection #mainStoryInput {
+    color: #2c1d12 !important;
+    background:
+        radial-gradient(circle at 12% 8%, rgba(255, 252, 239, 0.86), transparent 20rem),
+        linear-gradient(145deg, #fbefd5 0%, #f1dcb2 52%, #dfc492 100%) !important;
+    border-color: rgba(116, 78, 44, 0.34) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.64),
+        inset 0 0 44px rgba(116, 78, 44, 0.10),
+        0 16px 34px rgba(0, 0, 0, 0.18) !important;
+}
+
+body:not(.focus-mode) #writingZoneSection #mainStoryInput::placeholder {
+    color: rgba(62, 43, 27, 0.52) !important;
+    font-style: italic;
+}
+
+body:not(.focus-mode) #writingZoneSection #mainStoryInput:focus {
+    border-color: rgba(147, 98, 54, 0.58) !important;
+    box-shadow:
+        0 0 0 4px rgba(215, 165, 111, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.70),
+        inset 0 0 44px rgba(116, 78, 44, 0.09),
+        0 18px 38px rgba(0, 0, 0, 0.20) !important;
+}
+
+/* Keep candle-brightness blending with the creamy page instead of snapping
+   back to the darker writing surface on the main page. */
+body.candle-brightness-active:not(.focus-mode) #writingZoneSection #mainStoryInput {
+    color: #24170f !important;
+    background:
+        linear-gradient(rgba(255, 252, 241, calc(var(--candle-input-alpha) * 0.58)), rgba(255, 252, 241, calc(var(--candle-input-alpha) * 0.58))),
+        radial-gradient(circle at 12% 8%, rgba(255, 252, 239, 0.9), transparent 20rem),
+        linear-gradient(145deg, #fff2d6 0%, #f4ddb0 54%, #e2c692 100%) !important;
+    border-color: rgba(96, 64, 36, calc(var(--candle-border-alpha) + 0.12)) !important;
+}
+
+/* =========================================================
+   Footer + feedback polish
+   ========================================================= */
+#feedbackModal .modal-intro {
+    margin-top: 5px;
+}
+
+.footer-info-modal .footer-modal-intro {
+    margin-top: 0.45rem;
+}
+
+.footer-modal-list {
+    display: grid;
+    gap: 0.72rem;
+    margin-top: 1rem;
+    text-align: left;
+}
+
+.footer-modal-list p {
+    margin: 0;
+    color: rgba(246, 234, 212, 0.84);
+    line-height: 1.5;
+}
+
+.footer-modal-list strong {
+    color: var(--accent-2);
+}
+
+
+/* =========================================================
+   Final 107: writing desk focus toggle + balanced candle slider
+   ========================================================= */
+
+/* Replace the old Focus Mode X with a single circular expand/retract button
+   that lives with Sound + Light on both the main desk and Focus Mode. */
+#exitFocusBtn {
+    display: none !important;
+}
+
+.focus-mode-toggle {
+    width: 2.75rem !important;
+    height: 2.75rem !important;
+    min-width: 2.75rem !important;
+    padding: 0 !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(208, 167, 111, 0.28) !important;
+    background: rgba(14, 9, 6, 0.58) !important;
+    color: var(--paper-soft) !important;
+    font-weight: 900 !important;
+    font-size: 1.08rem !important;
+    line-height: 1 !important;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.18) !important;
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.focus-mode-toggle:hover,
+.focus-mode-toggle[aria-pressed="true"] {
+    color: #10100a !important;
+    background: linear-gradient(135deg, #a8c58d, var(--accent)) !important;
+    border-color: rgba(226, 244, 206, 0.34) !important;
+    transform: translateY(-1px);
+}
+
+.focus-mode-toggle-icon {
+    display: inline-block;
+    transform: translateY(-0.02rem);
+}
+
+body.focus-mode .focus-mode-toggle-icon {
+    transform: translate(-0.02rem, 0.02rem);
+}
+
+/* Let the main page Writing Desk be a true writing space instead of a
+   focus-only trigger. It grows by about one-third and keeps the main-page
+   surface warm/dark like the Weekly Inspiration strip, with a creamy corner. */
+#writingZoneSection #mainStoryInput,
+body.focus-mode #writingZoneSection #mainStoryInput {
+    min-height: 440px !important;
+    color: var(--paper) !important;
+    background:
+        radial-gradient(circle at 10% 6%, rgba(255, 248, 222, 0.26) 0, rgba(255, 248, 222, 0.12) 11rem, transparent 24rem),
+        linear-gradient(135deg, rgba(32, 55, 42, 0.64), rgba(54, 37, 23, 0.59) 54%, rgba(18, 13, 9, 0.72)),
+        rgba(0, 0, 0, var(--focus-textarea-alpha)) !important;
+    border-color: rgba(220, 229, 201, 0.15) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.055),
+        inset 0 0 44px rgba(6, 4, 2, 0.10),
+        0 18px 40px rgba(0, 0, 0, 0.20) !important;
+}
+
+body.focus-mode #writingZoneSection #mainStoryInput {
+    min-height: 72vh !important;
+}
+
+#writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode #writingZoneSection #mainStoryInput::placeholder {
+    color: rgba(255, 241, 212, 0.58) !important;
+    font-style: italic;
+}
+
+#writingZoneSection #mainStoryInput:focus,
+body.focus-mode #writingZoneSection #mainStoryInput:focus {
+    border-color: rgba(223, 191, 131, 0.44) !important;
+    box-shadow:
+        0 0 0 4px rgba(215, 165, 111, 0.12),
+        inset 0 1px 0 rgba(255, 255, 255, 0.07),
+        inset 0 0 44px rgba(6, 4, 2, 0.10),
+        0 20px 46px rgba(0, 0, 0, 0.24) !important;
+}
+
+/* Keep the guest pen-name field related to the writing page without making it
+   as visually heavy as the story surface. */
+#writingZoneSection #guestPenName {
+    background:
+        radial-gradient(circle at 8% 0%, rgba(255, 248, 222, 0.18), transparent 14rem),
+        linear-gradient(135deg, rgba(32, 55, 42, 0.44), rgba(54, 37, 23, 0.40)) !important;
+    color: var(--paper) !important;
+    border-color: rgba(220, 229, 201, 0.14) !important;
+}
+
+#writingZoneSection.is-writing-active {
+    border-color: rgba(223, 191, 131, 0.24) !important;
+}
+
+/* Candle slider balance:
+   50% is the default mood.
+   Below 50% darkens toward the pop-up-window atmosphere.
+   Above 50% brightens the writing paper toward white while preserving the
+   existing warm candle behavior for the rest of the page. */
+body.candle-brightness-active .overlay {
+    background: rgba(12, 7, 4, var(--candle-room-overlay-alpha)) !important;
+    backdrop-filter: blur(1.2px) saturate(var(--candle-room-overlay-saturation)) !important;
+}
+
+body.candle-brightness-active main .card,
+body.candle-brightness-active main .story-card,
+body.candle-brightness-active main .stat-card,
+body.candle-brightness-active main .writing-zone,
+body.candle-brightness-active .ambient-menu,
+body.candle-brightness-active .modal-content.book-style,
+body.candle-brightness-active .modal-content.narrow,
+body.candle-brightness-active .passport-guide-style {
+    color: var(--candle-text-color) !important;
+    background:
+        linear-gradient(rgba(0, 0, 0, var(--candle-panel-dim-alpha)), rgba(0, 0, 0, var(--candle-panel-dim-alpha))),
+        linear-gradient(145deg,
+            rgba(255, 248, 230, var(--candle-panel-alpha-1)),
+            rgba(238, 218, 178, var(--candle-panel-alpha-2))),
+        linear-gradient(145deg,
+            rgba(27, 19, 13, var(--focus-zone-alpha)),
+            rgba(18, 13, 9, var(--focus-zone-alpha-2))) !important;
+}
+
+/* Main and Focus Mode writing surfaces use the same candle behavior. */
+body.candle-brightness-active #writingZoneSection #mainStoryInput,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput {
+    color: var(--candle-text-color) !important;
+    background:
+        linear-gradient(rgba(0, 0, 0, var(--candle-writing-dim-alpha)), rgba(0, 0, 0, var(--candle-writing-dim-alpha))),
+        linear-gradient(rgba(255, 255, 252, var(--candle-paper-alpha)), rgba(255, 255, 252, var(--candle-paper-alpha))),
+        radial-gradient(circle at 10% 6%, rgba(255, 248, 222, calc(0.26 + (0.50 * var(--candle-ease)))) 0, rgba(255, 248, 222, calc(0.12 + (0.32 * var(--candle-ease)))) 11rem, transparent 24rem),
+        linear-gradient(135deg, rgba(32, 55, 42, 0.64), rgba(54, 37, 23, 0.59) 54%, rgba(18, 13, 9, 0.72)) !important;
+    border-color: rgba(80, 55, 38, var(--candle-border-alpha)) !important;
+    box-shadow:
+        0 0 0 4px rgba(125, 139, 109, calc(0.04 + (0.08 * var(--candle-ease)))),
+        inset 0 1px 0 rgba(255, 255, 255, var(--candle-focus-inset-alpha)),
+        inset 0 0 44px rgba(6, 4, 2, calc(0.10 + (0.06 * var(--candle-dim)))),
+        0 20px 48px rgba(0, 0, 0, calc(0.22 + (0.18 * var(--candle-dim)))) !important;
+}
+
+body.candle-brightness-active #writingZoneSection #guestPenName {
+    color: var(--candle-text-color) !important;
+    background:
+        linear-gradient(rgba(0, 0, 0, calc(var(--candle-writing-dim-alpha) * 0.75)), rgba(0, 0, 0, calc(var(--candle-writing-dim-alpha) * 0.75))),
+        linear-gradient(rgba(255, 255, 252, calc(var(--candle-paper-alpha) * 0.78)), rgba(255, 255, 252, calc(var(--candle-paper-alpha) * 0.78))),
+        radial-gradient(circle at 8% 0%, rgba(255, 248, 222, 0.18), transparent 14rem),
+        linear-gradient(135deg, rgba(32, 55, 42, 0.44), rgba(54, 37, 23, 0.40)) !important;
+    border-color: rgba(80, 55, 38, var(--candle-border-alpha)) !important;
+}
+
+body.candle-brightness-active #writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput::placeholder,
+body.candle-brightness-active #writingZoneSection #guestPenName::placeholder {
+    color: color-mix(in srgb, var(--candle-text-color) 58%, transparent) !important;
+}
+
+/* Make the circular focus button behave like the other controls on bright or
+   dim candle settings. */
+body.candle-brightness-active .focus-mode-toggle {
+    color: var(--candle-text-color) !important;
+    background: rgba(255, 252, 241, var(--candle-control-alpha)) !important;
+    border-color: rgba(80, 55, 38, var(--candle-border-alpha)) !important;
+    box-shadow:
+        0 8px 18px rgba(0, 0, 0, calc(0.16 + (0.12 * var(--candle-dim)))),
+        inset 0 1px 0 rgba(255, 255, 255, var(--candle-focus-inset-alpha)) !important;
+}
+
+body.candle-brightness-active .focus-mode-toggle:hover,
+body.candle-brightness-active .focus-mode-toggle[aria-pressed="true"] {
+    background: rgba(255, 252, 241, var(--candle-control-hover-alpha)) !important;
+}
+
+/* Mobile keeps the bigger writing surface, but avoids making it taller than
+   the visible screen once the keyboard appears. */
+@media (max-width: 760px) {
+    #writingZoneSection #mainStoryInput {
+        min-height: 58vh !important;
+    }
+
+    body.focus-mode #writingZoneSection #mainStoryInput {
+        min-height: 68vh !important;
+    }
+
+    .focus-mode-toggle {
+        width: 2.55rem !important;
+        height: 2.55rem !important;
+        min-width: 2.55rem !important;
+    }
+}
+
+/* =========================================================
+   Final 108: simplified light menu + polished desk spacing
+   =========================================================
+   Candle brightness is paused for now. The Light popup keeps the ambient
+   lighting choices and the Feather/Ink window slider only, and the Writing
+   Desk control row is aligned on the right so the round focus button sits
+   where the old close button belonged in Focus Mode.
+*/
+:root {
+    --nook-section-gap: 1.25rem;
+    --nook-control-height: 2.75rem;
+    --nook-control-gap: 0.55rem;
+    --nook-card-top-gap: 98px;
+}
+
+/* Keep top spacing between the fixed header and first card visually consistent
+   with the spacing between the main content boxes. */
+main {
+    padding-top: var(--nook-card-top-gap) !important;
+}
+
+main > .card,
+main > section.card {
+    margin-bottom: var(--nook-section-gap) !important;
+}
+
+main > section.card:last-child {
+    margin-bottom: 0 !important;
+}
+
+.site-footer {
+    margin-top: var(--nook-section-gap) !important;
+}
+
+/* The candle slider has been removed from the Light popup; hide any fallback
+   remnants if an older browser cache keeps a stale fragment alive. */
+.candle-brightness-feature,
+.candle-brightness-slider,
+#candleBrightnessSlider {
+    display: none !important;
+}
+
+/* Control row polish: Sound + Light + round Focus toggle share one visual
+   height and sit comfortably in the Writing Desk corner. */
+#writingZoneSection .writing-desk-header {
+    position: relative;
+    align-items: flex-start !important;
+    min-height: var(--nook-control-height);
+    margin-bottom: 1.05rem !important;
+}
+
+#writingZoneSection .writing-desk-title {
+    padding-top: 0.24rem;
+    padding-right: min(42vw, 18rem);
+}
+
+#writingZoneSection .focus-ambient-controls {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: var(--nook-control-gap) !important;
+    width: auto !important;
+    max-width: none !important;
+    left: auto !important;
+    right: clamp(1rem, 2.4vw, 1.45rem) !important;
+    top: 0.72rem !important;
+    transform: none !important;
+    z-index: 12 !important;
+}
+
+#soundEffectsBtn { order: 1; }
+#lightingEffectsBtn { order: 2; }
+#focusModeToggleBtn { order: 3; }
+
+#writingZoneSection .focus-mini-btn.focus-icon-btn,
+#writingZoneSection .focus-mode-toggle {
+    height: var(--nook-control-height) !important;
+    min-height: var(--nook-control-height) !important;
+    border-radius: 999px !important;
+    line-height: 1 !important;
+}
+
+#writingZoneSection .focus-mini-btn.focus-icon-btn {
+    min-width: 6.7rem !important;
+    padding: 0 1rem !important;
+    font-size: 0.84rem !important;
+}
+
+#writingZoneSection .focus-mode-toggle {
+    width: var(--nook-control-height) !important;
+    min-width: var(--nook-control-height) !important;
+    font-size: 1.08rem !important;
+}
+
+/* Pull the main-page buttons up slightly without crowding the Writing Desk
+   title. The card still has enough top padding for the right-corner controls. */
+body:not(.focus-mode) #writingZoneSection {
+    padding-top: 3.95rem !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+    top: 0.72rem !important;
+}
+
+/* In Focus Mode, the round retract/close button sits where the old X lived;
+   Sound and Light line up immediately to its left. */
+body.focus-mode #writingZoneSection {
+    padding-top: 3.95rem !important;
+}
+
+body.focus-mode #writingZoneSection .focus-ambient-controls {
+    top: 0.68rem !important;
+    right: 0.72rem !important;
+    left: auto !important;
+    transform: none !important;
+}
+
+body.focus-mode #writingZoneSection .focus-mini-btn.focus-icon-btn,
+body.focus-mode #writingZoneSection .focus-mode-toggle {
+    height: var(--nook-control-height) !important;
+    min-height: var(--nook-control-height) !important;
+}
+
+body.focus-mode #writingZoneSection .focus-mode-toggle {
+    width: var(--nook-control-height) !important;
+    min-width: var(--nook-control-height) !important;
+}
+
+/* Right-align the popups to the controls instead of the center of the desk,
+   which keeps the menu visually attached to Sound/Light and gives the Light
+   popup a better size now that the candle slider is gone. */
+#writingZoneSection .ambient-menu,
+body:not(.focus-mode) #writingZoneSection .ambient-menu,
+body.focus-mode #writingZoneSection .ambient-menu {
+    left: auto !important;
+    right: clamp(1rem, 2.4vw, 1.45rem) !important;
+    transform: none !important;
+    top: 3.85rem !important;
+    width: min(340px, calc(100vw - 32px)) !important;
+    max-height: min(72vh, 470px) !important;
+    overflow-y: auto !important;
+}
+
+body.focus-mode #writingZoneSection .ambient-menu {
+    right: 0.72rem !important;
+    top: 3.8rem !important;
+}
+
+#writingZoneSection .lighting-menu {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    align-content: start !important;
+}
+
+#writingZoneSection .lighting-menu .ambient-slider-feature {
+    margin-bottom: 0.22rem !important;
+    padding-bottom: 0.58rem !important;
+}
+
+#writingZoneSection .lighting-menu button,
+#writingZoneSection .sound-menu button {
+    min-height: 2.55rem;
+}
+
+/* Slightly tighter and more consistent spacing inside the Writing Desk now that
+   the top controls are in a stable right-corner row. */
+#writingZoneSection .story-input-wrap {
+    margin-top: 0.1rem !important;
+}
+
+#writingZoneSection .writer-tools {
+    margin-top: 0.95rem !important;
+}
+
+#writingZoneSection .writer-action-line {
+    margin-top: 0.75rem !important;
+}
+
+/* Keep the Weekly Inspiration card visually separated from the fixed header by
+   the same rhythm used between cards. */
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+    margin-top: 0 !important;
+    margin-bottom: var(--nook-section-gap) !important;
+}
+
+/* Mobile/tablet: keep the controls comfortable, wrap only when necessary, and
+   let the popups return toward center so they do not hang off-screen. */
+@media (max-width: 760px) {
+    :root {
+        --nook-card-top-gap: 104px;
+        --nook-control-height: 2.55rem;
+        --nook-control-gap: 0.38rem;
+    }
+
+    #writingZoneSection .writing-desk-header {
+        min-height: calc(var(--nook-control-height) * 2 + 0.55rem);
+    }
+
+    #writingZoneSection .writing-desk-title {
+        padding-right: 0;
+    }
+
+    #writingZoneSection .focus-ambient-controls,
+    body:not(.focus-mode) #writingZoneSection .focus-ambient-controls,
+    body.focus-mode #writingZoneSection .focus-ambient-controls {
+        top: 0.72rem !important;
+        right: 0.85rem !important;
+        left: auto !important;
+        transform: none !important;
+        flex-wrap: wrap !important;
+        max-width: calc(100% - 1.7rem) !important;
+    }
+
+    #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        min-width: 5.35rem !important;
+        padding: 0 0.78rem !important;
+        font-size: 0.8rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection,
+    body.focus-mode #writingZoneSection {
+        padding-top: 5.25rem !important;
+    }
+
+    #writingZoneSection .ambient-menu,
+    body:not(.focus-mode) #writingZoneSection .ambient-menu,
+    body.focus-mode #writingZoneSection .ambient-menu {
+        top: 4.45rem !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        width: min(92vw, 340px) !important;
+    }
+}
+
+@media (max-width: 430px) {
+    :root {
+        --nook-card-top-gap: 112px;
+    }
+
+    #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        min-width: 4.9rem !important;
+        padding: 0 0.62rem !important;
+        font-size: 0.76rem !important;
+    }
+}
+
+/* =========================================================
+   Final 109: tighter Writing Desk top + lower inspiration card
+   =========================================================
+   - Weekly Inspiration now sits about 25px lower from the fixed header.
+   - Writing Desk top padding is pulled back down so the header/control area
+     feels closer to the earlier compact layout.
+*/
+:root {
+    --nook-card-top-gap: 123px;
+}
+
+/* Keep the larger top gap from the header to the first card only. */
+main {
+    padding-top: var(--nook-card-top-gap) !important;
+}
+
+/* Main-page Writing Desk: reduce the extra blank area above the title/input. */
+body:not(.focus-mode) #writingZoneSection {
+    padding-top: clamp(1.35rem, 2.7vw, 2.05rem) !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .writing-desk-header {
+    min-height: var(--nook-control-height) !important;
+    margin-bottom: 0.72rem !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .writing-desk-title {
+    padding-top: 0.1rem !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+    top: 0.55rem !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .ambient-menu {
+    top: 3.55rem !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .story-input-wrap {
+    margin-top: 0 !important;
+}
+
+/* Focus Mode keeps the corner controls, but trims the empty top area slightly
+   so it visually matches the main Writing Desk more closely. */
+body.focus-mode #writingZoneSection {
+    padding-top: 3.35rem !important;
+}
+
+body.focus-mode #writingZoneSection .writing-desk-header {
+    margin-bottom: 0.72rem !important;
+}
+
+body.focus-mode #writingZoneSection .focus-ambient-controls {
+    top: 0.56rem !important;
+}
+
+body.focus-mode #writingZoneSection .ambient-menu {
+    top: 3.55rem !important;
+}
+
+@media (max-width: 760px) {
+    :root {
+        --nook-card-top-gap: 129px;
+    }
+
+    body:not(.focus-mode) #writingZoneSection,
+    body.focus-mode #writingZoneSection {
+        padding-top: 4.65rem !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .ambient-menu,
+    body.focus-mode #writingZoneSection .ambient-menu {
+        top: 4.25rem !important;
+    }
+}
+
+@media (max-width: 430px) {
+    :root {
+        --nook-card-top-gap: 137px;
+    }
+}
+
+/* =========================================================
+   Final 110: lower Writing Desk card slightly
+   =========================================================
+   Adds 10px of breathing room above the main-page Writing Desk
+   so the card sits a touch lower without changing Focus Mode.
+*/
+body:not(.focus-mode) #writingZoneSection {
+    margin-top: 10px !important;
+}
+
+
+/* =========================================================
+   Final 111: quiet Focus Mode + tighter Writing Desk headers
+   =========================================================
+   - Focus Mode no longer plays a page/open/close sound.
+   - Main Writing Desk top/header space is trimmed another 10px.
+   - Focus Mode controls are balanced so the space above the buttons
+     visually matches the space below them before the writing area starts.
+*/
+
+/* Main page Writing Desk: pull the header/content area up by about 10px
+   while leaving the whole card position from Final 110 intact. */
+body:not(.focus-mode) #writingZoneSection {
+    padding-top: calc(clamp(1.35rem, 2.7vw, 2.05rem) - 10px) !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .writing-desk-header {
+    margin-bottom: 0.58rem !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+    top: calc(0.55rem - 10px) !important;
+}
+
+body:not(.focus-mode) #writingZoneSection .ambient-menu {
+    top: calc(3.55rem - 10px) !important;
+}
+
+/* Focus Mode desktop/tablet: keep Sound/Light/Close in the same row, but
+   center the row inside the header band so there is even breathing room above
+   and below before the writing surface begins. */
+body.focus-mode #writingZoneSection {
+    padding-top: 3.35rem !important;
+}
+
+body.focus-mode #writingZoneSection .writing-desk-header {
+    margin-bottom: 0.58rem !important;
+}
+
+body.focus-mode #writingZoneSection .focus-ambient-controls {
+    top: 0.30rem !important;
+}
+
+body.focus-mode #writingZoneSection .ambient-menu {
+    top: 3.25rem !important;
+}
+
+/* Keep the round close/retract button visually aligned with Sound/Light. */
+body.focus-mode #writingZoneSection .focus-mode-toggle {
+    align-self: center !important;
+}
+
+@media (max-width: 760px) {
+    body:not(.focus-mode) #writingZoneSection {
+        padding-top: calc(4.65rem - 10px) !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .focus-ambient-controls {
+        top: calc(0.72rem - 10px) !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .ambient-menu {
+        top: calc(4.25rem - 10px) !important;
+    }
+
+    body.focus-mode #writingZoneSection {
+        padding-top: calc(4.65rem - 10px) !important;
+    }
+
+    body.focus-mode #writingZoneSection .focus-ambient-controls {
+        top: calc(0.72rem - 10px) !important;
+    }
+
+    body.focus-mode #writingZoneSection .ambient-menu {
+        top: calc(4.25rem - 10px) !important;
+    }
+}
+
+/* =========================================================
+   Final 112: Focus Mode mirrors main Writing Desk header
+   =========================================================
+   Focus Mode now uses the same Writing Desk header rhythm as the main page:
+   title locked left, Sound/Light/close controls in the same right-corner row,
+   matching button heights, matching popup attachment, and the same top/bottom
+   breathing room before the writing surface.
+*/
+
+/* Desktop/tablet Focus Mode: copy the main Writing Desk spacing model. */
+body.focus-mode #writingZoneSection {
+    padding-top: calc(clamp(1.35rem, 2.7vw, 2.05rem) - 10px) !important;
+}
+
+body.focus-mode #writingZoneSection .writing-desk-header {
+    position: relative !important;
+    align-items: flex-start !important;
+    min-height: var(--nook-control-height) !important;
+    margin: 0 0 0.58rem 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+}
+
+body.focus-mode #writingZoneSection .writing-desk-title {
+    padding-top: 0.1rem !important;
+    padding-right: min(42vw, 18rem) !important;
+    margin: 0 !important;
+    text-align: left !important;
+    max-width: none !important;
+}
+
+body.focus-mode #writingZoneSection .writing-desk-title .eyebrow {
+    position: relative !important;
+    top: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    text-align: left !important;
+    white-space: nowrap !important;
+}
+
+body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls,
+body.focus-mode #writingZoneSection .focus-ambient-controls {
+    display: inline-flex !important;
+    position: absolute !important;
+    align-items: center !important;
+    justify-content: flex-end !important;
+    gap: var(--nook-control-gap) !important;
+    width: auto !important;
+    max-width: none !important;
+    top: calc(0.55rem - 10px) !important;
+    right: clamp(1rem, 2.4vw, 1.45rem) !important;
+    left: auto !important;
+    bottom: auto !important;
+    transform: none !important;
+    margin: 0 !important;
+    z-index: 12 !important;
+}
+
+body.focus-mode #writingZoneSection .focus-mini-btn.focus-icon-btn,
+body.focus-mode #writingZoneSection .focus-mode-toggle {
+    height: var(--nook-control-height) !important;
+    min-height: var(--nook-control-height) !important;
+    border-radius: 999px !important;
+    line-height: 1 !important;
+    align-self: center !important;
+}
+
+body.focus-mode #writingZoneSection .focus-mini-btn.focus-icon-btn {
+    min-width: 6.7rem !important;
+    padding: 0 1rem !important;
+    font-size: 0.84rem !important;
+}
+
+body.focus-mode #writingZoneSection .focus-mode-toggle {
+    width: var(--nook-control-height) !important;
+    min-width: var(--nook-control-height) !important;
+    font-size: 1.08rem !important;
+}
+
+body.focus-mode #writingZoneSection .ambient-menu {
+    top: calc(3.55rem - 10px) !important;
+    right: clamp(1rem, 2.4vw, 1.45rem) !important;
+    left: auto !important;
+    transform: none !important;
+    width: min(340px, calc(100vw - 32px)) !important;
+    max-height: min(72vh, 470px) !important;
+    overflow-y: auto !important;
+}
+
+/* Mobile Focus Mode: match the main-page stacked/right-corner control layout
+   instead of hiding Sound/Light. */
+@media (max-width: 760px) {
+    body.focus-mode #writingZoneSection {
+        padding-top: calc(4.65rem - 10px) !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-header {
+        min-height: calc(var(--nook-control-height) * 2 + 0.55rem) !important;
+        margin: 0 0 0.58rem 0 !important;
+        padding: 0 !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-title {
+        padding-top: 0.1rem !important;
+        padding-right: 0 !important;
+        max-width: calc(100vw - 11rem) !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-title .eyebrow {
+        top: 0 !important;
+        font-size: 0.76rem !important;
+        letter-spacing: 0.11em !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls,
+    body.focus-mode #writingZoneSection .focus-ambient-controls {
+        display: inline-flex !important;
+        position: absolute !important;
+        top: calc(0.72rem - 10px) !important;
+        right: 0.85rem !important;
+        left: auto !important;
+        transform: none !important;
+        flex-wrap: wrap !important;
+        max-width: calc(100% - 1.7rem) !important;
+        justify-content: flex-end !important;
+        gap: var(--nook-control-gap) !important;
+        margin: 0 !important;
+    }
+
+    body.focus-mode #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        min-width: 5.35rem !important;
+        height: var(--nook-control-height) !important;
+        min-height: var(--nook-control-height) !important;
+        padding: 0 0.78rem !important;
+        font-size: 0.8rem !important;
+    }
+
+    body.focus-mode #writingZoneSection .focus-mode-toggle {
+        width: var(--nook-control-height) !important;
+        min-width: var(--nook-control-height) !important;
+        height: var(--nook-control-height) !important;
+        min-height: var(--nook-control-height) !important;
+    }
+
+    body.focus-mode #writingZoneSection .ambient-menu {
+        display: grid !important;
+        top: calc(4.25rem - 10px) !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        width: min(92vw, 340px) !important;
+    }
+}
+
+@media (max-width: 430px) {
+    body.focus-mode #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        min-width: 4.9rem !important;
+        padding: 0 0.62rem !important;
+        font-size: 0.76rem !important;
+    }
+}
+
+/* =========================================================
+   Final 113: Focus Mode slight lower placement + button nudge
+   =========================================================
+   Move the Focus Mode card down a touch and shift the Focus Mode
+   Sound/Light/retract controls about 30px to the right.
+*/
+
+body.focus-mode #writingZoneSection {
+    margin-top: calc(min(4vh, 32px) + 10px) !important;
+}
+
+body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls,
+body.focus-mode #writingZoneSection .focus-ambient-controls {
+    transform: translateX(30px) !important;
+}
+
+body.focus-mode #writingZoneSection .ambient-menu {
+    transform: translateX(30px) !important;
+}
+
+@media (max-width: 760px) {
+    body.focus-mode #writingZoneSection {
+        margin-top: 10px !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls,
+    body.focus-mode #writingZoneSection .focus-ambient-controls {
+        transform: translateX(30px) !important;
+    }
+
+    body.focus-mode #writingZoneSection .ambient-menu {
+        transform: translateX(calc(-50% + 30px)) !important;
+    }
+}
+
+@media (max-width: 430px) {
+    body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls,
+    body.focus-mode #writingZoneSection .focus-ambient-controls {
+        transform: translateX(18px) !important;
+    }
+
+    body.focus-mode #writingZoneSection .ambient-menu {
+        transform: translateX(calc(-50% + 18px)) !important;
+    }
+}
+
+/* =========================================================
+   Final 114: Focus Mode header vertical balance + right nudge
+   =========================================================
+   The Focus Mode title/control row is visually centered within the
+   header band between the card top and the writing surface. Controls
+   also move another 10px to the right from Final 113.
+*/
+:root {
+    --nook-focus-header-balance-lift: 10px;
+    --nook-focus-control-right-nudge: 40px;
+}
+
+body.focus-mode #writingZoneSection .writing-desk-header {
+    transform: translateY(calc(-1 * var(--nook-focus-header-balance-lift))) !important;
+    margin-bottom: calc(0.58rem + var(--nook-focus-header-balance-lift)) !important;
+}
+
+body.focus-mode #writingZoneSection .writing-desk-title,
+body.focus-mode #writingZoneSection .writing-desk-title .eyebrow {
+    transform: none !important;
+}
+
+body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls,
+body.focus-mode #writingZoneSection .focus-ambient-controls {
+    transform: translateX(var(--nook-focus-control-right-nudge)) !important;
+}
+
+body.focus-mode #writingZoneSection .ambient-menu {
+    top: calc(3.55rem - 20px) !important;
+    transform: translateX(var(--nook-focus-control-right-nudge)) !important;
+}
+
+@media (max-width: 760px) {
+    :root {
+        --nook-focus-header-balance-lift: 8px;
+        --nook-focus-control-right-nudge: 40px;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-header {
+        transform: translateY(calc(-1 * var(--nook-focus-header-balance-lift))) !important;
+        margin-bottom: calc(0.58rem + var(--nook-focus-header-balance-lift)) !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls,
+    body.focus-mode #writingZoneSection .focus-ambient-controls {
+        transform: translateX(var(--nook-focus-control-right-nudge)) !important;
+    }
+
+    body.focus-mode #writingZoneSection .ambient-menu {
+        top: calc(4.25rem - 18px) !important;
+        transform: translateX(calc(-50% + var(--nook-focus-control-right-nudge))) !important;
+    }
+}
+
+@media (max-width: 430px) {
+    :root {
+        --nook-focus-control-right-nudge: 28px;
+    }
+}
+
+/* =========================================================
+   Final 116: Focus Mode writing surface lift correction
+   =========================================================
+   Lift only the focus-mode writing surface upward by 22px and
+   add that space back into its height, so the header/buttons stay
+   exactly where they are while the writing area visually expands
+   into the available space.
+*/
+body.focus-mode #writingZoneSection textarea#mainStoryInput,
+body.focus-mode #writingZoneSection .writing-zone textarea,
+body.focus-mode #writingZoneSection textarea {
+    position: relative !important;
+    top: -22px !important;
+    min-height: calc(62vh + 22px) !important;
+}
+
+@media (max-width: 640px) {
+    body.focus-mode #writingZoneSection textarea#mainStoryInput,
+    body.focus-mode #writingZoneSection textarea {
+        top: -22px !important;
+        min-height: calc(300px + 22px) !important;
+    }
+}
+
+/* =========================================================
+   Final 117: Focus Mode writing surface correction + control alignment
+   =========================================================
+   Lower the focus-mode writing surface 5px from the previous 22px lift
+   and align the right edge of the focus/retract control with the right
+   edge of the writing surface.
+*/
+body.focus-mode #writingZoneSection textarea#mainStoryInput,
+body.focus-mode #writingZoneSection .writing-zone textarea,
+body.focus-mode #writingZoneSection textarea {
+    top: -17px !important;
+    min-height: calc(62vh + 17px) !important;
+}
+
+body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls,
+body.focus-mode #writingZoneSection .focus-ambient-controls {
+    right: 0 !important;
+    transform: none !important;
+}
+
+body.focus-mode #writingZoneSection .ambient-menu {
+    right: 0 !important;
+    transform: none !important;
+}
+
+@media (max-width: 760px) {
+    body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls,
+    body.focus-mode #writingZoneSection .focus-ambient-controls {
+        right: 0 !important;
+        transform: none !important;
+    }
+
+    body.focus-mode #writingZoneSection .ambient-menu {
+        left: auto !important;
+        right: 0 !important;
+        transform: none !important;
+    }
+}
+
+@media (max-width: 640px) {
+    body.focus-mode #writingZoneSection textarea#mainStoryInput,
+    body.focus-mode #writingZoneSection textarea {
+        top: -17px !important;
+        min-height: calc(300px + 17px) !important;
+    }
+}
+
+/* =========================================================
+   Final 118: main-page Sound/Light height match
+   =========================================================
+   Match the main-page Sound and Light pill heights to the circular
+   Enter Focus Mode button without shifting their placement.
+*/
+body:not(.focus-mode) #writingZoneSection #soundEffectsBtn,
+body:not(.focus-mode) #writingZoneSection #lightingEffectsBtn {
+    height: var(--nook-control-height) !important;
+    min-height: var(--nook-control-height) !important;
+    max-height: var(--nook-control-height) !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* =========================================================
+   Final 119: identical old-paper writing surface in Focus Mode
+   =========================================================
+   The focus-mode textarea was still inheriting older transparent/dark rules.
+   This locks the main page and Focus Mode writing surfaces to the same
+   opaque old-page treatment, so Focus Mode no longer looks dim or see-through.
+*/
+#writingZoneSection #mainStoryInput,
+body:not(.focus-mode) #writingZoneSection #mainStoryInput,
+body.focus-mode #writingZoneSection #mainStoryInput,
+body.candle-brightness-active #writingZoneSection #mainStoryInput,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput {
+    opacity: 1 !important;
+    color: #2c1d12 !important;
+    background-color: #f1dcb2 !important;
+    background:
+        radial-gradient(circle at 12% 8%, rgba(255, 252, 239, 0.92) 0, rgba(255, 252, 239, 0.60) 10rem, transparent 24rem),
+        linear-gradient(145deg, #fbefd5 0%, #f1dcb2 52%, #dfc492 100%) !important;
+    border-color: rgba(116, 78, 44, 0.34) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.66),
+        inset 0 0 44px rgba(116, 78, 44, 0.10),
+        0 16px 34px rgba(0, 0, 0, 0.18) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+#writingZoneSection #mainStoryInput::placeholder,
+body:not(.focus-mode) #writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode #writingZoneSection #mainStoryInput::placeholder,
+body.candle-brightness-active #writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput::placeholder {
+    color: rgba(62, 43, 27, 0.52) !important;
+    font-style: italic !important;
+}
+
+#writingZoneSection #mainStoryInput:focus,
+body:not(.focus-mode) #writingZoneSection #mainStoryInput:focus,
+body.focus-mode #writingZoneSection #mainStoryInput:focus,
+body.candle-brightness-active #writingZoneSection #mainStoryInput:focus,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput:focus {
+    border-color: rgba(147, 98, 54, 0.58) !important;
+    box-shadow:
+        0 0 0 4px rgba(215, 165, 111, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        inset 0 0 44px rgba(116, 78, 44, 0.09),
+        0 18px 38px rgba(0, 0, 0, 0.20) !important;
+}
+
+/* Preserve the current Focus Mode placement from Final 117 while changing
+   only the surface treatment. */
+body.focus-mode #writingZoneSection textarea#mainStoryInput,
+body.focus-mode #writingZoneSection .writing-zone textarea,
+body.focus-mode #writingZoneSection textarea {
+    top: -17px !important;
+}
+
+/* =========================================================
+   Final 120: Feather / Ink affects the writing paper itself
+   =========================================================
+   The Light menu's Feather <-> Ink slider now also feathers the textarea
+   parchment on both the main page and Focus Mode. Moving toward Feather makes
+   the old-paper surface translucent so the room/background shows through;
+   once the slider passes the middle toward Feather, the writing switches to
+   light ink for readability.
+*/
+:root {
+    --nook-writing-paper-alpha: 1;
+    --nook-writing-highlight-alpha: 0.92;
+    --nook-writing-glow-alpha: 0.38;
+    --nook-writing-border-alpha: 0.34;
+    --nook-writing-shadow-alpha: 0.18;
+    --nook-writing-paper-blur: 0.15px;
+    --nook-writing-text-color: #2c1d12;
+    --nook-writing-placeholder-color: rgba(62, 43, 27, 0.52);
+    --nook-writing-caret-color: #2c1d12;
+    --nook-writing-text-shadow: none;
+}
+
+#writingZoneSection #mainStoryInput,
+body:not(.focus-mode) #writingZoneSection #mainStoryInput,
+body.focus-mode #writingZoneSection #mainStoryInput,
+body.candle-brightness-active #writingZoneSection #mainStoryInput,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput {
+    opacity: 1 !important;
+    color: var(--nook-writing-text-color) !important;
+    caret-color: var(--nook-writing-caret-color) !important;
+    text-shadow: var(--nook-writing-text-shadow) !important;
+    background-color: rgba(241, 220, 178, var(--nook-writing-paper-alpha)) !important;
+    background:
+        radial-gradient(circle at 12% 8%,
+            rgba(255, 252, 239, var(--nook-writing-highlight-alpha)) 0,
+            rgba(255, 252, 239, calc(var(--nook-writing-highlight-alpha) * 0.64)) 10rem,
+            rgba(255, 252, 239, 0) 24rem),
+        linear-gradient(145deg,
+            rgba(251, 239, 213, var(--nook-writing-paper-alpha)) 0%,
+            rgba(241, 220, 178, calc(var(--nook-writing-paper-alpha) * 0.96)) 52%,
+            rgba(223, 196, 146, calc(var(--nook-writing-paper-alpha) * 0.88)) 100%) !important;
+    border-color: rgba(116, 78, 44, var(--nook-writing-border-alpha)) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, calc(var(--nook-writing-highlight-alpha) * 0.72)),
+        inset 0 0 44px rgba(116, 78, 44, calc(var(--nook-writing-glow-alpha) * 0.28)),
+        0 16px 34px rgba(0, 0, 0, var(--nook-writing-shadow-alpha)) !important;
+    backdrop-filter: blur(var(--nook-writing-paper-blur)) !important;
+    -webkit-backdrop-filter: blur(var(--nook-writing-paper-blur)) !important;
+    transition:
+        color 0.22s ease,
+        background 0.22s ease,
+        border-color 0.22s ease,
+        box-shadow 0.22s ease,
+        backdrop-filter 0.22s ease,
+        -webkit-backdrop-filter 0.22s ease !important;
+}
+
+#writingZoneSection #mainStoryInput::placeholder,
+body:not(.focus-mode) #writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode #writingZoneSection #mainStoryInput::placeholder,
+body.candle-brightness-active #writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput::placeholder {
+    color: var(--nook-writing-placeholder-color) !important;
+    text-shadow: var(--nook-writing-text-shadow) !important;
+    font-style: italic !important;
+}
+
+#writingZoneSection #mainStoryInput:focus,
+body:not(.focus-mode) #writingZoneSection #mainStoryInput:focus,
+body.focus-mode #writingZoneSection #mainStoryInput:focus,
+body.candle-brightness-active #writingZoneSection #mainStoryInput:focus,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput:focus {
+    border-color: rgba(147, 98, 54, calc(var(--nook-writing-border-alpha) + 0.18)) !important;
+    box-shadow:
+        0 0 0 4px rgba(215, 165, 111, calc(0.10 + (var(--nook-writing-ink-factor, 1) * 0.10))),
+        inset 0 1px 0 rgba(255, 255, 255, calc(var(--nook-writing-highlight-alpha) * 0.78)),
+        inset 0 0 44px rgba(116, 78, 44, calc(var(--nook-writing-glow-alpha) * 0.24)),
+        0 18px 38px rgba(0, 0, 0, calc(var(--nook-writing-shadow-alpha) + 0.02)) !important;
+}
+
+/* When the paper is feathered enough for light text, give selection/readability
+   a darker highlight so white writing remains comfortable over the room image. */
+body.writing-paper-feathered #writingZoneSection #mainStoryInput::selection {
+    color: #fffaf0 !important;
+    background: rgba(0, 0, 0, 0.42) !important;
+}
+
+
+/* Story Nook 121: basic writing tools */
+:root {
+    --writing-user-font-family: 'Cormorant Garamond', Georgia, serif;
+    --writing-user-font-size: 1.42rem;
+    --writing-user-font-weight: 500;
+    --writing-user-font-style: normal;
+}
+
+.typing-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+    margin: 0.72rem 0 0.22rem;
+    padding: 0.58rem 0.68rem;
+    border-radius: 18px;
+    border: 1px solid rgba(220, 229, 201, 0.16);
+    background:
+        radial-gradient(circle at 12% 0%, rgba(246, 234, 212, 0.12), transparent 13rem),
+        linear-gradient(135deg, rgba(32, 55, 42, 0.46), rgba(54, 37, 23, 0.34));
+    box-shadow: inset 0 1px 0 rgba(255, 241, 212, 0.08), 0 10px 24px rgba(0, 0, 0, 0.14);
+}
+
+.typing-toolbar-group {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.typing-toolbar-selects { flex: 1 1 320px; }
+
+.typing-control {
+    width: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    color: var(--sage-soft);
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.typing-control select {
+    width: auto;
+    min-width: 132px;
+    height: 40px;
+    padding: 0.42rem 2.1rem 0.42rem 0.78rem;
+    border-radius: 999px;
+    color: var(--paper);
+    background: rgba(13, 9, 6, 0.44);
+    border: 1px solid rgba(215, 165, 111, 0.28);
+    box-shadow: none;
+}
+
+.typing-control select:focus {
+    border-color: rgba(223, 191, 131, 0.78);
+    box-shadow: 0 0 0 3px rgba(215, 165, 111, 0.14);
+}
+
+.typing-format-toggles {
+    justify-content: flex-end;
+    margin-left: auto;
+}
+
+.typing-tool-btn {
+    width: 40px;
+    height: 40px;
+    display: inline-grid;
+    place-items: center;
+    border-radius: 50%;
+    color: var(--sage-soft);
+    background: rgba(255, 255, 255, 0.045);
+    border: 1px solid rgba(220, 229, 201, 0.18);
+    box-shadow: inset 0 1px 0 rgba(255, 241, 212, 0.08);
+    font: 900 1rem/1 var(--font-ui);
+    transition: transform 0.18s ease, background 0.18s ease, color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.typing-tool-btn:hover {
+    transform: translateY(-1px);
+    color: var(--paper);
+    background: rgba(156, 175, 136, 0.18);
+    border-color: rgba(220, 229, 201, 0.32);
+}
+
+.typing-tool-btn[aria-pressed="true"] {
+    color: #1d130d;
+    background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    border-color: rgba(255, 245, 223, 0.48);
+    box-shadow: 0 8px 18px rgba(215, 165, 111, 0.20);
+}
+
+#writingZoneSection #mainStoryInput,
+body:not(.focus-mode) #writingZoneSection #mainStoryInput,
+body.focus-mode #writingZoneSection #mainStoryInput,
+body.candle-brightness-active #writingZoneSection #mainStoryInput,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput {
+    font-family: var(--writing-user-font-family) !important;
+    font-size: var(--writing-user-font-size) !important;
+    font-weight: var(--writing-user-font-weight) !important;
+    font-style: var(--writing-user-font-style) !important;
+    line-height: 1.72 !important;
+}
+
+body.focus-mode .typing-toolbar {
+    margin-top: 0.62rem;
+    margin-bottom: 0.16rem;
+}
+
+@media (max-width: 720px) {
+    .typing-toolbar {
+        align-items: stretch;
+        padding: 0.68rem;
+    }
+
+    .typing-toolbar-group,
+    .typing-toolbar-selects,
+    .typing-format-toggles {
+        width: 100%;
+        justify-content: space-between;
+        margin-left: 0;
+    }
+
+    .typing-control {
+        flex: 1 1 100%;
+        justify-content: space-between;
+    }
+
+    .typing-control select {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+}
+
+/* =========================================================
+   Final 122: mobile Focus Mode header alignment polish
+   =========================================================
+   On small screens, Focus Mode now mirrors the desktop header rhythm:
+   Writing Desk stays left, Sound/Light/retract stay together on one clean
+   right-aligned row, and the writing paper sits below with intentional space.
+*/
+@media (max-width: 760px) {
+    body.focus-mode main {
+        padding-top: 54px !important;
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
+    body.focus-mode #writingZoneSection {
+        padding: 1.18rem 1rem 0.9rem !important;
+        min-height: calc(100svh - 66px) !important;
+        border-radius: 20px !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-header {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 0.72rem !important;
+        width: 100% !important;
+        min-height: var(--nook-control-height) !important;
+        margin: 0 0 1rem 0 !important;
+        padding: 0 !important;
+        transform: none !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-title {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        align-self: center !important;
+        justify-self: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-title .eyebrow {
+        top: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+        font-size: 0.76rem !important;
+        letter-spacing: 0.12em !important;
+        white-space: nowrap !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls,
+    body.focus-mode #writingZoneSection .focus-ambient-controls {
+        position: static !important;
+        display: inline-flex !important;
+        flex: 0 0 auto !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        flex-wrap: nowrap !important;
+        gap: 0.46rem !important;
+        width: auto !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        transform: none !important;
+    }
+
+    body.focus-mode #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        height: var(--nook-control-height) !important;
+        min-height: var(--nook-control-height) !important;
+        min-width: 5.05rem !important;
+        padding: 0 0.72rem !important;
+        font-size: 0.78rem !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+    }
+
+    body.focus-mode #writingZoneSection .focus-icon-btn > span:first-child {
+        font-size: 1rem !important;
+        line-height: 1 !important;
+    }
+
+    body.focus-mode #writingZoneSection .focus-mode-toggle {
+        width: var(--nook-control-height) !important;
+        min-width: var(--nook-control-height) !important;
+        height: var(--nook-control-height) !important;
+        min-height: var(--nook-control-height) !important;
+        margin: 0 !important;
+    }
+
+    body.focus-mode #writingZoneSection .ambient-menu {
+        top: 4.05rem !important;
+        right: 1rem !important;
+        left: auto !important;
+        transform: none !important;
+        width: min(92vw, 340px) !important;
+    }
+
+    body.focus-mode #writingZoneSection #mainStoryInput,
+    body.focus-mode #writingZoneSection textarea#mainStoryInput,
+    body.focus-mode #writingZoneSection textarea {
+        top: 0 !important;
+        min-height: min(64svh, 470px) !important;
+    }
+}
+
+@media (max-width: 430px) {
+    body.focus-mode #writingZoneSection {
+        padding-left: 0.82rem !important;
+        padding-right: 0.82rem !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-header {
+        gap: 0.52rem !important;
+        margin-bottom: 0.88rem !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-title .eyebrow {
+        font-size: 0.72rem !important;
+        letter-spacing: 0.105em !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls,
+    body.focus-mode #writingZoneSection .focus-ambient-controls {
+        gap: 0.34rem !important;
+    }
+
+    body.focus-mode #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        min-width: 4.52rem !important;
+        padding: 0 0.56rem !important;
+        font-size: 0.74rem !important;
+    }
+}
+
+@media (max-width: 370px) {
+    body.focus-mode #writingZoneSection .writing-desk-header {
+        gap: 0.4rem !important;
+    }
+
+    body.focus-mode #writingZoneSection .focus-mini-btn.focus-icon-btn {
+        min-width: 4.18rem !important;
+        padding: 0 0.46rem !important;
+        font-size: 0.7rem !important;
+    }
+
+    body.focus-mode #writingZoneSection .writing-desk-title .eyebrow {
+        font-size: 0.68rem !important;
+        letter-spacing: 0.095em !important;
+    }
+}
+
+
+/* =========================================================
+   Final 124: mobile writing tools layout polish
+   ========================================================= */
+@media (max-width: 720px) {
+    .typing-toolbar { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; align-items: start !important; gap: 0.58rem 0.62rem !important; padding: 0.64rem 0.68rem !important; }
+    .typing-toolbar-selects { grid-column: 1 / -1 !important; display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; gap: 0.58rem !important; width: 100% !important; flex: none !important; margin: 0 !important; }
+    .typing-control { width: 100% !important; min-width: 0 !important; display: flex !important; flex-direction: column !important; align-items: stretch !important; justify-content: flex-start !important; gap: 0.32rem !important; flex: none !important; }
+    .typing-control span { padding-left: 0.14rem !important; line-height: 1 !important; }
+    .typing-control select { width: 100% !important; min-width: 0 !important; height: 40px !important; padding-left: 0.7rem !important; padding-right: 1.75rem !important; }
+    .typing-format-toggles { grid-column: 1 / 2 !important; display: inline-flex !important; width: auto !important; justify-content: flex-start !important; align-items: center !important; gap: 0.42rem !important; margin: 0 !important; padding: 0 !important; }
+    .typing-tool-btn { width: 38px !important; height: 38px !important; flex: 0 0 38px !important; }
+}
+@media (max-width: 380px) {
+    .typing-toolbar { gap: 0.52rem 0.5rem !important; padding: 0.58rem !important; }
+    .typing-toolbar-selects { gap: 0.48rem !important; }
+    .typing-control { font-size: 0.66rem !important; letter-spacing: 0.075em !important; }
+    .typing-control select { height: 38px !important; padding-left: 0.58rem !important; padding-right: 1.5rem !important; font-size: 0.78rem !important; }
+    .typing-tool-btn { width: 36px !important; height: 36px !important; flex-basis: 36px !important; }
+}
+
+
+/* =========================================================
+   Final 125: mobile Writing Desk header balance
+   =========================================================
+   Mobile desk headers now match the desktop rhythm: Writing Desk title on the
+   left, Sound / Light / Focus controls side-by-side on the right, and a compact
+   even margin before the writing paper. This shared mobile block is the spacing
+   model to preserve for future iterations.
+*/
+@media (max-width: 760px) {
+    :root { --nook-mobile-control-height: 2.46rem; --nook-mobile-control-gap: 0.34rem; }
+    body.focus-mode main { padding-top: 48px !important; padding-left: 10px !important; padding-right: 10px !important; }
+    body:not(.focus-mode) #writingZoneSection, body.focus-mode #writingZoneSection { padding: 1.08rem 1rem 1rem !important; border-radius: 24px !important; }
+    body.focus-mode #writingZoneSection { min-height: calc(100svh - 60px) !important; }
+    #writingZoneSection .writing-desk-header, body:not(.focus-mode) #writingZoneSection .writing-desk-header, body.focus-mode #writingZoneSection .writing-desk-header { display: flex !important; align-items: center !important; justify-content: space-between !important; gap: 0.66rem !important; width: 100% !important; min-height: var(--nook-mobile-control-height) !important; margin: 0 0 0.72rem 0 !important; padding: 0 !important; position: relative !important; transform: none !important; }
+    #writingZoneSection .writing-desk-title, body:not(.focus-mode) #writingZoneSection .writing-desk-title, body.focus-mode #writingZoneSection .writing-desk-title { flex: 1 1 auto !important; min-width: 0 !important; max-width: none !important; margin: 0 !important; padding: 0 !important; align-self: center !important; text-align: left !important; }
+    #writingZoneSection .writing-desk-title .eyebrow, body:not(.focus-mode) #writingZoneSection .writing-desk-title .eyebrow, body.focus-mode #writingZoneSection .writing-desk-title .eyebrow { margin: 0 !important; padding: 0 !important; line-height: 1 !important; top: 0 !important; transform: none !important; white-space: nowrap !important; font-size: 0.74rem !important; letter-spacing: 0.105em !important; }
+    #writingZoneSection .writing-desk-controls.focus-ambient-controls, #writingZoneSection .focus-ambient-controls, body:not(.focus-mode) #writingZoneSection .writing-desk-controls.focus-ambient-controls, body:not(.focus-mode) #writingZoneSection .focus-ambient-controls, body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-controls, body.focus-mode #writingZoneSection .focus-ambient-controls { position: static !important; display: inline-flex !important; flex: 0 0 auto !important; align-items: center !important; justify-content: flex-end !important; flex-wrap: nowrap !important; gap: var(--nook-mobile-control-gap) !important; width: auto !important; max-width: none !important; margin: 0 0 0 auto !important; padding: 0 !important; top: auto !important; right: auto !important; bottom: auto !important; left: auto !important; transform: none !important; z-index: 12 !important; }
+    #writingZoneSection .focus-mini-btn.focus-icon-btn, body:not(.focus-mode) #writingZoneSection .focus-mini-btn.focus-icon-btn, body.focus-mode #writingZoneSection .focus-mini-btn.focus-icon-btn { height: var(--nook-mobile-control-height) !important; min-height: var(--nook-mobile-control-height) !important; min-width: 4.78rem !important; padding: 0 0.62rem !important; border-radius: 999px !important; font-size: 0.74rem !important; line-height: 1 !important; white-space: nowrap !important; display: inline-flex !important; align-items: center !important; justify-content: center !important; gap: 0.28rem !important; flex: 0 0 auto !important; }
+    #writingZoneSection .focus-icon-btn > span:first-child, body.focus-mode #writingZoneSection .focus-icon-btn > span:first-child { font-size: 0.94rem !important; line-height: 1 !important; }
+    #writingZoneSection .focus-mode-toggle, body:not(.focus-mode) #writingZoneSection .focus-mode-toggle, body.focus-mode #writingZoneSection .focus-mode-toggle { width: var(--nook-mobile-control-height) !important; min-width: var(--nook-mobile-control-height) !important; height: var(--nook-mobile-control-height) !important; min-height: var(--nook-mobile-control-height) !important; margin: 0 !important; flex: 0 0 var(--nook-mobile-control-height) !important; display: inline-grid !important; place-items: center !important; border-radius: 50% !important; }
+    #writingZoneSection .story-input-wrap, body.focus-mode #writingZoneSection .story-input-wrap { margin-top: 0 !important; }
+    body.focus-mode #writingZoneSection #mainStoryInput, body.focus-mode #writingZoneSection textarea#mainStoryInput, body.focus-mode #writingZoneSection textarea { top: 0 !important; min-height: min(64svh, 470px) !important; }
+    #writingZoneSection .ambient-menu, body:not(.focus-mode) #writingZoneSection .ambient-menu, body.focus-mode #writingZoneSection .ambient-menu { top: calc(1.08rem + var(--nook-mobile-control-height) + 0.45rem) !important; left: auto !important; right: 1rem !important; transform: none !important; width: min(92vw, 340px) !important; max-width: calc(100vw - 2rem) !important; }
+}
+@media (max-width: 430px) {
+    :root { --nook-mobile-control-height: 2.38rem; --nook-mobile-control-gap: 0.28rem; }
+    body:not(.focus-mode) #writingZoneSection, body.focus-mode #writingZoneSection { padding-left: 0.82rem !important; padding-right: 0.82rem !important; }
+    #writingZoneSection .writing-desk-header, body.focus-mode #writingZoneSection .writing-desk-header { gap: 0.46rem !important; margin-bottom: 0.66rem !important; }
+    #writingZoneSection .writing-desk-title .eyebrow, body.focus-mode #writingZoneSection .writing-desk-title .eyebrow { font-size: 0.70rem !important; letter-spacing: 0.095em !important; }
+    #writingZoneSection .focus-mini-btn.focus-icon-btn, body.focus-mode #writingZoneSection .focus-mini-btn.focus-icon-btn { min-width: 4.32rem !important; padding: 0 0.48rem !important; font-size: 0.70rem !important; gap: 0.23rem !important; }
+    #writingZoneSection .focus-icon-btn > span:first-child, body.focus-mode #writingZoneSection .focus-icon-btn > span:first-child { font-size: 0.88rem !important; }
+    #writingZoneSection .ambient-menu, body:not(.focus-mode) #writingZoneSection .ambient-menu, body.focus-mode #writingZoneSection .ambient-menu { right: 0.82rem !important; max-width: calc(100vw - 1.64rem) !important; }
+}
+@media (max-width: 370px) {
+    #writingZoneSection .writing-desk-header, body.focus-mode #writingZoneSection .writing-desk-header { gap: 0.34rem !important; }
+    #writingZoneSection .focus-mini-btn.focus-icon-btn, body.focus-mode #writingZoneSection .focus-mini-btn.focus-icon-btn { min-width: 3.96rem !important; padding: 0 0.38rem !important; font-size: 0.66rem !important; }
+    #writingZoneSection .focus-icon-btn > span:first-child, body.focus-mode #writingZoneSection .focus-icon-btn > span:first-child { display: none !important; }
+    #writingZoneSection .writing-desk-title .eyebrow, body.focus-mode #writingZoneSection .writing-desk-title .eyebrow { font-size: 0.66rem !important; letter-spacing: 0.08em !important; }
+}
+
+
+/* =========================================================
+   Final 126: mobile ambient popup stability fix
+   =========================================================
+   The Sound/Light menus must never appear unless their buttons explicitly
+   remove .hidden. This overrides older responsive display rules that could
+   leave a menu visible during mobile Focus Mode resize/keyboard changes.
+*/
+#writingZoneSection .ambient-menu,
+body:not(.focus-mode) #writingZoneSection .ambient-menu,
+body.focus-mode #writingZoneSection .ambient-menu {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+#writingZoneSection .ambient-menu:not(.hidden),
+body:not(.focus-mode) #writingZoneSection .ambient-menu:not(.hidden),
+body.focus-mode #writingZoneSection .ambient-menu:not(.hidden) {
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+#writingZoneSection .ambient-menu.hidden,
+body:not(.focus-mode) #writingZoneSection .ambient-menu.hidden,
+body.focus-mode #writingZoneSection .ambient-menu.hidden {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+@media (max-width: 760px) {
+    #writingZoneSection .ambient-menu:not(.hidden),
+    body:not(.focus-mode) #writingZoneSection .ambient-menu:not(.hidden),
+    body.focus-mode #writingZoneSection .ambient-menu:not(.hidden) {
+        top: calc(1.08rem + var(--nook-mobile-control-height) + 0.45rem) !important;
+        right: 1rem !important;
+        left: auto !important;
+        transform: none !important;
+        z-index: 30 !important;
+    }
+}
+
+/* =========================================================
+   Final 127: writing tools select arrow alignment
+   =========================================================
+   Moves the Font and Size dropdown arrows inward so they feel centered
+   inside the rounded controls on both the main page and Focus Mode.
+*/
+#writingZoneSection .typing-control select,
+body.focus-mode #writingZoneSection .typing-control select {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    padding-right: 2.85rem !important;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23dfbf83' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 1.35rem center !important;
+    background-size: 0.82rem 0.82rem !important;
+}
+
+#writingZoneSection .typing-control select::-ms-expand {
+    display: none !important;
+}
+
+@media (max-width: 720px) {
+    #writingZoneSection .typing-control select,
+    body.focus-mode #writingZoneSection .typing-control select {
+        padding-right: 2.65rem !important;
+        background-position: right 1.22rem center !important;
+    }
+}
+
+/* =========================================================
+   Final 128: nudge writing tools select arrows slightly right
+   =========================================================
+   The previous inset was a touch too far left. This moves the custom
+   Font and Size dropdown arrows 4px back toward the right edge on both
+   the main page and Focus Mode without changing the layout.
+*/
+#writingZoneSection .typing-control select,
+body.focus-mode #writingZoneSection .typing-control select {
+    background-position: right 1.10rem center !important;
+}
+
+@media (max-width: 720px) {
+    #writingZoneSection .typing-control select,
+    body.focus-mode #writingZoneSection .typing-control select {
+        background-position: right 0.97rem center !important;
+    }
+}
+
+/* =========================================================
+   Final 129: Focus Mode desktop eraser placement
+   =========================================================
+   In Focus Mode, the writing surface is lifted upward while the eraser
+   stays positioned inside the wrapper. This pulls the eraser back up into
+   the paper and nudges it slightly right so it matches the main-page feel.
+*/
+@media (min-width: 761px) {
+    body.focus-mode #writingZoneSection .textarea-eraser {
+        right: 0.58rem !important;
+        bottom: calc(0.78rem + 17px) !important;
+        z-index: 8 !important;
+    }
+
+    body.focus-mode #writingZoneSection .textarea-eraser:hover {
+        transform: translateY(-1px) !important;
+    }
+}
+
+
+/* Story Nook 130: micro polish + publish moment + draft persistence cues */
+#writingZoneSection #mainStoryInput,
+body.focus-mode #writingZoneSection #mainStoryInput {
+    caret-color: #8f5f34 !important;
+    transition:
+        background 0.25s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.24s ease,
+        filter 0.2s ease !important;
+}
+
+body.writing-paper-feathered #writingZoneSection #mainStoryInput,
+body.writing-paper-feathered.focus-mode #writingZoneSection #mainStoryInput {
+    caret-color: rgba(255, 249, 233, 0.94) !important;
+}
+
+#writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode #writingZoneSection #mainStoryInput::placeholder {
+    transition: color 0.28s ease, opacity 0.28s ease, transform 0.28s ease !important;
+}
+
+#writingZoneSection #mainStoryInput:focus::placeholder,
+body.focus-mode #writingZoneSection #mainStoryInput:focus::placeholder {
+    opacity: 0.42 !important;
+    color: rgba(91, 66, 42, 0.36) !important;
+}
+
+body.writing-has-content #writingZoneSection #mainStoryInput::placeholder,
+body.writing-has-content.focus-mode #writingZoneSection #mainStoryInput::placeholder {
+    opacity: 0 !important;
+    transform: translateY(-2px) !important;
+}
+
+.typing-sound-toggle {
+    min-width: 2.55rem;
+}
+
+.typing-tool-btn.active,
+.typing-tool-btn[aria-pressed="true"].typing-sound-toggle {
+    color: #2a1a10 !important;
+    background: linear-gradient(135deg, rgba(223, 191, 131, 0.96), rgba(199, 154, 97, 0.92)) !important;
+    border-color: rgba(255, 246, 223, 0.72) !important;
+    box-shadow: 0 10px 22px rgba(143, 95, 52, 0.22) !important;
+}
+
+.publish-moment-modal {
+    background:
+        radial-gradient(circle at 50% 42%, rgba(223, 191, 131, 0.14), transparent 18rem),
+        rgba(10, 7, 5, 0.72) !important;
+}
+
+.publish-moment-card {
+    overflow: hidden;
+    transform-origin: center;
+    animation: publishMomentEnter 0.42s cubic-bezier(.2, .8, .2, 1) both;
+    border-color: rgba(223, 191, 131, 0.34) !important;
+    box-shadow:
+        0 24px 70px rgba(0, 0, 0, 0.44),
+        0 0 44px rgba(223, 191, 131, 0.16) !important;
+}
+
+.publish-moment-card::before {
+    content: "";
+    position: absolute;
+    inset: -40% -20% auto;
+    height: 70%;
+    background: radial-gradient(circle, rgba(255, 244, 214, 0.22), transparent 62%);
+    pointer-events: none;
+}
+
+.publish-moment-icon {
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    margin: 0 auto 0.8rem;
+    border-radius: 999px;
+    background: rgba(255, 244, 214, 0.14);
+    border: 1px solid rgba(255, 244, 214, 0.28);
+    font-size: 2rem;
+    box-shadow: inset 0 0 22px rgba(223, 191, 131, 0.14);
+}
+
+.publish-moment-card h2 {
+    color: var(--paper);
+    font-size: clamp(1.55rem, 5vw, 2.15rem);
+    margin-bottom: 0.5rem;
+}
+
+.publish-moment-card .modal-intro {
+    margin-bottom: 0;
+    color: rgba(246, 234, 212, 0.78);
+}
+
+@keyframes publishMomentEnter {
+    from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (max-width: 620px) {
+    .typing-sound-toggle {
+        min-width: 2.35rem;
+    }
+
+    .publish-moment-card {
+        width: min(92vw, 390px) !important;
+    }
+}
