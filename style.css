@@ -1585,7 +1585,7 @@ body {
 }
 .bookmark-ribbon span { background: rgba(25, 15, 9, 0.42); }
 .ribbon-panel {
-    top: 52px !important;
+    top: 32px !important;
     right: 0 !important;
     background: linear-gradient(180deg, rgba(236, 214, 176, 0.98), rgba(202, 163, 106, 0.98)) !important;
     border-color: rgba(92, 57, 30, 0.2);
@@ -13312,4 +13312,414 @@ body.writing-has-content.focus-mode #writingZoneSection #mainStoryInput::placeho
     .profile-header { align-items: flex-start; }
     .profile-stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .profile-bio-display { font-size: 0.98rem; }
+}
+
+/* =========================================================
+   Box shape and width polish
+   ========================================================= */
+main {
+    max-width: 1120px !important;
+    width: min(100% - 36px, 1120px) !important;
+}
+
+main > .card,
+main > section.card,
+.writing-zone.card,
+.leaderboard.card,
+.feed.card,
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+    border-radius: 14px !important;
+}
+
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+    background: linear-gradient(145deg, rgba(42, 27, 18, 0.95), rgba(28, 18, 12, 0.93)) !important;
+    border-color: rgba(226, 185, 125, 0.28) !important;
+}
+
+.leaderboard.card {
+    background: linear-gradient(145deg, rgba(42, 27, 18, 0.95), rgba(28, 18, 12, 0.93)) !important;
+    border-color: rgba(226, 185, 125, 0.28) !important;
+}
+
+#writingZoneSection.writing-zone,
+.feed.card {
+    background: linear-gradient(145deg, rgba(24, 15, 10, 0.96), rgba(12, 8, 6, 0.94)) !important;
+    border-color: rgba(226, 185, 125, 0.19) !important;
+}
+
+.compact-inspiration .prompt-strip,
+.story-card,
+.top-story-card,
+.feed-toolbar {
+    border-radius: 12px !important;
+}
+
+@media (max-width: 760px) {
+    main {
+        width: min(100% - 24px, 1120px) !important;
+    }
+
+    main > .card,
+    main > section.card,
+    .writing-zone.card,
+    .leaderboard.card,
+    .feed.card,
+    .compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+        border-radius: 13px !important;
+    }
+}
+
+/* Header lower edge adjustment */
+.site-nav,
+#mainNav.site-nav {
+    padding-bottom: 25px !important;
+}
+
+.site-nav.scrolled,
+#mainNav.site-nav.scrolled {
+    padding-bottom: 12px !important;
+}
+
+#loggedOutNav,
+#loggedInNav,
+.quote-of-day,
+#navLoginBtn {
+    transform: translateY(2px) !important;
+}
+
+#navLogo .brand-logo-img,
+#navLogo.brand-lockup.nav-logo .brand-logo-img {
+    width: 120px !important;
+    height: 120px !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    transform: translate(15px, 25px) !important;
+}
+
+/* Weekly Inspiration premium gold treatment */
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+    background:
+        linear-gradient(145deg, rgba(255, 249, 230, 0.96), rgba(220, 192, 134, 0.94) 58%, rgba(170, 126, 67, 0.92)) !important;
+    border-color: rgba(243, 214, 151, 0.58) !important;
+    box-shadow:
+        0 22px 54px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 255, 255, 0.58),
+        inset 0 -1px 0 rgba(94, 58, 24, 0.16) !important;
+}
+
+.compact-inspiration .weekly-prompt-heading .section-label-title,
+.compact-inspiration #weeklyPromptTitle {
+    color: #4c2f17 !important;
+    text-shadow: 0 1px 0 rgba(255, 248, 224, 0.52) !important;
+}
+
+.compact-inspiration .prompt-strip {
+    position: relative !important;
+    overflow: hidden !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    align-items: center !important;
+    background:
+        radial-gradient(circle at 88% 50%, rgba(235, 188, 91, 0.36), rgba(174, 114, 38, 0.18) 18%, transparent 38%),
+        linear-gradient(90deg, rgba(18, 12, 8, 0.96) 0%, rgba(31, 20, 12, 0.96) 54%, rgba(82, 54, 23, 0.94) 100%) !important;
+    border: 1px solid rgba(236, 196, 108, 0.34) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 236, 182, 0.14),
+        inset -34px 0 68px rgba(219, 163, 67, 0.12),
+        0 14px 30px rgba(39, 21, 9, 0.2) !important;
+}
+
+.compact-inspiration .prompt-strip::after {
+    content: "" !important;
+    position: absolute !important;
+    right: -42px !important;
+    top: 50% !important;
+    width: 210px !important;
+    height: 210px !important;
+    transform: translateY(-50%) !important;
+    border-radius: 50% !important;
+    background:
+        radial-gradient(circle, rgba(236, 193, 104, 0.28), rgba(173, 111, 41, 0.12) 42%, transparent 68%) !important;
+    opacity: 0.82 !important;
+    pointer-events: none !important;
+}
+
+.compact-inspiration #weeklyPromptText {
+    position: relative !important;
+    z-index: 1 !important;
+    color: rgba(255, 244, 219, 0.95) !important;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.28) !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn {
+    position: relative !important;
+    z-index: 2 !important;
+    width: 74px !important;
+    height: 74px !important;
+    min-width: 74px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    border: 1px solid rgba(246, 217, 144, 0.5) !important;
+    background:
+        radial-gradient(circle at 46% 42%, rgba(49, 34, 21, 0.96) 0 32%, rgba(23, 15, 10, 0.94) 58%, rgba(11, 7, 5, 0.96) 100%) !important;
+    box-shadow:
+        0 0 0 8px rgba(217, 165, 79, 0.08),
+        0 0 24px rgba(222, 171, 77, 0.2),
+        inset 0 0 0 1px rgba(255, 235, 174, 0.16),
+        inset 0 12px 24px rgba(255, 220, 142, 0.06) !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn::before,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 10px !important;
+    border-radius: inherit !important;
+    background:
+        radial-gradient(circle at 50% 50%, rgba(226, 170, 72, 0.2), transparent 58%) !important;
+    opacity: 1 !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn::after,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn::after {
+    display: none !important;
+    content: none !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn span,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn span {
+    position: relative !important;
+    z-index: 2 !important;
+    display: inline-block !important;
+    color: #e0a85e !important;
+    font-size: 1.35rem !important;
+    line-height: 1 !important;
+    filter: drop-shadow(0 0 8px rgba(232, 174, 77, 0.26)) !important;
+    transform: rotate(-10deg) !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn span:first-child,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn span:first-child {
+    display: inline-grid !important;
+    place-items: center !important;
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+    font-size: 0 !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn span:first-child::before,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn span:first-child::before {
+    content: "🪶" !important;
+    display: block !important;
+    font-size: 1.45rem !important;
+    line-height: 1 !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn span:last-child,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn span:last-child {
+    display: none !important;
+}
+
+.compact-inspiration .video-toggle-btn {
+    background: rgba(35, 22, 13, 0.72) !important;
+    border-color: rgba(236, 196, 108, 0.34) !important;
+    color: rgba(255, 239, 205, 0.92) !important;
+}
+
+.compact-inspiration .video-toggle-text {
+    color: rgba(255, 239, 205, 0.92) !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn span:first-child,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn span:first-child {
+    display: inline-grid !important;
+}
+
+@media (max-width: 760px) {
+    .compact-inspiration .prompt-strip {
+        grid-template-columns: 1fr auto !important;
+        gap: 0.9rem !important;
+    }
+
+    .compact-inspiration .prompt-write-btn.feather-prompt-btn,
+    #copyPromptBtn.prompt-write-btn.feather-prompt-btn {
+        width: 66px !important;
+        height: 66px !important;
+        min-width: 66px !important;
+    }
+}
+
+/* Weekly Inspiration sage + creamy gold revision */
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+    background:
+        linear-gradient(100deg, rgba(28, 42, 32, 0.94) 0%, rgba(24, 31, 22, 0.94) 34%, rgba(19, 15, 10, 0.96) 74%, rgba(12, 8, 6, 0.98) 100%) !important;
+    border-color: rgba(199, 154, 90, 0.42) !important;
+    box-shadow:
+        0 22px 54px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(241, 219, 169, 0.18),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.28) !important;
+}
+
+.compact-inspiration .weekly-prompt-heading .section-label-title,
+.compact-inspiration #weeklyPromptTitle {
+    color: rgba(255, 239, 189, 0.9) !important;
+    text-shadow: 0 1px 0 rgba(23, 32, 21, 0.48) !important;
+}
+
+.compact-inspiration .prompt-strip {
+    background:
+        radial-gradient(circle at 86% 50%, rgba(218, 162, 53, 0.34), rgba(245, 221, 159, 0.42) 19%, transparent 39%),
+        linear-gradient(105deg, rgba(254, 247, 226, 0.98) 0%, rgba(238, 213, 157, 0.98) 62%, rgba(190, 137, 58, 0.96) 100%) !important;
+    border-color: rgba(102, 91, 54, 0.25) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.62),
+        inset -34px 0 70px rgba(156, 99, 31, 0.12),
+        0 14px 30px rgba(22, 31, 20, 0.22) !important;
+}
+
+.compact-inspiration .prompt-strip::after {
+    background:
+        radial-gradient(circle, rgba(163, 108, 35, 0.2), rgba(208, 163, 69, 0.16) 42%, transparent 68%) !important;
+    opacity: 0.74 !important;
+}
+
+.compact-inspiration #weeklyPromptText {
+    color: #1e1710 !important;
+    text-shadow: 0 1px 0 rgba(255, 252, 237, 0.62) !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn {
+    border-color: rgba(248, 224, 155, 0.62) !important;
+    background:
+        radial-gradient(circle at 46% 42%, rgba(74, 51, 29, 0.96) 0 32%, rgba(30, 21, 14, 0.96) 58%, rgba(12, 8, 6, 0.98) 100%) !important;
+    box-shadow:
+        0 0 0 8px rgba(92, 111, 78, 0.14),
+        0 0 24px rgba(145, 101, 34, 0.2),
+        inset 0 0 0 1px rgba(255, 235, 174, 0.18),
+        inset 0 12px 24px rgba(255, 220, 142, 0.08) !important;
+}
+
+.compact-inspiration .video-toggle-btn {
+    background: rgba(51, 64, 45, 0.74) !important;
+    border-color: rgba(232, 207, 139, 0.36) !important;
+    color: rgba(255, 239, 205, 0.95) !important;
+}
+
+
+/* Final override: replace the nav text wordmark with image 2.png and tuck it closer to the main logo. */
+#navLogo.brand-lockup.nav-logo {
+    gap: 0 !important;
+}
+
+#navLogo.brand-lockup.nav-logo .brand-title-img {
+    width: clamp(220px, 25vw, 430px) !important;
+    height: auto !important;
+    object-fit: contain !important;
+    display: block !important;
+    margin-left: -22px !important;
+    transform: translateY(52px) !important;
+    filter: drop-shadow(0 16px 24px rgba(0, 0, 0, 0.42)) !important;
+    pointer-events: none !important;
+}
+
+#navLogo.brand-lockup.nav-logo span {
+    display: none !important;
+}
+
+@media (max-width: 760px) {
+    #navLogo.brand-lockup.nav-logo .brand-title-img {
+        display: none !important;
+    }
+}
+
+/* Nav wordmark cleanup: hide missing image 2.png and place text beside the logo. */
+#navLogo.brand-lockup.nav-logo .brand-title-img {
+    display: none !important;
+}
+
+#navLogo.brand-lockup.nav-logo span {
+    display: block !important;
+    position: fixed !important;
+    left: 184px !important;
+    top: 30px !important;
+    transform: none !important;
+    margin: 0 !important;
+    color: #d7a86a !important;
+    font-size: clamp(1.55rem, 2vw, 2rem) !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    z-index: 1000000 !important;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4) !important;
+}
+
+@media (max-width: 760px) {
+    #navLogo.brand-lockup.nav-logo span {
+        left: 138px !important;
+        top: 35px !important;
+        font-size: 1.05rem !important;
+    }
+}
+
+/* Nav wordmark image: use story-nook-logo2.png and keep it near the header bottom. */
+#navLogo.brand-lockup.nav-logo .brand-title-img {
+    display: block !important;
+    position: fixed !important;
+    left: 97px !important;
+    top: -25px !important;
+    bottom: auto !important;
+    width: auto !important;
+    height: 196px !important;
+    object-fit: contain !important;
+    margin: 0 !important;
+    transform: none !important;
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.38)) !important;
+    pointer-events: none !important;
+    z-index: 1000001 !important;
+}
+
+#navLogo.brand-lockup.nav-logo span,
+#navLogo.brand-lockup.nav-logo .brand-title-text {
+    display: none !important;
+}
+
+@media (max-width: 760px) {
+    #navLogo.brand-lockup.nav-logo .brand-title-img {
+        left: 86px !important;
+        top: 36px !important;
+        bottom: auto !important;
+        width: auto !important;
+        height: 96px !important;
+    }
+}
+
+/* Mobile logo pairing: keep the main mark and wordmark side-by-side. */
+@media (max-width: 760px) {
+    #navLogo .brand-logo-img,
+    #navLogo.brand-lockup.nav-logo .brand-logo-img {
+        width: 120px !important;
+        height: 120px !important;
+        transform: translate(14px, 19px) !important;
+    }
+
+    #navLogo.brand-lockup.nav-logo .brand-title-img {
+        left: 95px !important;
+        top: -20px !important;
+        height: 180px !important;
+    }
+}
+
+@media (max-width: 390px) {
+    #navLogo .brand-logo-img,
+    #navLogo.brand-lockup.nav-logo .brand-logo-img {
+        width: 90px !important;
+        height: 90px !important;
+        transform: translate(12px, 22px) !important;
+    }
+
+    #navLogo.brand-lockup.nav-logo .brand-title-img {
+        left: 112px !important;
+        top: 18px !important;
+        height: 68px !important;
+    }
 }
