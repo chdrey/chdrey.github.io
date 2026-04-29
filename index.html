@@ -84,7 +84,6 @@
 
             <div class="video-toggle-wrapper">
                 <button id="toggleVideoBtn" class="video-toggle-btn" type="button" aria-expanded="false" aria-controls="videoDropdown">
-                    <span aria-hidden="true">🎬</span>
                     <span class="video-toggle-text">Tap for video inspiration</span>
                 </button>
                 <div id="videoDropdown" class="video-dropdown" aria-hidden="true">
@@ -297,7 +296,7 @@
         <div class="footer-content footer-content-polished">
             <div class="footer-main">
                 <div class="brand-lockup footer-brand">
-                    <img src="story-nook-logo.png" alt="" class="brand-logo-img" aria-hidden="true">
+                    <img src="story-nook-main-logo-new-square.png" alt="" class="brand-logo-img" aria-hidden="true">
                     <span>The Story Nook</span>
                 </div>
                 <p class="footer-note">A cozy place for writers, readers, and creative minds to share late-night ideas.</p>
@@ -353,7 +352,7 @@
         <div class="modal-content narrow cozy-panel">
             <button class="close-modal" type="button" data-close="authModal" aria-label="Close">&times;</button>
             <div class="brand-lockup modal-brand">
-                <img src="story-nook-logo.png" alt="" class="brand-logo-img" aria-hidden="true">
+                <img src="story-nook-main-logo-new-square.png" alt="" class="brand-logo-img" aria-hidden="true">
                 <span>The Story Nook</span>
             </div>
             <h2 id="authTitle">Welcome back</h2>
@@ -421,7 +420,7 @@
         <div class="modal-content book-style">
             <button class="close-modal" type="button" data-close="profileModal" aria-label="Close">&times;</button>
             <div class="profile-header">
-                <div class="avatar-wrapper" title="Upload a new avatar">
+                <div class="avatar-wrapper" title="Choose a profile picture">
                     <img id="profileAvatar" src="" alt="Profile avatar" class="avatar-large profile-trigger-action">
                     <input type="file" id="avatarUploadInput" accept="image/*" hidden>
                     <div id="avatarEditOverlay" class="avatar-edit-hint">📷</div>
@@ -472,6 +471,19 @@
             <div id="deleteSection" class="delete-section">
                 <button id="deleteAccountBtn" class="btn-delete-final full-width" type="button">Delete Profile Data</button>
             </div>
+        </div>
+    </div>
+
+    <div id="avatarPickerModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="avatarPickerTitle">
+        <div class="modal-content narrow cozy-panel avatar-picker-modal">
+            <button class="close-modal" type="button" data-close="avatarPickerModal" aria-label="Close">&times;</button>
+            <h2 id="avatarPickerTitle">Choose Profile Picture</h2>
+            <p class="modal-intro">Unlocked prize pictures will appear here as your profile grows.</p>
+            <div class="profile-placeholder-picker">
+                <span class="profile-field-label">Available pictures</span>
+                <div id="avatarPlaceholderGrid" class="avatar-placeholder-grid" aria-label="Choose a profile picture"></div>
+            </div>
+            <button id="avatarUploadBtn" class="btn-secondary full-width" type="button">Upload Custom Picture</button>
         </div>
     </div>
 
