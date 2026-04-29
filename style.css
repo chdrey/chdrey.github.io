@@ -16483,15 +16483,29 @@ body.candle-lit .site-footer {
 }
 
 /* Final profile button: clean circle with the same warm icon-color edge. */
+:root {
+    --nook-profile-photo-size: 54px;
+    --nook-profile-edge-size: 3px;
+    --nook-profile-button-size: calc(var(--nook-profile-photo-size) + (var(--nook-profile-edge-size) * 2));
+}
+
 #loggedInNav .profile-trigger,
 #navProfileBtn.profile-trigger {
     box-sizing: border-box !important;
+    width: var(--nook-profile-button-size) !important;
+    height: var(--nook-profile-button-size) !important;
+    min-width: var(--nook-profile-button-size) !important;
+    min-height: var(--nook-profile-button-size) !important;
+    max-width: var(--nook-profile-button-size) !important;
+    max-height: var(--nook-profile-button-size) !important;
     padding: 0 !important;
-    border: 3px solid #c9a274 !important;
+    border: var(--nook-profile-edge-size) solid #c9a274 !important;
     border-radius: 50% !important;
     background: transparent !important;
     box-shadow: none !important;
     overflow: hidden !important;
+    display: grid !important;
+    place-items: center !important;
 }
 
 #loggedInNav .profile-trigger::after,
@@ -16506,7 +16520,7 @@ body.candle-lit .site-footer {
 #loggedInNav .profile-trigger:focus,
 #navProfileBtn.profile-trigger:focus {
     padding: 0 !important;
-    border: 3px solid #c9a274 !important;
+    border: var(--nook-profile-edge-size) solid #c9a274 !important;
     background: transparent !important;
     box-shadow: none !important;
     outline: 0 !important;
@@ -16514,11 +16528,45 @@ body.candle-lit .site-footer {
 
 #loggedInNav .avatar-small,
 #navProfileBtn .avatar-small {
-    width: 100% !important;
-    height: 100% !important;
+    width: var(--nook-profile-photo-size) !important;
+    height: var(--nook-profile-photo-size) !important;
     border: 0 !important;
     border-radius: 50% !important;
     box-shadow: none !important;
     object-fit: cover !important;
     object-position: center center !important;
+}
+
+/* Writing Desk and Weekly Inspiration bottom spacing. */
+:root {
+    --nook-writing-bottom-contract: 15px;
+    --nook-writing-bottom-padding: max(0px, calc(clamp(1rem, 3.4vw, 2rem) - var(--nook-writing-bottom-contract)));
+    --nook-weekly-bottom-contract: 9px;
+}
+
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+    padding-bottom: max(0px, calc(clamp(1rem, 3.6vw, 2rem) - var(--nook-weekly-bottom-contract))) !important;
+}
+
+#writingZoneSection.writing-zone,
+body:not(.focus-mode) #writingZoneSection.writing-zone,
+body.focus-mode #writingZoneSection.writing-zone {
+    padding-bottom: var(--nook-writing-bottom-padding) !important;
+}
+
+#writingZoneSection .writer-action-line,
+body.focus-mode #writingZoneSection .writer-action-line {
+    padding-bottom: 0 !important;
+}
+
+@media (max-width: 760px) {
+    #writingZoneSection.writing-zone,
+    body:not(.focus-mode) #writingZoneSection.writing-zone,
+    body.focus-mode #writingZoneSection.writing-zone {
+        padding-bottom: max(0px, calc(1rem - var(--nook-writing-bottom-contract))) !important;
+    }
+
+    .compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
+        padding-bottom: max(0px, calc(1rem - var(--nook-weekly-bottom-contract))) !important;
+    }
 }
