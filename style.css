@@ -16239,7 +16239,7 @@ body.focus-mode #writingZoneSection #guestPenName:focus {
 /* Header cutout logo patch. Old logo images stay in the markup as fallbacks. */
 :root {
     --nook-header-cutout-width: 298px;
-    --nook-header-cutout-height: 83px;
+    --nook-header-cutout-height: 82px;
     --nook-header-cutout-left: max(14px, calc((100vw - 980px) / 2 - 90px));
     --nook-main-content-edge: max(20px, calc((100vw - 980px) / 2 - 56px));
 }
