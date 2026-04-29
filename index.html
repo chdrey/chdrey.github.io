@@ -18,6 +18,7 @@
         <button id="navLogo" class="brand-lockup nav-logo" type="button" aria-label="Back to top">
             <img src="story-nook-main-logo-new-square.png" alt="" class="brand-logo-img" aria-hidden="true">
             <img src="story-nook-logo2.png" alt="The Story Nook" class="brand-title-img">
+            <img src="story-nook-header-cutout.png" alt="The Story Nook" class="brand-header-cutout-img">
         </button>
 
         <div class="nav-actions">
@@ -29,38 +30,48 @@
                 <button id="navLoginBtn" class="btn-secondary">Log In</button>
             </div>
             <div id="loggedInNav" class="nav-group hidden">
-                <button id="navProfileBtn" class="profile-trigger">
+                <button id="navMonthlyTopBtn" class="nav-icon-btn nav-monthly-btn" type="button" aria-label="Top stories of the month">
+                    <svg class="nav-eye-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M2.5 12s3.4-6.2 9.5-6.2S21.5 12 21.5 12s-3.4 6.2-9.5 6.2S2.5 12 2.5 12Z"></path>
+                        <path d="M12 9.2a2.8 2.8 0 1 1 0 5.6 2.8 2.8 0 0 1 0-5.6Z"></path>
+                    </svg>
+                </button>
+                <button id="navMailBtn" class="nav-icon-btn nav-mail-btn has-unread" type="button" aria-label="Messages">
+                    <svg class="nav-mail-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M21 3 9.6 21l-2.2-8.4L3 10.4 21 3Z"></path>
+                        <path d="M7.4 12.6 21 3"></path>
+                    </svg>
+                </button>
+                <button id="navMessagesBtn" class="nav-icon-btn nav-message-btn" type="button" aria-label="Notifications">
+                    <svg class="nav-bell-icon" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M18 10.5a6 6 0 0 0-12 0v3.2l-1.7 2.8h15.4L18 13.7v-3.2Z"></path>
+                        <path d="M9.7 19a2.5 2.5 0 0 0 4.6 0"></path>
+                    </svg>
+                </button>
+                <button id="navProfileBtn" class="profile-trigger" type="button" aria-label="Open profile">
                     <span id="navUsername">Writer</span>
                     <img id="navAvatar" src="" alt="Profile avatar" class="avatar-small">
                 </button>
             </div>
 
-            <div class="bookmark-menu-shell">
-                <button id="bookmarkMenuBtn" class="bookmark-ribbon" type="button" aria-expanded="false" aria-controls="nookRibbonPanel" aria-label="Open site menu">
-                    <span></span>
+            <div class="bookmark-menu-shell hidden">
+                <button id="bookmarkMenuBtn" class="bookmark-ribbon archive-menu-btn" type="button" aria-expanded="false" aria-controls="nookRibbonPanel" aria-label="Open archives">
+                    <span class="archive-menu-mark" aria-hidden="true"></span>
                 </button>
-                <div id="nookRibbonPanel" class="ribbon-panel hidden" aria-label="Your Story Nook journey">
-                    <p id="journeyNote" class="ribbon-note storybook-menu-note">Sign in to reveal your journey.</p>
-                    <div class="storybook-menu-pages" aria-label="Creative journey menu">
-                        <button type="button" class="storybook-page-link" data-journey-action="collection">
-                            <span class="page-link-title">My Collection</span>
-                            <span class="page-link-desc">Keepsakes gathered from your time in the Nook.</span>
+                <div id="nookRibbonPanel" class="ribbon-panel hidden archive-menu-panel" aria-label="Story Nook archive menu">
+                    <p id="journeyNote" class="ribbon-note storybook-menu-note">The Archive</p>
+                    <div class="storybook-menu-pages archive-menu-pages" aria-label="Archive menu">
+                        <button type="button" class="storybook-page-link" data-archive-action="open">
+                            <span class="page-link-title">Open Archive</span>
+                            <span class="page-link-desc">Browse the strongest stories, likes, and discussion.</span>
                         </button>
-                        <button type="button" class="storybook-page-link" data-journey-action="milestones">
-                            <span class="page-link-title">Milestones</span>
-                            <span class="page-link-desc">The quiet marks your stories leave behind.</span>
+                        <button type="button" class="storybook-page-link" data-archive-action="favorite">
+                            <span class="page-link-title">All-Time Favorite</span>
+                            <span class="page-link-desc">Jump to the story with the most hearts.</span>
                         </button>
-                        <button type="button" class="storybook-page-link" data-journey-action="flair">
-                            <span class="page-link-title">Unlocked Flair</span>
-                            <span class="page-link-desc">Frames, badges, and earned details.</span>
-                        </button>
-                        <button type="button" class="storybook-page-link" data-journey-action="stories">
-                            <span class="page-link-title">My Stories</span>
-                            <span class="page-link-desc">Return to the pages you have shared.</span>
-                        </button>
-                        <button type="button" class="storybook-page-link logged-in-only hidden" data-poll-link="https://strawpoll.com">
-                            <span class="page-link-title">Vote Next Prompt</span>
-                            <span class="page-link-desc">Help choose next week’s theme and mood.</span>
+                        <button type="button" class="storybook-page-link" data-archive-action="podium">
+                            <span class="page-link-title">Weekly Podium</span>
+                            <span class="page-link-desc">A home for every weekly top three.</span>
                         </button>
                     </div>
                 </div>
@@ -420,7 +431,7 @@
         <div class="modal-content book-style">
             <button class="close-modal" type="button" data-close="profileModal" aria-label="Close">&times;</button>
             <div class="profile-header">
-                <div class="avatar-wrapper" title="Choose a profile picture">
+                <div class="avatar-wrapper" title="Choose a profile picture" role="button" tabindex="0" aria-label="Choose profile picture">
                     <img id="profileAvatar" src="" alt="Profile avatar" class="avatar-large profile-trigger-action">
                     <input type="file" id="avatarUploadInput" accept="image/*" hidden>
                     <div id="avatarEditOverlay" class="avatar-edit-hint">📷</div>
@@ -566,6 +577,21 @@
                     <input type="text" id="newCommentInput" placeholder="Share your thoughts..." class="input-wide">
                     <button id="postCommentBtn" class="btn-primary small" type="button">Post</button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="archiveModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="archiveTitle">
+        <div class="modal-content book-style archive-modal-layout">
+            <button class="close-modal" type="button" data-close="archiveModal" aria-label="Close">&times;</button>
+            <div class="archive-modal-header">
+                <p class="eyebrow dark">The Story Nook</p>
+                <h2 id="archiveTitle">Archive</h2>
+                <p class="archive-intro">All-time favorites, top stories, and the future home of every weekly podium.</p>
+            </div>
+            <div id="archiveStats" class="archive-stats"></div>
+            <div id="archiveStoriesList" class="archive-stories-list">
+                <div class="loading-state">Opening the archive...</div>
             </div>
         </div>
     </div>

@@ -59,6 +59,7 @@
         feedLimit: 30,
         feedStories: [],
         topStories: [],
+        archiveStories: [],
         initialized: false,
         ambient: {
             ctx: null,
@@ -186,12 +187,16 @@
         $('#enterBtn')?.addEventListener('click', () => enterNook());
         $('#browseBtn')?.addEventListener('click', () => enterNook('storyFeed'));
         $('#navLoginBtn')?.addEventListener('click', () => openAuth('login'));
+        restoreMessagesButtonState();
         wireLogoBackToTop();
         closeRibbonPanel();
-        if (enableRibbonMenu) {
-            wireRibbonPullMenu();
-            $('#nookRibbonPanel')?.addEventListener('click', handleRibbonPanelClick);
-        }
+        wireArchiveMenu();
+        if (enableRibbonMenu) wireRibbonPullMenu();
+        $('#nookRibbonPanel')?.addEventListener('click', handleRibbonPanelClick);
+        $('#navMonthlyTopBtn')?.addEventListener('click', handleMonthlyTopButtonClick);
+        $('#navMailBtn')?.addEventListener('click', handleMailButtonClick);
+        $('#navMessagesBtn')?.addEventListener('click', handleMessagesButtonClick);
+        $('#archiveStoriesList')?.addEventListener('click', handleArchiveStoryClick);
         $('#navProfileBtn')?.addEventListener('click', () => {
             openModal('profileModal');
             resetProfileModalToMyView();
@@ -310,9 +315,11 @@
             if (event.key === 'Enter') postComment();
         });
 
-        $('#profileAvatar')?.addEventListener('click', () => {
-            if (!state.currentUser) return openAuth('login');
-            if (!$('#profileModal')?.classList.contains('admin-view')) openAvatarPicker();
+        $('.avatar-wrapper')?.addEventListener('click', openProfileAvatarPicker);
+        $('.avatar-wrapper')?.addEventListener('keydown', (event) => {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            event.preventDefault();
+            openProfileAvatarPicker();
         });
         $('#avatarUploadBtn')?.addEventListener('click', () => $('#avatarUploadInput')?.click());
         $('#avatarUploadInput')?.addEventListener('change', uploadAvatar);
@@ -422,10 +429,12 @@
         const guestInput = $('#guestPenName');
         const commentGuestInput = $('#commentGuestName');
         const adminButton = $('#adminDashboardBtn');
+        const archiveMenu = $('.bookmark-menu-shell');
 
         if (state.currentUser && state.currentProfile) {
             loggedOut?.classList.add('hidden');
             loggedIn?.classList.remove('hidden');
+            archiveMenu?.classList.remove('hidden');
             guestInput?.classList.add('hidden');
             commentGuestInput?.classList.add('hidden');
             setText('#navUsername', state.currentProfile.username || 'Writer');
@@ -434,13 +443,15 @@
         } else {
             loggedOut?.classList.remove('hidden');
             loggedIn?.classList.add('hidden');
+            archiveMenu?.classList.add('hidden');
+            closeRibbonPanel();
             guestInput?.classList.remove('hidden');
             commentGuestInput?.classList.remove('hidden');
             updateAvatars(null);
         }
 
         adminButton?.classList.toggle('hidden', !state.isAdmin);
-        setText('#journeyNote', state.currentUser ? 'Your story is still unfolding.' : 'Sign in to reveal your journey.');
+        setText('#journeyNote', 'The Archive');
         $('#feedbackEmail')?.classList.toggle('hidden', !!state.currentUser);
         $$('.logged-in-only').forEach((item) => item.classList.toggle('hidden', !state.currentUser));
     }
@@ -2284,14 +2295,10 @@
         const value = Number(slider.value) || 88;
         const inkFactor = clamp01((value - min) / Math.max(1, max - min));
         const featherFactor = 1 - inkFactor;
-        const useLightInk = inkFactor < 0.5;
-
-        const paperAlpha = 0.18 + (0.82 * inkFactor);
-        const highlightAlpha = 0.12 + (0.80 * inkFactor);
-        const glowAlpha = 0.08 + (0.30 * inkFactor);
-        const borderAlpha = useLightInk
-            ? 0.24 + (0.16 * featherFactor)
-            : 0.20 + (0.22 * inkFactor);
+        const paperAlpha = level;
+        const highlightAlpha = 0.10 + (0.82 * level);
+        const glowAlpha = 0.06 + (0.30 * inkFactor);
+        const borderAlpha = 0.18 + (0.22 * inkFactor);
         const shadowAlpha = 0.08 + (0.14 * inkFactor);
         const paperBlur = 0.15 + (1.35 * featherFactor);
 
@@ -2307,11 +2314,11 @@
         document.body.style.setProperty('--nook-writing-border-alpha', borderAlpha.toFixed(3));
         document.body.style.setProperty('--nook-writing-shadow-alpha', shadowAlpha.toFixed(3));
         document.body.style.setProperty('--nook-writing-paper-blur', `${paperBlur.toFixed(2)}px`);
-        document.body.style.setProperty('--nook-writing-text-color', useLightInk ? '#fff8e8' : '#2c1d12');
-        document.body.style.setProperty('--nook-writing-placeholder-color', useLightInk ? 'rgba(255, 248, 232, 0.62)' : 'rgba(62, 43, 27, 0.52)');
-        document.body.style.setProperty('--nook-writing-caret-color', useLightInk ? '#fff8e8' : '#2c1d12');
-        document.body.style.setProperty('--nook-writing-text-shadow', useLightInk ? '0 1px 2px rgba(0, 0, 0, 0.62)' : 'none');
-        document.body.classList.toggle('writing-paper-feathered', useLightInk);
+        document.body.style.setProperty('--nook-writing-text-color', '#2c1d12');
+        document.body.style.setProperty('--nook-writing-placeholder-color', 'rgba(62, 43, 27, 0.52)');
+        document.body.style.setProperty('--nook-writing-caret-color', '#2c1d12');
+        document.body.style.setProperty('--nook-writing-text-shadow', 'none');
+        document.body.classList.toggle('writing-paper-feathered', featherFactor > 0.5);
 
         updateCandleBrightness();
     }
@@ -2814,7 +2821,7 @@
         const button = $('#bookmarkMenuBtn');
         const shell = button?.closest('.bookmark-menu-shell');
         if (!panel || !button) return;
-        if (open && !enableRibbonMenu) return;
+        if (open && !enableRibbonMenu && !options.allowDormantMenu) return;
 
         const wasOpen = button.getAttribute('aria-expanded') === 'true';
 
@@ -3156,8 +3163,64 @@
         setRibbonPanelOpen(false);
     }
 
+    function wireArchiveMenu() {
+        const button = $('#bookmarkMenuBtn');
+        if (!button) return;
+
+        button.addEventListener('click', (event) => {
+            event.stopPropagation();
+            setRibbonPanelOpen(!isRibbonPanelOpen(), { allowDormantMenu: true });
+        });
+    }
+
+    function handleMessagesButtonClick() {
+        toast('Notifications are opening soon.');
+    }
+
+    function handleMonthlyTopButtonClick() {
+        toast('Top stories of the month are opening soon.');
+    }
+
+    function handleMailButtonClick() {
+        const button = $('#navMailBtn');
+        button?.classList.remove('has-unread');
+        button?.classList.add('is-seen');
+        try {
+            window.localStorage.setItem('story-nook:messages-seen:v1', 'true');
+        } catch (error) {
+            console.warn('Could not save mail seen state', error);
+        }
+        toast('Messages are opening soon.');
+    }
+
+    function restoreMessagesButtonState() {
+        const button = $('#navMailBtn');
+        if (!button) return;
+        try {
+            if (window.localStorage.getItem('story-nook:messages-seen:v1') === 'true') {
+                button.classList.remove('has-unread');
+                button.classList.add('is-seen');
+            }
+        } catch (error) {
+            console.warn('Could not restore mail seen state', error);
+        }
+    }
+
+    function openProfileAvatarPicker() {
+        if (!state.currentUser) return openAuth('login');
+        if (!$('#profileModal')?.classList.contains('admin-view')) openAvatarPicker();
+    }
+
 
     function handleRibbonPanelClick(event) {
+        const archiveButton = event.target.closest('[data-archive-action]');
+        if (archiveButton) {
+            event.stopPropagation();
+            closeRibbonPanel();
+            openArchiveModal(archiveButton.dataset.archiveAction || 'open');
+            return;
+        }
+
         const pollButton = event.target.closest('[data-poll-link]');
         if (pollButton) {
             event.stopPropagation();
@@ -3242,6 +3305,93 @@
         return 0;
     }
 
+    async function openArchiveModal(mode = 'open') {
+        if (!state.db) return toast('The archive needs Supabase to be connected.', 'error');
+        const list = $('#archiveStoriesList');
+        const stats = $('#archiveStats');
+        if (list) list.innerHTML = '<div class="loading-state">Opening the archive...</div>';
+        if (stats) stats.innerHTML = '';
+        openModal('archiveModal');
+
+        const { data: stories, error } = await state.db
+            .from('stories')
+            .select('*, profiles!stories_user_id_fkey(id, username, avatar_url), comments(count)')
+            .is('deleted_at', null)
+            .order('votes', { ascending: false })
+            .order('created_at', { ascending: false })
+            .limit(60);
+
+        if (error) {
+            if (list) list.innerHTML = '<div class="empty-state">The archive could not be opened yet.</div>';
+            return;
+        }
+
+        state.archiveStories = stories || [];
+        renderArchive(mode);
+    }
+
+    function renderArchive(mode = 'open') {
+        const list = $('#archiveStoriesList');
+        const stats = $('#archiveStats');
+        if (!list) return;
+
+        const stories = state.archiveStories || [];
+        const favorite = stories[0];
+        const podium = stories.slice(0, 3);
+
+        if (stats) {
+            stats.innerHTML = `
+                <div class="archive-stat">
+                    <span>${stories.length}</span>
+                    <small>ranked stories</small>
+                </div>
+                <div class="archive-stat">
+                    <span>${favorite ? favorite.votes || 0 : 0}</span>
+                    <small>top hearts</small>
+                </div>
+                <div class="archive-stat">
+                    <span>${podium.length}</span>
+                    <small>podium slots</small>
+                </div>`;
+        }
+
+        if (!stories.length) {
+            list.innerHTML = '<div class="empty-state">No stories have reached the archive yet.</div>';
+            return;
+        }
+
+        const visibleStories = mode === 'favorite' && favorite ? [favorite] : stories;
+        const intro = mode === 'podium'
+            ? '<div class="archive-podium-note">Weekly podium history will live here once the backend starts saving each week&apos;s top three. For now, this shows the current all-time podium.</div>'
+            : '';
+
+        list.innerHTML = `
+            ${intro}
+            ${visibleStories.map((story, index) => archiveStoryHTML(story, index)).join('')}`;
+    }
+
+    function archiveStoryHTML(story, index) {
+        const author = getAuthorName(story);
+        const comments = getCommentCount(story);
+        const rankLabel = index === 0 ? 'All-time favorite' : `Rank ${index + 1}`;
+        const preview = truncateText(story.content || 'Untitled story', 190);
+        return `
+            <button class="archive-story-card" type="button" data-archive-story-id="${story.id}">
+                <span class="archive-rank">${escapeHtml(rankLabel)}</span>
+                <span class="archive-author">@${escapeHtml(author)}</span>
+                <span class="archive-preview">${escapeHtml(preview)}</span>
+                <span class="archive-meta">${story.votes || 0} likes · ${comments} comments</span>
+            </button>`;
+    }
+
+    function handleArchiveStoryClick(event) {
+        const card = event.target.closest('[data-archive-story-id]');
+        if (!card) return;
+        const storyId = Number(card.dataset.archiveStoryId);
+        closeModal('archiveModal');
+        openReadModal(storyId);
+    }
+
     function canEditStory(story) {
         return !!(state.isAdmin || (state.currentUser && story?.user_id === state.currentUser.id));
     }
@@ -3275,6 +3425,12 @@
 
     function escapeAttr(value) {
         return escapeHtml(value).replace(/`/g, '&#096;');
+    }
+
+    function truncateText(value, limit = 160) {
+        const text = String(value ?? '').replace(/\s+/g, ' ').trim();
+        if (text.length <= limit) return text;
+        return `${text.slice(0, Math.max(0, limit - 1)).trim()}...`;
     }
 
     function setText(selector, value) {

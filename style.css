@@ -5593,7 +5593,7 @@ body.light-moonlit-desk {
     background: var(--ambient-body-bg) !important;
 }
 
-body.light-fireplace-glow { 
+body.light-fireplace-glow {
     --ambient-body-bg:
         radial-gradient(circle at 46% 74%, rgba(168, 78, 38, 0.18), transparent 32rem),
         linear-gradient(160deg, #1b100b, #28170f 52%, #130b08);
@@ -8114,7 +8114,7 @@ body.focus-mode #writingZoneSection .writing-desk-controls.focus-ambient-control
    Final 70: tighter card headroom + centered Writing Desk controls
    ========================================================= */
 
-/* Use Reader Favorites as the spacing model for the main cards. 
+/* Use Reader Favorites as the spacing model for the main cards.
    Latest Submissions keeps its existing internal layout/refresh behavior. */
 main > section.card {
     padding-top: 1.12rem !important;
@@ -12433,11 +12433,10 @@ body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput:foc
         0 18px 38px rgba(0, 0, 0, calc(var(--nook-writing-shadow-alpha) + 0.02)) !important;
 }
 
-/* When the paper is feathered enough for light text, give selection/readability
-   a darker highlight so white writing remains comfortable over the room image. */
+/* Feathering keeps dark ink and simply lets the paper become less readable. */
 body.writing-paper-feathered #writingZoneSection #mainStoryInput::selection {
-    color: #fffaf0 !important;
-    background: rgba(0, 0, 0, 0.42) !important;
+    color: #2c1d12 !important;
+    background: rgba(215, 165, 111, 0.34) !important;
 }
 
 
@@ -12927,7 +12926,7 @@ body.focus-mode #writingZoneSection #mainStoryInput {
 
 body.writing-paper-feathered #writingZoneSection #mainStoryInput,
 body.writing-paper-feathered.focus-mode #writingZoneSection #mainStoryInput {
-    caret-color: rgba(255, 249, 233, 0.94) !important;
+    caret-color: #2c1d12 !important;
 }
 
 #writingZoneSection #mainStoryInput::placeholder,
@@ -14172,6 +14171,8 @@ body.focus-mode #writingZoneSection textarea#mainStoryInput {
 
 .compact-inspiration #weeklyPromptText {
     font-size: clamp(1.2rem, 1.7vw, 1.42rem) !important;
+    font-weight: 700 !important;
+    color: #100b07 !important;
 }
 
 /* Writing Desk glass toolbar and mint active states */
@@ -14194,7 +14195,13 @@ body.focus-mode #writingZoneSection textarea#mainStoryInput {
 #writingZoneSection #mainStoryInput,
 body.focus-mode #writingZoneSection #mainStoryInput {
     background:
-        linear-gradient(135deg, rgba(255, 251, 236, 0.98), rgba(232, 213, 171, 0.96)) !important;
+        radial-gradient(circle at 12% 8%,
+            rgba(255, 252, 239, var(--nook-writing-highlight-alpha, 0.92)) 0,
+            rgba(255, 252, 239, calc(var(--nook-writing-highlight-alpha, 0.92) * 0.64)) 10rem,
+            rgba(255, 252, 239, 0) 24rem),
+        linear-gradient(135deg,
+            rgba(255, 251, 236, var(--nook-writing-paper-alpha, 1)),
+            rgba(232, 213, 171, calc(var(--nook-writing-paper-alpha, 1) * 0.96))) !important;
 }
 
 #writingZoneSection .typing-toolbar,
@@ -14268,13 +14275,13 @@ body.focus-mode #writingZoneSection .typing-control select,
 
 #navLogo .brand-logo-img,
 #navLogo.brand-lockup.nav-logo .brand-logo-img {
-    width: 108px !important;
-    height: 108px !important;
+    width: 118px !important;
+    height: 133px !important;
     transform: translate(15px, 25px) !important;
 }
 
 #navLogo.brand-lockup.nav-logo .brand-title-img {
-    left: 91px !important;
+    left: 76px !important;
     top: -22px !important;
     height: 176px !important;
 }
@@ -14342,13 +14349,13 @@ body.focus-mode #writingZoneSection .ambient-menu:not(.hidden) {
 
     #navLogo .brand-logo-img,
     #navLogo.brand-lockup.nav-logo .brand-logo-img {
-        width: 88px !important;
-        height: 88px !important;
+        width: 98px !important;
+        height: 113px !important;
         transform: translate(12px, 13px) !important;
     }
 
     #navLogo.brand-lockup.nav-logo .brand-title-img {
-        left: 100px !important;
+        left: 85px !important;
         top: 9px !important;
         height: 74px !important;
     }
@@ -14735,5 +14742,1620 @@ body.focus-mode #writingZoneSection #guestPenName:focus {
         max-width: 100px !important;
         max-height: 100px !important;
         flex-basis: 100px !important;
+    }
+}
+
+/* Continuous main-page gradient: one shared wash from header to footer. */
+:root {
+    --nook-page-gradient:
+        linear-gradient(180deg,
+            #070403 0%,
+            #1b110b 18%,
+            #26170e 36%,
+            #352113 55%,
+            #51341d 76%,
+            #74512f 100%);
+    --nook-panel-border: rgba(218, 190, 126, 0.24);
+    --nook-panel-highlight: rgba(255, 245, 216, 0.09);
+}
+
+html,
+body {
+    background: #140d09 !important;
+    background-attachment: scroll !important;
+}
+
+body::before {
+    content: "" !important;
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: -10 !important;
+    pointer-events: none !important;
+    background:
+        linear-gradient(rgba(10, 7, 5, 0.58), rgba(10, 7, 5, 0.7)),
+        url("story-nook-default-background.jpg") center / cover no-repeat !important;
+}
+
+.video-background,
+.overlay,
+.page-glow {
+    display: block !important;
+}
+
+.video-background {
+    background:
+        linear-gradient(rgba(10, 7, 5, 0.58), rgba(10, 7, 5, 0.7)),
+        url("story-nook-default-background.jpg") center / cover no-repeat !important;
+}
+
+.overlay,
+.page-glow {
+    display: none !important;
+}
+
+.site-nav,
+#mainNav.site-nav,
+.site-nav.scrolled,
+#mainNav.site-nav.scrolled,
+footer,
+.site-footer,
+main > .card,
+main > section.card,
+.hero.card,
+.writing-zone.card,
+.leaderboard.card,
+.feed.card,
+.compact-inspiration[aria-labelledby="weeklyPromptTitle"],
+#writingZoneSection.writing-zone {
+    background: var(--nook-page-gradient) fixed !important;
+    border-color: var(--nook-panel-border) !important;
+    box-shadow:
+        0 18px 48px rgba(0, 0, 0, 0.24),
+        inset 0 1px 0 var(--nook-panel-highlight) !important;
+}
+
+.site-nav,
+#mainNav.site-nav,
+footer,
+.site-footer {
+    box-shadow:
+        0 16px 44px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 245, 216, 0.06) !important;
+}
+
+.compact-inspiration .prompt-strip,
+.writing-zone textarea,
+.feed-toolbar,
+.story-card,
+.top-story-card,
+.stat-card {
+    background: rgba(8, 10, 12, 0.24) !important;
+    border-color: rgba(218, 190, 126, 0.18) !important;
+}
+
+.compact-inspiration .prompt-strip::after {
+    opacity: 0.28 !important;
+}
+
+/* Dormant header menu: keep the future ribbon code, but disable pull/drop behavior for now. */
+.site-nav,
+#mainNav.site-nav,
+.site-nav.scrolled,
+#mainNav.site-nav.scrolled {
+    align-items: center !important;
+}
+
+.nav-actions {
+    position: relative !important;
+    align-items: center !important;
+}
+
+.bookmark-menu-shell {
+    display: none !important;
+    position: relative !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+}
+
+.bookmark-menu-shell::before,
+.bookmark-menu-shell::after,
+.bookmark-ribbon::before,
+.bookmark-ribbon::after {
+    display: none !important;
+    content: none !important;
+}
+
+.bookmark-ribbon,
+.bookmark-ribbon:hover,
+.bookmark-ribbon:active,
+.bookmark-ribbon.is-dragging,
+.bookmark-ribbon.pulled-once,
+.bookmark-ribbon[aria-expanded="true"] {
+    position: relative !important;
+    inset: auto !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    border-radius: 50% !important;
+    transform: none !important;
+    transition: background 0.18s ease, border-color 0.18s ease !important;
+    animation: none !important;
+}
+
+.ribbon-panel,
+.ribbon-panel.is-open,
+.ribbon-panel.is-closing {
+    position: absolute !important;
+    top: calc(100% + 0.75rem) !important;
+    right: 0 !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+    transform-origin: top right !important;
+}
+
+.ribbon-panel.hidden,
+.ribbon-panel:not(.is-open) {
+    display: none !important;
+}
+
+/* Premium marble feather button */
+.compact-inspiration {
+    --feather-icon-size: 1.9rem;
+    --feather-icon-x: -7px;
+    --feather-icon-y: -1px;
+    --feather-icon-rotation: -10deg;
+    --feather-icon-hover-x: 2px;
+    --feather-icon-hover-y: -2px;
+    --feather-icon-hover-scale: 1.08;
+    --feather-icon-hover-rotation: -16deg;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn {
+    overflow: hidden !important;
+    border-color: rgba(204, 155, 76, 0.56) !important;
+    background:
+        radial-gradient(circle at 32% 24%, rgba(255, 229, 158, 0.3), transparent 18%),
+        radial-gradient(circle at 63% 70%, rgba(129, 76, 30, 0.66), transparent 32%),
+        linear-gradient(145deg, #4b2f1b 0%, #24170f 48%, #080706 100%) !important;
+    box-shadow:
+        0 13px 22px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 236, 183, 0.26),
+        inset 0 -16px 28px rgba(0, 0, 0, 0.38) !important;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn::before,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 5px !important;
+    border-radius: inherit !important;
+    background:
+        radial-gradient(circle at 34% 24%, rgba(255, 244, 203, 0.34), transparent 22%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 34%, rgba(255, 209, 118, 0.08) 68%, transparent) !important;
+    opacity: 0.68 !important;
+    pointer-events: none !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn::after,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    top: -45% !important;
+    left: -80% !important;
+    width: 46% !important;
+    height: 190% !important;
+    border-radius: 999px !important;
+    background: linear-gradient(90deg, transparent, rgba(255, 244, 207, 0.64), transparent) !important;
+    transform: rotate(26deg) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    animation: featherMarbleShine 6.8s ease-in-out infinite !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn:hover,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn:hover {
+    transform: translateY(-2px) scale(1.035) !important;
+    border-color: rgba(239, 191, 99, 0.78) !important;
+    box-shadow:
+        0 17px 28px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 240, 195, 0.34),
+        inset 0 -16px 28px rgba(0, 0, 0, 0.36) !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn:hover span:first-child,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn:hover span:first-child {
+    transform:
+        translate(var(--feather-icon-hover-x), var(--feather-icon-hover-y))
+        rotate(var(--feather-icon-hover-rotation))
+        scale(var(--feather-icon-hover-scale)) !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn span:first-child::before,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn span:first-child::before {
+    font-size: var(--feather-icon-size) !important;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.42)) !important;
+    transform:
+        translate(var(--feather-icon-x), var(--feather-icon-y))
+        rotate(var(--feather-icon-rotation)) !important;
+}
+
+@keyframes featherMarbleShine {
+    0%,
+    66% {
+        left: -80%;
+        opacity: 0;
+    }
+    72% {
+        opacity: 0.78;
+    }
+    82% {
+        left: 132%;
+        opacity: 0;
+    }
+    100% {
+        left: 132%;
+        opacity: 0;
+    }
+}
+
+/* Header login button: same warm premium family as the feather button, without shine. */
+#navLoginBtn.btn-secondary {
+    min-height: 54px !important;
+    padding: 0.85rem 1.35rem !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(204, 155, 76, 0.58) !important;
+    color: rgba(255, 226, 166, 0.96) !important;
+    background:
+        radial-gradient(circle at 34% 22%, rgba(255, 224, 142, 0.16), transparent 28%),
+        linear-gradient(145deg, rgba(63, 39, 22, 0.98) 0%, rgba(31, 20, 13, 0.98) 54%, rgba(12, 8, 6, 0.99) 100%) !important;
+    box-shadow:
+        0 12px 22px rgba(0, 0, 0, 0.26),
+        inset 0 1px 0 rgba(255, 232, 174, 0.22),
+        inset 0 -12px 22px rgba(0, 0, 0, 0.28) !important;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.42) !important;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease !important;
+}
+
+#navLoginBtn.btn-secondary:hover {
+    transform: translateY(-1px) !important;
+    border-color: rgba(235, 184, 95, 0.8) !important;
+    color: rgba(255, 237, 191, 0.98) !important;
+    background:
+        radial-gradient(circle at 34% 22%, rgba(255, 224, 142, 0.2), transparent 30%),
+        linear-gradient(145deg, rgba(75, 47, 27, 0.98) 0%, rgba(36, 24, 15, 0.98) 54%, rgba(12, 8, 6, 0.99) 100%) !important;
+    box-shadow:
+        0 15px 26px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 235, 183, 0.28),
+        inset 0 -12px 22px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Video inspiration button: premium brown/gold style without an icon. */
+.compact-inspiration .video-toggle-btn,
+#toggleVideoBtn.video-toggle-btn {
+    justify-content: center !important;
+    gap: 0 !important;
+    min-height: 54px !important;
+    padding: 0.85rem 1.45rem !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(204, 155, 76, 0.58) !important;
+    color: rgba(255, 226, 166, 0.96) !important;
+    background:
+        radial-gradient(circle at 34% 22%, rgba(255, 224, 142, 0.16), transparent 28%),
+        linear-gradient(145deg, rgba(63, 39, 22, 0.98) 0%, rgba(31, 20, 13, 0.98) 54%, rgba(12, 8, 6, 0.99) 100%) !important;
+    box-shadow:
+        0 12px 22px rgba(0, 0, 0, 0.26),
+        inset 0 1px 0 rgba(255, 232, 174, 0.22),
+        inset 0 -12px 22px rgba(0, 0, 0, 0.28) !important;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.42) !important;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease !important;
+}
+
+.compact-inspiration .video-toggle-btn > span[aria-hidden="true"],
+#toggleVideoBtn.video-toggle-btn > span[aria-hidden="true"] {
+    display: none !important;
+}
+
+.compact-inspiration .video-toggle-text,
+#toggleVideoBtn .video-toggle-text {
+    color: inherit !important;
+    text-align: center !important;
+}
+
+.compact-inspiration .video-toggle-btn:hover,
+.compact-inspiration .video-toggle-btn[aria-expanded="true"],
+#toggleVideoBtn.video-toggle-btn:hover,
+#toggleVideoBtn.video-toggle-btn[aria-expanded="true"] {
+    transform: translateY(-1px) !important;
+    border-color: rgba(235, 184, 95, 0.8) !important;
+    color: rgba(255, 237, 191, 0.98) !important;
+    background:
+        radial-gradient(circle at 34% 22%, rgba(255, 224, 142, 0.2), transparent 30%),
+        linear-gradient(145deg, rgba(75, 47, 27, 0.98) 0%, rgba(36, 24, 15, 0.98) 54%, rgba(12, 8, 6, 0.99) 100%) !important;
+    box-shadow:
+        0 15px 26px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 235, 183, 0.28),
+        inset 0 -12px 22px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Softer radial button finish: warm center, darker brown edge. */
+#navLoginBtn.btn-secondary,
+.compact-inspiration .video-toggle-btn,
+#toggleVideoBtn.video-toggle-btn {
+    background: #7d5430 !important;
+}
+
+#navLoginBtn.btn-secondary:hover,
+.compact-inspiration .video-toggle-btn:hover,
+.compact-inspiration .video-toggle-btn[aria-expanded="true"],
+#toggleVideoBtn.video-toggle-btn:hover,
+#toggleVideoBtn.video-toggle-btn[aria-expanded="true"] {
+    background: #8b6138 !important;
+}
+
+/* Weekly Inspiration dream page */
+.compact-inspiration .prompt-strip {
+    background:
+        linear-gradient(135deg, rgba(255, 251, 236, 0.98), rgba(232, 213, 171, 0.96)) !important;
+    border-color: rgba(179, 141, 82, 0.34) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        inset 0 -24px 44px rgba(143, 103, 45, 0.12),
+        0 14px 30px rgba(28, 16, 9, 0.18) !important;
+}
+
+.compact-inspiration .prompt-strip::after {
+    opacity: 0.16 !important;
+}
+
+.compact-inspiration #weeklyPromptText {
+    color: #15100b !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 248, 0.72) !important;
+}
+
+/* Readable storybook text for focus writing and weekly prompt sample. */
+body.focus-mode #writingZoneSection #mainStoryInput,
+body.focus-mode #writingZoneSection textarea#mainStoryInput,
+.compact-inspiration #weeklyPromptText {
+    font-family: 'Cormorant Garamond', Georgia, serif !important;
+    font-weight: 600 !important;
+    color: #15100b !important;
+    line-height: 1.48 !important;
+    text-shadow: none !important;
+}
+
+body.focus-mode #writingZoneSection #mainStoryInput,
+body.focus-mode #writingZoneSection textarea#mainStoryInput {
+    font-size: clamp(1.45rem, 2vw, 1.85rem) !important;
+}
+
+.compact-inspiration #weeklyPromptText {
+    font-size: clamp(1.2rem, 1.7vw, 1.42rem) !important;
+}
+
+/* Writing Desk glass toolbar and mint active states */
+#writingZoneSection.writing-zone {
+    position: relative !important;
+    overflow: hidden !important;
+    background: var(--nook-page-gradient) fixed !important;
+}
+
+#writingZoneSection.writing-zone::before {
+    display: none !important;
+    content: none !important;
+}
+
+#writingZoneSection.writing-zone > * {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+#writingZoneSection #mainStoryInput,
+body.focus-mode #writingZoneSection #mainStoryInput {
+    background:
+        linear-gradient(135deg, rgba(255, 251, 236, 0.98), rgba(232, 213, 171, 0.96)) !important;
+}
+
+#writingZoneSection .typing-toolbar,
+body.focus-mode #writingZoneSection .typing-toolbar {
+    border: 1px solid rgba(207, 235, 194, 0.22) !important;
+    background: rgba(211, 233, 202, 0.1) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 14px 28px rgba(0, 0, 0, 0.12) !important;
+    backdrop-filter: blur(18px) saturate(1.12) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.12) !important;
+}
+
+#writingZoneSection .typing-control select,
+body.focus-mode #writingZoneSection .typing-control select,
+#writingZoneSection .typing-format-toggles button,
+#writingZoneSection .writing-desk-controls .focus-mini-btn,
+#writingZoneSection .focus-mode-toggle {
+    background: rgba(22, 15, 10, 0.72) !important;
+    border-color: rgba(201, 222, 174, 0.28) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 241, 204, 0.16),
+        0 8px 18px rgba(0, 0, 0, 0.2) !important;
+}
+
+.compact-inspiration .video-toggle-btn[aria-expanded="true"],
+#toggleVideoBtn.video-toggle-btn[aria-expanded="true"] {
+    background: #a9c98f !important;
+    border-color: rgba(220, 240, 190, 0.78) !important;
+    color: #18200f !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 238, 0.36) !important;
+}
+
+#loggedInNav .profile-trigger,
+#navProfileBtn.profile-trigger {
+    width: 62px !important;
+    height: 62px !important;
+    min-width: 62px !important;
+    padding: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    border-radius: 50% !important;
+    border: 3px solid #a9c98f !important;
+    background: rgba(169, 201, 143, 0.16) !important;
+    box-shadow:
+        0 12px 24px rgba(0, 0, 0, 0.26),
+        inset 0 1px 0 rgba(255, 255, 238, 0.28) !important;
+}
+
+#loggedInNav #navUsername {
+    display: none !important;
+}
+
+#loggedInNav .avatar-small,
+#navProfileBtn .avatar-small {
+    width: 54px !important;
+    height: 54px !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+}
+
+/* Final repair: restore Sound/Light dropdown behavior and compact header sizing. */
+.site-nav,
+#mainNav.site-nav,
+.site-nav.scrolled,
+#mainNav.site-nav.scrolled {
+    padding-top: 8px !important;
+    padding-bottom: 10px !important;
+    min-height: 82px !important;
+}
+
+#navLogo .brand-logo-img,
+#navLogo.brand-lockup.nav-logo .brand-logo-img {
+    width: 119px !important;
+    height: 119px !important;
+    transform: translate(29px, 20px) !important;
+}
+
+#navLogo.brand-lockup.nav-logo .brand-title-img {
+    left: 91px !important;
+    top: -23px !important;
+    height: 176px !important;
+}
+
+#navLoginBtn.btn-secondary {
+    min-height: 46px !important;
+    padding: 0.68rem 1.12rem !important;
+    font-size: 0.95rem !important;
+}
+
+#writingZoneSection.writing-zone {
+    overflow: visible !important;
+}
+
+#writingZoneSection .ambient-menu,
+body:not(.focus-mode) #writingZoneSection .ambient-menu,
+body.focus-mode #writingZoneSection .ambient-menu {
+    position: absolute !important;
+    z-index: 9999 !important;
+}
+
+#writingZoneSection .ambient-menu:not(.hidden),
+body:not(.focus-mode) #writingZoneSection .ambient-menu:not(.hidden),
+body.focus-mode #writingZoneSection .ambient-menu:not(.hidden) {
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+#soundEffectsBtn.has-active-effect,
+#lightingEffectsBtn.has-active-effect,
+#soundEffectsBtn[aria-expanded="true"],
+#lightingEffectsBtn[aria-expanded="true"],
+#soundEffectsBtn[aria-pressed="true"],
+#lightingEffectsBtn[aria-pressed="true"] {
+    background: #a9c98f !important;
+    border-color: rgba(220, 240, 190, 0.78) !important;
+    color: #18200f !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 238, 0.34) !important;
+}
+
+#loggedInNav .profile-trigger,
+#navProfileBtn.profile-trigger {
+    width: 57px !important;
+    height: 57px !important;
+    min-width: 57px !important;
+}
+
+#loggedInNav .avatar-small,
+#navProfileBtn .avatar-small {
+    width: 51px !important;
+    height: 51px !important;
+}
+
+@media (max-width: 760px) {
+    .site-nav,
+    #mainNav.site-nav,
+    .site-nav.scrolled,
+    #mainNav.site-nav.scrolled {
+        min-height: 76px !important;
+        padding-top: 7px !important;
+        padding-bottom: 9px !important;
+    }
+
+    #navLogo .brand-logo-img,
+    #navLogo.brand-lockup.nav-logo .brand-logo-img {
+        width: 97px !important;
+        height: 97px !important;
+        transform: translate(27px, 9px) !important;
+    }
+
+    #navLogo.brand-lockup.nav-logo .brand-title-img {
+        left: 100px !important;
+        top: 8px !important;
+        height: 74px !important;
+    }
+
+    #navLoginBtn.btn-secondary {
+        min-height: 42px !important;
+        padding: 0.58rem 0.9rem !important;
+        font-size: 0.88rem !important;
+    }
+
+    #loggedInNav .profile-trigger,
+    #navProfileBtn.profile-trigger {
+        width: 51px !important;
+        height: 51px !important;
+        min-width: 51px !important;
+    }
+
+    #loggedInNav .avatar-small,
+    #navProfileBtn .avatar-small {
+        width: 45px !important;
+        height: 45px !important;
+    }
+}
+
+/* Unified mint active state for Writing Desk controls. */
+#soundEffectsBtn.has-active-effect,
+#lightingEffectsBtn.has-active-effect,
+#soundEffectsBtn[aria-expanded="true"],
+#lightingEffectsBtn[aria-expanded="true"],
+#soundEffectsBtn[aria-pressed="true"],
+#lightingEffectsBtn[aria-pressed="true"],
+#focusModeToggleBtn[aria-pressed="true"],
+#writingBoldBtn[aria-pressed="true"],
+#writingBoldBtn.active,
+#writingItalicBtn[aria-pressed="true"],
+#writingItalicBtn.active,
+#typingSoundToggleBtn[aria-pressed="true"],
+#typingSoundToggleBtn.active,
+#writingZoneSection .typing-tool-btn[aria-pressed="true"],
+#writingZoneSection .typing-tool-btn.active,
+#writingZoneSection .ambient-menu button[aria-pressed="true"],
+#writingZoneSection .sound-mix-option[aria-pressed="true"],
+#writingZoneSection [data-lighting][aria-pressed="true"] {
+    background: #a9c98f !important;
+    border-color: rgba(220, 240, 190, 0.82) !important;
+    color: #18200f !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 238, 0.34) !important;
+    box-shadow:
+        0 10px 20px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 238, 0.44) !important;
+}
+
+#soundEffectsBtn.has-active-effect *,
+#lightingEffectsBtn.has-active-effect *,
+#soundEffectsBtn[aria-expanded="true"] *,
+#lightingEffectsBtn[aria-expanded="true"] *,
+#soundEffectsBtn[aria-pressed="true"] *,
+#lightingEffectsBtn[aria-pressed="true"] *,
+#focusModeToggleBtn[aria-pressed="true"] *,
+#writingBoldBtn[aria-pressed="true"] *,
+#writingBoldBtn.active *,
+#writingItalicBtn[aria-pressed="true"] *,
+#writingItalicBtn.active *,
+#typingSoundToggleBtn[aria-pressed="true"] *,
+#typingSoundToggleBtn.active *,
+#writingZoneSection .typing-tool-btn[aria-pressed="true"] *,
+#writingZoneSection .typing-tool-btn.active *,
+#writingZoneSection .ambient-menu button[aria-pressed="true"] *,
+#writingZoneSection .sound-mix-option[aria-pressed="true"] *,
+#writingZoneSection [data-lighting][aria-pressed="true"] * {
+    color: #18200f !important;
+}
+
+/* Highest-specificity active controls: beat the dark Writing Desk button skin. */
+#writingZoneSection #soundEffectsBtn.has-active-effect,
+#writingZoneSection #lightingEffectsBtn.has-active-effect,
+#writingZoneSection #soundEffectsBtn[aria-expanded="true"],
+#writingZoneSection #lightingEffectsBtn[aria-expanded="true"],
+#writingZoneSection #soundEffectsBtn[aria-pressed="true"],
+#writingZoneSection #lightingEffectsBtn[aria-pressed="true"],
+#writingZoneSection #focusModeToggleBtn[aria-pressed="true"],
+#writingZoneSection #writingBoldBtn[aria-pressed="true"],
+#writingZoneSection #writingBoldBtn.active,
+#writingZoneSection #writingItalicBtn[aria-pressed="true"],
+#writingZoneSection #writingItalicBtn.active,
+#writingZoneSection #typingSoundToggleBtn[aria-pressed="true"],
+#writingZoneSection #typingSoundToggleBtn.active,
+body #writingZoneSection .ambient-menu button[aria-pressed="true"],
+body #writingZoneSection .sound-mix-option[aria-pressed="true"],
+body #writingZoneSection [data-lighting][aria-pressed="true"] {
+    background: #a9c98f !important;
+    border-color: rgba(220, 240, 190, 0.82) !important;
+    color: #18200f !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 238, 0.34) !important;
+    box-shadow:
+        0 10px 20px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 238, 0.44) !important;
+}
+
+#writingZoneSection #soundEffectsBtn.has-active-effect *,
+#writingZoneSection #lightingEffectsBtn.has-active-effect *,
+#writingZoneSection #soundEffectsBtn[aria-expanded="true"] *,
+#writingZoneSection #lightingEffectsBtn[aria-expanded="true"] *,
+#writingZoneSection #soundEffectsBtn[aria-pressed="true"] *,
+#writingZoneSection #lightingEffectsBtn[aria-pressed="true"] *,
+#writingZoneSection #focusModeToggleBtn[aria-pressed="true"] *,
+#writingZoneSection #writingBoldBtn[aria-pressed="true"] *,
+#writingZoneSection #writingBoldBtn.active *,
+#writingZoneSection #writingItalicBtn[aria-pressed="true"] *,
+#writingZoneSection #writingItalicBtn.active *,
+#writingZoneSection #typingSoundToggleBtn[aria-pressed="true"] *,
+#writingZoneSection #typingSoundToggleBtn.active *,
+body #writingZoneSection .ambient-menu button[aria-pressed="true"] *,
+body #writingZoneSection .sound-mix-option[aria-pressed="true"] *,
+body #writingZoneSection [data-lighting][aria-pressed="true"] * {
+    color: #18200f !important;
+}
+
+/* Header profile picture: clean borderless circle. */
+#loggedInNav .profile-trigger,
+#navProfileBtn.profile-trigger {
+    width: 77px !important;
+    height: 77px !important;
+    min-width: 77px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+    outline: 0 !important;
+}
+
+#loggedInNav .avatar-small,
+#navProfileBtn .avatar-small {
+    width: 100% !important;
+    height: 100% !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    display: block !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+    background: transparent !important;
+}
+
+#loggedInNav .profile-trigger:hover,
+#navProfileBtn.profile-trigger:hover,
+#loggedInNav .profile-trigger:focus,
+#navProfileBtn.profile-trigger:focus {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+}
+
+@media (max-width: 760px) {
+    #loggedInNav .profile-trigger,
+    #navProfileBtn.profile-trigger {
+        width: 69px !important;
+        height: 69px !important;
+        min-width: 69px !important;
+    }
+
+    #loggedInNav .avatar-small,
+    #navProfileBtn .avatar-small {
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+
+/* Header independence: avatar/logo sizes should never resize the header. */
+#mainNav.site-nav,
+.site-nav {
+    box-sizing: border-box !important;
+    height: 82px !important;
+    min-height: 82px !important;
+    max-height: 82px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    align-items: center !important;
+    overflow: visible !important;
+}
+
+#mainNav .nav-actions,
+.site-nav .nav-actions {
+    align-items: center !important;
+    max-height: 82px !important;
+}
+
+#navProfileBtn.profile-trigger,
+#loggedInNav .profile-trigger {
+    flex: 0 0 auto !important;
+}
+
+@media (max-width: 760px) {
+    #mainNav.site-nav,
+    .site-nav {
+        height: 76px !important;
+        min-height: 76px !important;
+        max-height: 76px !important;
+    }
+
+    #mainNav .nav-actions,
+    .site-nav .nav-actions {
+        max-height: 76px !important;
+    }
+}
+
+/* Avatar picker modal and future prize profile pictures. */
+.avatar-picker-modal {
+    width: min(92vw, 560px) !important;
+    text-align: left !important;
+}
+
+.avatar-picker-modal h2,
+.avatar-picker-modal .modal-intro {
+    text-align: center;
+}
+
+.avatar-picker-modal .avatar-placeholder-grid {
+    grid-template-columns: repeat(auto-fill, 92px);
+    justify-content: center;
+    gap: 0.85rem;
+    margin: 0.75rem 0 1rem;
+}
+
+.avatar-picker-modal .avatar-placeholder-choice {
+    position: relative;
+    width: 92px !important;
+    height: 92px !important;
+    min-width: 92px !important;
+    min-height: 92px !important;
+    max-width: 92px !important;
+    max-height: 92px !important;
+    aspect-ratio: 1 / 1 !important;
+    padding: 4px !important;
+    flex: 0 0 92px !important;
+    display: block !important;
+}
+
+.avatar-picker-modal .avatar-placeholder-choice img {
+    width: 100% !important;
+    height: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    border-radius: 50% !important;
+}
+
+@media (max-width: 520px) {
+    .avatar-picker-modal .avatar-placeholder-grid {
+        grid-template-columns: repeat(auto-fill, 76px);
+        gap: 0.7rem;
+    }
+
+    .avatar-picker-modal .avatar-placeholder-choice {
+        width: 76px !important;
+        height: 76px !important;
+        min-width: 76px !important;
+        min-height: 76px !important;
+        max-width: 76px !important;
+        max-height: 76px !important;
+        flex-basis: 76px !important;
+    }
+}
+
+.avatar-placeholder-choice.is-prize:not(.is-locked)::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    border: 2px solid rgba(236, 196, 111, 0.62);
+    pointer-events: none;
+}
+
+.avatar-placeholder-choice.is-locked {
+    cursor: not-allowed;
+    filter: grayscale(1);
+    opacity: 0.58;
+}
+
+.avatar-placeholder-choice.is-locked img {
+    filter: blur(1px) brightness(0.72);
+}
+
+.avatar-lock-label,
+.avatar-prize-label {
+    position: absolute;
+    left: 50%;
+    bottom: 5px;
+    transform: translateX(-50%);
+    max-width: calc(100% - 10px);
+    padding: 0.18rem 0.42rem;
+    border-radius: 999px;
+    background: rgba(18, 12, 8, 0.76);
+    color: #fff4d0;
+    font-size: 0.62rem;
+    font-weight: 800;
+    line-height: 1.05;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.avatar-prize-label {
+    background: rgba(169, 201, 143, 0.92);
+    color: #18200f;
+}
+
+/* Guest pen name: match the Writing Desk writing surface. */
+#writingZoneSection #guestPenName,
+#writingZoneSection .writer-action-line #guestPenName,
+body.focus-mode #writingZoneSection #guestPenName {
+    color: #15100b !important;
+    caret-color: #8f5f34 !important;
+    background:
+        linear-gradient(135deg, rgba(255, 251, 236, 0.98), rgba(232, 213, 171, 0.96)) !important;
+    border: 1px solid rgba(147, 98, 54, 0.38) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        inset 0 -18px 32px rgba(143, 103, 45, 0.08),
+        0 8px 18px rgba(28, 16, 9, 0.12) !important;
+    text-shadow: none !important;
+}
+
+#writingZoneSection #guestPenName::placeholder,
+body.focus-mode #writingZoneSection #guestPenName::placeholder {
+    color: rgba(62, 43, 27, 0.52) !important;
+    font-style: italic !important;
+}
+
+#writingZoneSection #guestPenName:focus,
+body.focus-mode #writingZoneSection #guestPenName:focus {
+    border-color: rgba(147, 98, 54, 0.58) !important;
+    box-shadow:
+        0 0 0 4px rgba(215, 165, 111, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        inset 0 -18px 32px rgba(143, 103, 45, 0.08) !important;
+}
+
+/* Profile modal picture: force every placeholder into the same clean circle. */
+#profileModal .avatar-wrapper {
+    width: 112px !important;
+    height: 112px !important;
+    min-width: 112px !important;
+    flex: 0 0 112px !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    background: transparent !important;
+}
+
+#profileModal #profileAvatar.avatar-large,
+#profileModal .avatar-wrapper #profileAvatar {
+    display: block !important;
+    width: 112px !important;
+    height: 112px !important;
+    min-width: 112px !important;
+    min-height: 112px !important;
+    max-width: 112px !important;
+    max-height: 112px !important;
+    aspect-ratio: 1 / 1 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+#profileModal .avatar-edit-hint {
+    border-radius: 50% !important;
+}
+
+@media (max-width: 640px) {
+    #profileModal .avatar-wrapper,
+    #profileModal #profileAvatar.avatar-large,
+    #profileModal .avatar-wrapper #profileAvatar {
+        width: 100px !important;
+        height: 100px !important;
+        min-width: 100px !important;
+        min-height: 100px !important;
+        max-width: 100px !important;
+        max-height: 100px !important;
+        flex-basis: 100px !important;
+    }
+}
+
+/* Header profile picture: warm wooden ring with an inner shadow over the photo. */
+#loggedInNav .profile-trigger,
+#navProfileBtn.profile-trigger {
+    position: relative !important;
+    box-sizing: border-box !important;
+    border: 0 !important;
+    padding: 2px !important;
+    background:
+        conic-gradient(
+            from 145deg,
+            #3a2112 0deg,
+            #8a5730 52deg,
+            #c58a4f 102deg,
+            #6f4427 165deg,
+            #2d190d 226deg,
+            #9b6439 292deg,
+            #3a2112 360deg
+        ) !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 218, 155, 0.28),
+        inset 0 0 5px rgba(38, 20, 10, 0.45),
+        0 8px 16px rgba(23, 13, 8, 0.22) !important;
+    overflow: hidden !important;
+}
+
+#loggedInNav .profile-trigger::after,
+#navProfileBtn.profile-trigger::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 2px !important;
+    border-radius: 50% !important;
+    box-shadow:
+        inset 0 4px 7px rgba(38, 20, 10, 0.34),
+        inset 0 -2px 4px rgba(255, 223, 168, 0.10) !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+}
+
+#loggedInNav .avatar-small,
+#navProfileBtn .avatar-small {
+    position: relative !important;
+    z-index: 1 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    display: block !important;
+}
+
+#loggedInNav .profile-trigger:hover,
+#navProfileBtn.profile-trigger:hover,
+#loggedInNav .profile-trigger:focus,
+#navProfileBtn.profile-trigger:focus {
+    border: 0 !important;
+    padding: 2px !important;
+    background:
+        conic-gradient(
+            from 145deg,
+            #442716 0deg,
+            #9a6439 52deg,
+            #d19a5b 102deg,
+            #75482a 165deg,
+            #332012 226deg,
+            #a36b3f 292deg,
+            #442716 360deg
+        ) !important;
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 226, 173, 0.28),
+        inset 0 0 5px rgba(38, 20, 10, 0.42),
+        0 9px 18px rgba(23, 13, 8, 0.25) !important;
+    outline: 0 !important;
+}
+
+/* Final header tools: clean avatar, quiet notifications, and Archive menu. */
+#loggedInNav.nav-group {
+    align-items: center !important;
+    gap: 0.36rem !important;
+    transform: translateX(60px) !important;
+}
+
+#loggedInNav .profile-trigger,
+#navProfileBtn.profile-trigger {
+    width: 54px !important;
+    height: 54px !important;
+    min-width: 54px !important;
+    min-height: 54px !important;
+    max-width: 54px !important;
+    max-height: 54px !important;
+    margin-left: 8px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+    display: grid !important;
+    place-items: center !important;
+}
+
+#loggedInNav #navUsername {
+    display: none !important;
+}
+
+#loggedInNav .profile-trigger::after,
+#navProfileBtn.profile-trigger::after {
+    content: "" !important;
+    position: absolute !important;
+    inset: 0 !important;
+    display: block !important;
+    border-radius: 50% !important;
+    box-shadow:
+        inset 0 5px 10px rgba(0, 0, 0, 0.52),
+        inset 0 -2px 4px rgba(255, 225, 168, 0.08) !important;
+    pointer-events: none !important;
+    z-index: 2 !important;
+}
+
+#loggedInNav .avatar-small,
+#navProfileBtn .avatar-small {
+    position: relative !important;
+    z-index: 1 !important;
+    width: 100% !important;
+    height: 100% !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    box-shadow: none !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+}
+
+#loggedInNav .profile-trigger:hover,
+#navProfileBtn.profile-trigger:hover,
+#loggedInNav .profile-trigger:focus,
+#navProfileBtn.profile-trigger:focus {
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+}
+
+.nav-icon-btn {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    border: 0;
+    border-radius: 50%;
+    color: #c9a274;
+    background: transparent;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    cursor: pointer;
+    transition: color 180ms ease, transform 180ms ease;
+}
+
+.nav-icon-btn:hover,
+.nav-icon-btn:focus-visible {
+    color: #d6b783;
+    transform: translateY(-1px);
+    outline: 0;
+}
+
+.nav-mail-btn.has-unread,
+.nav-message-btn.has-unread {
+    color: #a9d39a;
+}
+
+.nav-mail-btn.is-seen,
+.nav-message-btn.is-seen {
+    color: #c9a274;
+}
+
+.nav-mail-btn.has-unread::after,
+.nav-message-btn.has-unread::after {
+    content: "";
+    position: absolute;
+    inset: -35%;
+    background: linear-gradient(115deg, transparent 38%, rgba(255,255,255,0.65) 48%, transparent 58%);
+    transform: translateX(-145%) rotate(8deg);
+    animation: navMessageShine 6s ease-in-out infinite;
+}
+
+.nav-eye-icon,
+.nav-mail-icon,
+.nav-bell-icon {
+    width: 23px;
+    height: 23px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.15;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+#avatarEditOverlay.avatar-edit-hint,
+#profileModal .avatar-edit-hint {
+    display: none !important;
+    opacity: 0 !important;
+}
+
+#profileModal .avatar-wrapper {
+    cursor: pointer !important;
+}
+
+#profileModal .avatar-wrapper:focus-visible {
+    outline: 2px solid rgba(125, 151, 101, 0.72) !important;
+    outline-offset: 4px !important;
+}
+
+.bookmark-menu-shell {
+    display: block !important;
+    position: relative !important;
+    inset: auto !important;
+    width: auto !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin-left: 0.15rem !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    z-index: 7 !important;
+}
+
+.bookmark-menu-shell.hidden {
+    display: none !important;
+}
+
+.bookmark-menu-shell::before,
+.bookmark-menu-shell::after,
+.bookmark-ribbon::before,
+.bookmark-ribbon::after {
+    display: none !important;
+    content: none !important;
+}
+
+#bookmarkMenuBtn.bookmark-ribbon,
+#bookmarkMenuBtn.archive-menu-btn {
+    position: relative !important;
+    inset: auto !important;
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: #c9a274 !important;
+    display: grid !important;
+    place-items: center !important;
+    transform: none !important;
+    cursor: pointer !important;
+}
+
+#bookmarkMenuBtn.archive-menu-btn:hover,
+#bookmarkMenuBtn.archive-menu-btn:focus-visible,
+.bookmark-menu-shell.is-open #bookmarkMenuBtn.archive-menu-btn {
+    color: #d6b783 !important;
+    background: rgba(214, 183, 131, 0.06) !important;
+    outline: 0 !important;
+}
+
+.archive-menu-mark {
+    width: 0;
+    height: 0;
+    border-top: 9px solid transparent;
+    border-bottom: 9px solid transparent;
+    border-left: 19px solid currentColor;
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.25));
+}
+
+#nookRibbonPanel.ribbon-panel,
+#nookRibbonPanel.archive-menu-panel,
+#nookRibbonPanel.ribbon-panel.is-open {
+    position: absolute !important;
+    top: calc(100% + 0.65rem) !important;
+    right: 0 !important;
+    width: min(318px, calc(100vw - 26px)) !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
+    padding: 0.85rem !important;
+    border: 1px solid rgba(204, 166, 105, 0.24) !important;
+    border-radius: 14px !important;
+    background:
+        linear-gradient(145deg, rgba(22, 17, 13, 0.98), rgba(9, 8, 7, 0.98)),
+        radial-gradient(circle at 80% 0%, rgba(194, 143, 75, 0.16), transparent 44%) !important;
+    box-shadow: 0 18px 40px rgba(0,0,0,0.34) !important;
+    color: #efe1c4 !important;
+    transform: none !important;
+    transition: opacity 180ms ease, translate 180ms ease !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+}
+
+#nookRibbonPanel.ribbon-panel::before,
+#nookRibbonPanel.ribbon-panel::after {
+    display: none !important;
+    content: none !important;
+}
+
+#nookRibbonPanel.ribbon-panel.hidden,
+#nookRibbonPanel.ribbon-panel:not(.is-open) {
+    display: none !important;
+}
+
+.archive-menu-panel .storybook-menu-note {
+    margin: 0 0 0.65rem !important;
+    color: #d7bb84 !important;
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 1rem !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+
+.archive-menu-pages {
+    display: grid !important;
+    gap: 0.45rem !important;
+}
+
+.archive-menu-pages .storybook-page-link {
+    border: 1px solid rgba(206, 168, 104, 0.16) !important;
+    border-radius: 10px !important;
+    background: rgba(255, 255, 255, 0.035) !important;
+    color: #f0e2c7 !important;
+    padding: 0.72rem 0.78rem !important;
+    text-align: left !important;
+    box-shadow: none !important;
+}
+
+.archive-menu-pages .storybook-page-link:hover,
+.archive-menu-pages .storybook-page-link:focus-visible {
+    background: rgba(205, 167, 106, 0.10) !important;
+    border-color: rgba(206, 168, 104, 0.32) !important;
+    outline: 0 !important;
+}
+
+.archive-menu-pages .page-link-title {
+    color: #e4c58a !important;
+    font-weight: 900 !important;
+}
+
+.archive-menu-pages .page-link-desc {
+    color: rgba(239, 225, 196, 0.68) !important;
+}
+
+.archive-modal-layout {
+    max-width: min(920px, calc(100vw - 28px)) !important;
+}
+
+.archive-modal-header {
+    display: grid;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.archive-modal-header h2 {
+    margin: 0;
+}
+
+.archive-intro {
+    margin: 0;
+    color: #60442d;
+}
+
+.archive-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.archive-stat {
+    border: 1px solid rgba(84, 56, 33, 0.16);
+    border-radius: 10px;
+    padding: 0.7rem;
+    background: rgba(255,255,255,0.38);
+}
+
+.archive-stat span {
+    display: block;
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: #2a1a10;
+}
+
+.archive-stat small {
+    color: #6f5237;
+    font-weight: 800;
+}
+
+.archive-stories-list {
+    display: grid;
+    gap: 0.7rem;
+    max-height: min(58vh, 560px);
+    overflow: auto;
+    padding-right: 0.25rem;
+}
+
+.archive-story-card {
+    display: grid;
+    gap: 0.25rem;
+    width: 100%;
+    border: 1px solid rgba(76, 50, 30, 0.16);
+    border-radius: 12px;
+    padding: 0.85rem 0.95rem;
+    background: linear-gradient(135deg, rgba(255,248,229,0.92), rgba(226,210,179,0.82));
+    color: #21150d;
+    text-align: left;
+    cursor: pointer;
+}
+
+.archive-story-card:hover,
+.archive-story-card:focus-visible {
+    border-color: rgba(118, 82, 42, 0.34);
+    box-shadow: 0 10px 22px rgba(61, 38, 20, 0.14);
+    outline: 0;
+}
+
+.archive-rank {
+    color: #8b6638;
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.archive-author {
+    font-weight: 900;
+}
+
+.archive-preview {
+    color: #3a291b;
+    line-height: 1.45;
+}
+
+.archive-meta,
+.archive-podium-note {
+    color: #6e5338;
+    font-size: 0.88rem;
+    font-weight: 800;
+}
+
+.archive-podium-note {
+    border: 1px dashed rgba(112, 82, 45, 0.24);
+    border-radius: 10px;
+    padding: 0.8rem;
+    background: rgba(255,255,255,0.28);
+}
+
+@keyframes navMessageShine {
+    0%, 74% { transform: translateX(-145%) rotate(8deg); }
+    84%, 100% { transform: translateX(145%) rotate(8deg); }
+}
+
+@media (max-width: 760px) {
+    #loggedInNav.nav-group {
+        gap: 0 !important;
+        transform: none !important;
+    }
+
+    .nav-icon-btn {
+        display: none !important;
+    }
+
+    .nav-icon-btn,
+    #bookmarkMenuBtn.bookmark-ribbon,
+    #bookmarkMenuBtn.archive-menu-btn {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+    }
+
+    .nav-eye-icon,
+    .nav-mail-icon,
+    .nav-bell-icon {
+        width: 20px;
+        height: 20px;
+    }
+
+    .archive-menu-mark {
+        border-top-width: 8px;
+        border-bottom-width: 8px;
+        border-left-width: 16px;
+    }
+
+    #loggedInNav .profile-trigger,
+    #navProfileBtn.profile-trigger {
+        width: 54px !important;
+        height: 54px !important;
+        min-width: 54px !important;
+        min-height: 54px !important;
+        max-width: 54px !important;
+        max-height: 54px !important;
+        margin-left: 0 !important;
+    }
+
+    #nookRibbonPanel.ribbon-panel,
+    #nookRibbonPanel.archive-menu-panel {
+        right: -0.35rem !important;
+        width: min(300px, calc(100vw - 18px)) !important;
+    }
+
+    .archive-stats {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Solid header color for logo/header artwork alignment. */
+:root {
+    --nook-header-solid: #090503;
+}
+
+#mainNav.site-nav,
+.site-nav.scrolled,
+#mainNav.site-nav.scrolled {
+    background: transparent !important;
+    background-image: none !important;
+    background-attachment: scroll !important;
+    border: 0 !important;
+    border-bottom: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Header cutout logo patch. Old logo images stay in the markup as fallbacks. */
+:root {
+    --nook-header-cutout-width: 298px;
+    --nook-header-cutout-height: 82px;
+    --nook-header-cutout-left: max(14px, calc((100vw - 980px) / 2 - 90px));
+    --nook-main-content-edge: max(20px, calc((100vw - 980px) / 2 - 56px));
+}
+
+#navLogo.brand-lockup.nav-logo,
+#navLogo.nav-logo {
+    position: fixed !important;
+    top: 0 !important;
+    left: var(--nook-header-cutout-left) !important;
+    width: var(--nook-header-cutout-width) !important;
+    height: var(--nook-header-cutout-height) !important;
+    z-index: 1000000 !important;
+    display: block !important;
+    overflow: visible !important;
+    background: transparent !important;
+    border: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    transform: none !important;
+}
+
+#navLogo .brand-logo-img,
+#navLogo.brand-lockup.nav-logo .brand-logo-img,
+#navLogo .brand-title-img,
+#navLogo.brand-lockup.nav-logo .brand-title-img {
+    display: none !important;
+}
+
+#navLogo .brand-header-cutout-img,
+#navLogo.brand-lockup.nav-logo .brand-header-cutout-img {
+    display: block !important;
+    width: auto !important;
+    height: var(--nook-header-cutout-height) !important;
+    max-width: none !important;
+    max-height: none !important;
+    object-fit: contain !important;
+    object-position: left top !important;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    pointer-events: auto !important;
+}
+
+#mainNav.site-nav,
+.site-nav {
+    position: fixed !important;
+    padding-left: calc(var(--nook-header-cutout-left) + var(--nook-header-cutout-width) + 28px) !important;
+    padding-right: var(--nook-main-content-edge) !important;
+}
+
+#mainNav.site-nav::before,
+.site-nav::before {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: calc(var(--nook-header-cutout-left) + var(--nook-header-cutout-width)) !important;
+    background: var(--nook-header-solid) !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+
+#mainNav.site-nav::after,
+.site-nav::after {
+    content: "" !important;
+    position: absolute !important;
+    top: 0 !important;
+    right: auto !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    width: var(--nook-header-cutout-left) !important;
+    display: block !important;
+    background: var(--nook-header-solid) !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+
+#mainNav .nav-actions,
+.site-nav .nav-actions {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+@media (max-width: 760px) {
+    :root {
+        --nook-header-cutout-width: 276px;
+        --nook-header-cutout-height: 77px;
+        --nook-header-cutout-left: -6px;
+        --nook-main-content-edge: 27px;
+        --story-room-bg-position: left center;
+    }
+
+    #mainNav.site-nav,
+    .site-nav {
+        height: 77px !important;
+        min-height: 77px !important;
+        max-height: 77px !important;
+        padding-left: calc(var(--nook-header-cutout-left) + var(--nook-header-cutout-width) + 12px) !important;
+    }
+
+    body::before,
+    .video-background,
+    .video-background::before {
+        background-position: left center !important;
+        transform-origin: left center !important;
+    }
+
+    #mainNav.site-nav::after,
+    .site-nav::after {
+        width: 0 !important;
     }
 }
