@@ -14157,7 +14157,7 @@ footer,
 body.focus-mode #writingZoneSection #mainStoryInput,
 body.focus-mode #writingZoneSection textarea#mainStoryInput,
 .compact-inspiration #weeklyPromptText {
-    font-family: 'Cormorant Garamond', Georgia, serif !important;
+    font-family: var(--writing-user-font-family, 'Cormorant Garamond', Georgia, serif) !important;
     font-weight: 600 !important;
     color: #15100b !important;
     line-height: 1.48 !important;
@@ -14173,6 +14173,14 @@ body.focus-mode #writingZoneSection textarea#mainStoryInput {
     font-size: clamp(1.2rem, 1.7vw, 1.42rem) !important;
     font-weight: 700 !important;
     color: #100b07 !important;
+}
+
+#writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode #writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode #writingZoneSection textarea#mainStoryInput::placeholder {
+    font-family: var(--writing-user-font-family, 'Cormorant Garamond', Georgia, serif) !important;
+    font-weight: var(--writing-user-font-weight, 500) !important;
+    font-style: var(--writing-user-font-style, normal) !important;
 }
 
 /* Writing Desk glass toolbar and mint active states */
@@ -16170,7 +16178,7 @@ body.focus-mode #writingZoneSection #guestPenName:focus {
 @media (max-width: 760px) {
     #loggedInNav.nav-group {
         gap: 0 !important;
-        transform: none !important;
+        transform: translateX(45px) !important;
     }
 
     .nav-icon-btn {
@@ -16238,8 +16246,9 @@ body.focus-mode #writingZoneSection #guestPenName:focus {
 
 /* Header cutout logo patch. Old logo images stay in the markup as fallbacks. */
 :root {
+    --nook-header-height: 82px;
     --nook-header-cutout-width: 298px;
-    --nook-header-cutout-height: 82px;
+    --nook-header-cutout-height: calc(var(--nook-header-height) + 1px);
     --nook-header-cutout-left: max(14px, calc((100vw - 980px) / 2 - 90px));
     --nook-main-content-edge: max(20px, calc((100vw - 980px) / 2 - 56px));
 }
@@ -16288,6 +16297,9 @@ body.focus-mode #writingZoneSection #guestPenName:focus {
 #mainNav.site-nav,
 .site-nav {
     position: fixed !important;
+    height: var(--nook-header-height) !important;
+    min-height: var(--nook-header-height) !important;
+    max-height: var(--nook-header-height) !important;
     padding-left: calc(var(--nook-header-cutout-left) + var(--nook-header-cutout-width) + 28px) !important;
     padding-right: var(--nook-main-content-edge) !important;
 }
@@ -16298,7 +16310,7 @@ body.focus-mode #writingZoneSection #guestPenName:focus {
     position: absolute !important;
     top: 0 !important;
     right: 0 !important;
-    bottom: 0 !important;
+    bottom: -1px !important;
     left: calc(var(--nook-header-cutout-left) + var(--nook-header-cutout-width)) !important;
     background: var(--nook-header-solid) !important;
     border: 0 !important;
@@ -16313,7 +16325,7 @@ body.focus-mode #writingZoneSection #guestPenName:focus {
     position: absolute !important;
     top: 0 !important;
     right: auto !important;
-    bottom: 0 !important;
+    bottom: -1px !important;
     left: 0 !important;
     width: var(--nook-header-cutout-left) !important;
     display: block !important;
@@ -16332,19 +16344,27 @@ body.focus-mode #writingZoneSection #guestPenName:focus {
 
 @media (max-width: 760px) {
     :root {
+        --nook-header-height: 77px;
         --nook-header-cutout-width: 276px;
-        --nook-header-cutout-height: 77px;
+        --nook-header-cutout-height: calc(var(--nook-header-height) + 1px);
         --nook-header-cutout-left: -6px;
         --nook-main-content-edge: 27px;
+        --nook-card-top-gap: 112px;
         --story-room-bg-position: left center;
     }
 
     #mainNav.site-nav,
     .site-nav {
-        height: 77px !important;
-        min-height: 77px !important;
-        max-height: 77px !important;
+        top: -1px !important;
+        height: var(--nook-header-height) !important;
+        min-height: var(--nook-header-height) !important;
+        max-height: var(--nook-header-height) !important;
         padding-left: calc(var(--nook-header-cutout-left) + var(--nook-header-cutout-width) + 12px) !important;
+    }
+
+    #mainNav.site-nav::before,
+    .site-nav::before {
+        top: 0 !important;
     }
 
     body::before,
@@ -16357,5 +16377,11 @@ body.focus-mode #writingZoneSection #guestPenName:focus {
     #mainNav.site-nav::after,
     .site-nav::after {
         width: 0 !important;
+    }
+}
+
+@media (max-width: 430px) {
+    :root {
+        --nook-card-top-gap: 120px;
     }
 }
