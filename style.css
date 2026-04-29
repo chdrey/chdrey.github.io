@@ -3805,8 +3805,7 @@ main {
 
 /* Ribbon:
    - starts at the far-left edge
-   - closed state shows only the clickable tip under the header
-   - no body is visible until the menu opens
+   - closed state shows only the clickable tip under the    - no body is visible until the menu opens
    - z-index is above the logo/header hitbox so the tip is actually clickable */
 .bookmark-menu-shell {
     --story-ribbon-width: 42px !important;
@@ -13384,7 +13383,7 @@ main > section.card,
 #loggedInNav,
 .quote-of-day,
 #navLoginBtn {
-    transform: translateY(2px) !important;
+    transform: translateY(1px) !important;
 }
 
 #navLogo .brand-logo-img,
@@ -13592,12 +13591,14 @@ main > section.card,
 #copyPromptBtn.prompt-write-btn.feather-prompt-btn {
     border-color: rgba(248, 224, 155, 0.62) !important;
     background:
-        radial-gradient(circle at 46% 42%, rgba(74, 51, 29, 0.96) 0 32%, rgba(30, 21, 14, 0.96) 58%, rgba(12, 8, 6, 0.98) 100%) !important;
+        radial-gradient(circle at 34% 28%, rgba(255, 229, 154, 0.24), transparent 20%),
+        radial-gradient(circle at 58% 68%, rgba(98, 56, 22, 0.58), transparent 34%),
+        linear-gradient(145deg, rgba(58, 36, 20, 0.98) 0%, rgba(25, 17, 12, 0.98) 48%, rgba(9, 8, 7, 0.99) 100%) !important;
     box-shadow:
-        0 0 0 8px rgba(92, 111, 78, 0.14),
-        0 0 24px rgba(145, 101, 34, 0.2),
+        0 14px 24px rgba(0, 0, 0, 0.28),
         inset 0 0 0 1px rgba(255, 235, 174, 0.18),
-        inset 0 12px 24px rgba(255, 220, 142, 0.08) !important;
+        inset 0 12px 24px rgba(255, 220, 142, 0.09),
+        inset 0 -14px 26px rgba(0, 0, 0, 0.32) !important;
 }
 
 .compact-inspiration .video-toggle-btn {
@@ -13728,19 +13729,19 @@ main > section.card,
 :root {
     --nook-page-gradient:
         linear-gradient(180deg,
-            #182033 0%,
-            #172137 18%,
-            #172434 34%,
-            #16292b 52%,
-            #17281e 72%,
-            #172014 100%);
+            #120c08 0%,
+            #1b110b 18%,
+            #26170e 36%,
+            #352113 55%,
+            #51341d 76%,
+            #74512f 100%);
     --nook-panel-border: rgba(218, 190, 126, 0.24);
     --nook-panel-highlight: rgba(255, 245, 216, 0.09);
 }
 
 html,
 body {
-    background: var(--nook-page-gradient) !important;
+    background: #140d09 !important;
     background-attachment: scroll !important;
 }
 
@@ -13750,10 +13751,23 @@ body::before {
     inset: 0 !important;
     z-index: -10 !important;
     pointer-events: none !important;
-    background: var(--nook-page-gradient) !important;
+    background:
+        linear-gradient(rgba(10, 7, 5, 0.58), rgba(10, 7, 5, 0.7)),
+        url("story-nook-default-background.jpg") center / cover no-repeat !important;
 }
 
 .video-background,
+.overlay,
+.page-glow {
+    display: block !important;
+}
+
+.video-background {
+    background:
+        linear-gradient(rgba(10, 7, 5, 0.58), rgba(10, 7, 5, 0.7)),
+        url("story-nook-default-background.jpg") center / cover no-repeat !important;
+}
+
 .overlay,
 .page-glow {
     display: none !important;
@@ -13773,7 +13787,7 @@ main > section.card,
 .feed.card,
 .compact-inspiration[aria-labelledby="weeklyPromptTitle"],
 #writingZoneSection.writing-zone {
-    background: transparent !important;
+    background: var(--nook-page-gradient) fixed !important;
     border-color: var(--nook-panel-border) !important;
     box-shadow:
         0 18px 48px rgba(0, 0, 0, 0.24),
@@ -13801,4 +13815,314 @@ footer,
 
 .compact-inspiration .prompt-strip::after {
     opacity: 0.28 !important;
+}
+
+/* Dormant header menu: keep the future ribbon code, but disable pull/drop behavior for now. */
+.site-nav,
+#mainNav.site-nav,
+.site-nav.scrolled,
+#mainNav.site-nav.scrolled {
+    align-items: center !important;
+}
+
+.nav-actions {
+    position: relative !important;
+    align-items: center !important;
+}
+
+.bookmark-menu-shell {
+    display: none !important;
+    position: relative !important;
+    inset: auto !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    width: auto !important;
+    height: auto !important;
+    margin: 0 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+}
+
+.bookmark-menu-shell::before,
+.bookmark-menu-shell::after,
+.bookmark-ribbon::before,
+.bookmark-ribbon::after {
+    display: none !important;
+    content: none !important;
+}
+
+.bookmark-ribbon,
+.bookmark-ribbon:hover,
+.bookmark-ribbon:active,
+.bookmark-ribbon.is-dragging,
+.bookmark-ribbon.pulled-once,
+.bookmark-ribbon[aria-expanded="true"] {
+    position: relative !important;
+    inset: auto !important;
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    border-radius: 50% !important;
+    transform: none !important;
+    transition: background 0.18s ease, border-color 0.18s ease !important;
+    animation: none !important;
+}
+
+.ribbon-panel,
+.ribbon-panel.is-open,
+.ribbon-panel.is-closing {
+    position: absolute !important;
+    top: calc(100% + 0.75rem) !important;
+    right: 0 !important;
+    bottom: auto !important;
+    left: auto !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+    transform-origin: top right !important;
+}
+
+.ribbon-panel.hidden,
+.ribbon-panel:not(.is-open) {
+    display: none !important;
+}
+
+/* Premium marble feather button */
+.compact-inspiration {
+    --feather-icon-size: 1.9rem;
+    --feather-icon-x: -7px;
+    --feather-icon-y: -1px;
+    --feather-icon-rotation: -10deg;
+    --feather-icon-hover-x: 2px;
+    --feather-icon-hover-y: -2px;
+    --feather-icon-hover-scale: 1.08;
+    --feather-icon-hover-rotation: -16deg;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn {
+    overflow: hidden !important;
+    border-color: rgba(204, 155, 76, 0.56) !important;
+    background:
+        radial-gradient(circle at 32% 24%, rgba(255, 229, 158, 0.3), transparent 18%),
+        radial-gradient(circle at 63% 70%, rgba(129, 76, 30, 0.66), transparent 32%),
+        linear-gradient(145deg, #4b2f1b 0%, #24170f 48%, #080706 100%) !important;
+    box-shadow:
+        0 13px 22px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 236, 183, 0.26),
+        inset 0 -16px 28px rgba(0, 0, 0, 0.38) !important;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn::before,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 5px !important;
+    border-radius: inherit !important;
+    background:
+        radial-gradient(circle at 34% 24%, rgba(255, 244, 203, 0.34), transparent 22%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.22), transparent 34%, rgba(255, 209, 118, 0.08) 68%, transparent) !important;
+    opacity: 0.68 !important;
+    pointer-events: none !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn::after,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    top: -45% !important;
+    left: -80% !important;
+    width: 46% !important;
+    height: 190% !important;
+    border-radius: 999px !important;
+    background: linear-gradient(90deg, transparent, rgba(255, 244, 207, 0.64), transparent) !important;
+    transform: rotate(26deg) !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    animation: featherMarbleShine 6.8s ease-in-out infinite !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn:hover,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn:hover {
+    transform: translateY(-2px) scale(1.035) !important;
+    border-color: rgba(239, 191, 99, 0.78) !important;
+    box-shadow:
+        0 17px 28px rgba(0, 0, 0, 0.34),
+        inset 0 1px 0 rgba(255, 240, 195, 0.34),
+        inset 0 -16px 28px rgba(0, 0, 0, 0.36) !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn:hover span:first-child,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn:hover span:first-child {
+    transform:
+        translate(var(--feather-icon-hover-x), var(--feather-icon-hover-y))
+        rotate(var(--feather-icon-hover-rotation))
+        scale(var(--feather-icon-hover-scale)) !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn span:first-child::before,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn span:first-child::before {
+    font-size: var(--feather-icon-size) !important;
+    filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.42)) !important;
+    transform:
+        translate(var(--feather-icon-x), var(--feather-icon-y))
+        rotate(var(--feather-icon-rotation)) !important;
+}
+
+@keyframes featherMarbleShine {
+    0%,
+    66% {
+        left: -80%;
+        opacity: 0;
+    }
+    72% {
+        opacity: 0.78;
+    }
+    82% {
+        left: 132%;
+        opacity: 0;
+    }
+    100% {
+        left: 132%;
+        opacity: 0;
+    }
+}
+
+/* Header login button: same warm premium family as the feather button, without shine. */
+#navLoginBtn.btn-secondary {
+    min-height: 54px !important;
+    padding: 0.85rem 1.35rem !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(204, 155, 76, 0.58) !important;
+    color: rgba(255, 226, 166, 0.96) !important;
+    background:
+        radial-gradient(circle at 34% 22%, rgba(255, 224, 142, 0.16), transparent 28%),
+        linear-gradient(145deg, rgba(63, 39, 22, 0.98) 0%, rgba(31, 20, 13, 0.98) 54%, rgba(12, 8, 6, 0.99) 100%) !important;
+    box-shadow:
+        0 12px 22px rgba(0, 0, 0, 0.26),
+        inset 0 1px 0 rgba(255, 232, 174, 0.22),
+        inset 0 -12px 22px rgba(0, 0, 0, 0.28) !important;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.42) !important;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease !important;
+}
+
+#navLoginBtn.btn-secondary:hover {
+    transform: translateY(-1px) !important;
+    border-color: rgba(235, 184, 95, 0.8) !important;
+    color: rgba(255, 237, 191, 0.98) !important;
+    background:
+        radial-gradient(circle at 34% 22%, rgba(255, 224, 142, 0.2), transparent 30%),
+        linear-gradient(145deg, rgba(75, 47, 27, 0.98) 0%, rgba(36, 24, 15, 0.98) 54%, rgba(12, 8, 6, 0.99) 100%) !important;
+    box-shadow:
+        0 15px 26px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 235, 183, 0.28),
+        inset 0 -12px 22px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Video inspiration button: premium brown/gold style without an icon. */
+.compact-inspiration .video-toggle-btn,
+#toggleVideoBtn.video-toggle-btn {
+    justify-content: center !important;
+    gap: 0 !important;
+    min-height: 54px !important;
+    padding: 0.85rem 1.45rem !important;
+    border-radius: 999px !important;
+    border: 1px solid rgba(204, 155, 76, 0.58) !important;
+    color: rgba(255, 226, 166, 0.96) !important;
+    background:
+        radial-gradient(circle at 34% 22%, rgba(255, 224, 142, 0.16), transparent 28%),
+        linear-gradient(145deg, rgba(63, 39, 22, 0.98) 0%, rgba(31, 20, 13, 0.98) 54%, rgba(12, 8, 6, 0.99) 100%) !important;
+    box-shadow:
+        0 12px 22px rgba(0, 0, 0, 0.26),
+        inset 0 1px 0 rgba(255, 232, 174, 0.22),
+        inset 0 -12px 22px rgba(0, 0, 0, 0.28) !important;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.42) !important;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, color 0.18s ease !important;
+}
+
+.compact-inspiration .video-toggle-btn > span[aria-hidden="true"],
+#toggleVideoBtn.video-toggle-btn > span[aria-hidden="true"] {
+    display: none !important;
+}
+
+.compact-inspiration .video-toggle-text,
+#toggleVideoBtn .video-toggle-text {
+    color: inherit !important;
+    text-align: center !important;
+}
+
+.compact-inspiration .video-toggle-btn:hover,
+.compact-inspiration .video-toggle-btn[aria-expanded="true"],
+#toggleVideoBtn.video-toggle-btn:hover,
+#toggleVideoBtn.video-toggle-btn[aria-expanded="true"] {
+    transform: translateY(-1px) !important;
+    border-color: rgba(235, 184, 95, 0.8) !important;
+    color: rgba(255, 237, 191, 0.98) !important;
+    background:
+        radial-gradient(circle at 34% 22%, rgba(255, 224, 142, 0.2), transparent 30%),
+        linear-gradient(145deg, rgba(75, 47, 27, 0.98) 0%, rgba(36, 24, 15, 0.98) 54%, rgba(12, 8, 6, 0.99) 100%) !important;
+    box-shadow:
+        0 15px 26px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 235, 183, 0.28),
+        inset 0 -12px 22px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Softer radial button finish: warm center, darker brown edge. */
+#navLoginBtn.btn-secondary,
+.compact-inspiration .video-toggle-btn,
+#toggleVideoBtn.video-toggle-btn {
+    background: #7d5430 !important;
+}
+
+#navLoginBtn.btn-secondary:hover,
+.compact-inspiration .video-toggle-btn:hover,
+.compact-inspiration .video-toggle-btn[aria-expanded="true"],
+#toggleVideoBtn.video-toggle-btn:hover,
+#toggleVideoBtn.video-toggle-btn[aria-expanded="true"] {
+    background: #8b6138 !important;
+}
+
+/* Weekly Inspiration dream page */
+.compact-inspiration .prompt-strip {
+    background:
+        linear-gradient(135deg, rgba(255, 251, 236, 0.98), rgba(232, 213, 171, 0.96)) !important;
+    border-color: rgba(179, 141, 82, 0.34) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        inset 0 -24px 44px rgba(143, 103, 45, 0.12),
+        0 14px 30px rgba(28, 16, 9, 0.18) !important;
+}
+
+.compact-inspiration .prompt-strip::after {
+    opacity: 0.16 !important;
+}
+
+.compact-inspiration #weeklyPromptText {
+    color: #15100b !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 248, 0.72) !important;
+}
+
+/* Readable storybook text for focus writing and weekly prompt sample. */
+body.focus-mode #writingZoneSection #mainStoryInput,
+body.focus-mode #writingZoneSection textarea#mainStoryInput,
+.compact-inspiration #weeklyPromptText {
+    font-family: 'Cormorant Garamond', Georgia, serif !important;
+    font-weight: 600 !important;
+    color: #15100b !important;
+    line-height: 1.48 !important;
+    text-shadow: none !important;
+}
+
+body.focus-mode #writingZoneSection #mainStoryInput,
+body.focus-mode #writingZoneSection textarea#mainStoryInput {
+    font-size: clamp(1.45rem, 2vw, 1.85rem) !important;
+}
+
+.compact-inspiration #weeklyPromptText {
+    font-size: clamp(1.2rem, 1.7vw, 1.42rem) !important;
 }

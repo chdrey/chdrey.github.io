@@ -29,6 +29,7 @@
     };
 
     const enableMenuSound = true;
+    const enableRibbonMenu = false;
     const writingStyleKey = 'story-nook:writing-style:v1';
     const typingSoundKey = 'story-nook:typing-sound:v1';
 
@@ -159,7 +160,6 @@
         window.addEventListener('scroll', () => {
             // Header is intentionally steady now: no shrink/contract effect while scrolling.
             nav?.classList.remove('scrolled');
-            if (isRibbonPanelOpen()) requestAnimationFrame(syncStoryRibbonLength);
         }, { passive: true });
 
         $('#navLogo')?.addEventListener('click', scrollToTop);
@@ -167,11 +167,11 @@
         $('#browseBtn')?.addEventListener('click', () => enterNook('storyFeed'));
         $('#navLoginBtn')?.addEventListener('click', () => openAuth('login'));
         wireLogoBackToTop();
-        wireRibbonPullMenu();
-        window.addEventListener('resize', () => {
-            if (isRibbonPanelOpen()) syncStoryRibbonLength();
-        }, { passive: true });
-        $('#nookRibbonPanel')?.addEventListener('click', handleRibbonPanelClick);
+        closeRibbonPanel();
+        if (enableRibbonMenu) {
+            wireRibbonPullMenu();
+            $('#nookRibbonPanel')?.addEventListener('click', handleRibbonPanelClick);
+        }
         $('#navProfileBtn')?.addEventListener('click', () => {
             openModal('profileModal');
             resetProfileModalToMyView();
@@ -2481,6 +2481,7 @@
     }
 
     function wireRibbonPullMenu() {
+        if (!enableRibbonMenu) return;
         const button = $('#bookmarkMenuBtn');
         if (!button) return;
 
@@ -2567,6 +2568,7 @@
         const button = $('#bookmarkMenuBtn');
         const shell = button?.closest('.bookmark-menu-shell');
         if (!panel || !button) return;
+        if (open && !enableRibbonMenu) return;
 
         const wasOpen = button.getAttribute('aria-expanded') === 'true';
 
