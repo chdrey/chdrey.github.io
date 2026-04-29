@@ -13296,6 +13296,53 @@ body.writing-has-content.focus-mode #writingZoneSection #mainStoryInput::placeho
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
+.profile-placeholder-picker {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 0.35rem;
+}
+.avatar-placeholder-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(58px, 1fr));
+    gap: 0.55rem;
+}
+.avatar-placeholder-choice {
+    width: 100%;
+    aspect-ratio: 1;
+    padding: 3px;
+    border: 2px solid rgba(169, 201, 143, 0.3);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.34);
+    cursor: pointer;
+    overflow: hidden;
+    transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+}
+.avatar-placeholder-choice:hover {
+    transform: translateY(-2px);
+    border-color: rgba(169, 201, 143, 0.72);
+    box-shadow: 0 8px 18px rgba(38, 22, 13, 0.16);
+}
+.avatar-placeholder-choice[aria-pressed="true"] {
+    border-color: #a9c98f;
+    background: #a9c98f;
+    box-shadow: 0 0 0 3px rgba(169, 201, 143, 0.24), 0 10px 20px rgba(38, 22, 13, 0.18);
+}
+.avatar-placeholder-choice img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+.avatar-placeholder-choice.is-saving {
+    opacity: 0.65;
+    pointer-events: none;
+}
+.placeholder-avatar-empty {
+    margin: 0;
+    color: #806a50;
+    font-size: 0.9rem;
+}
 .profile-bio-input {
     min-height: 92px;
     resize: vertical;
@@ -13388,11 +13435,11 @@ main > section.card,
 
 #navLogo .brand-logo-img,
 #navLogo.brand-lockup.nav-logo .brand-logo-img {
-    width: 120px !important;
-    height: 120px !important;
+    width: 150px !important;
+    height: 130px !important;
     object-fit: cover !important;
     object-position: center center !important;
-    transform: translate(15px, 25px) !important;
+    transform: translate(15px, 30px) !important;
 }
 
 /* Weekly Inspiration premium gold treatment */
@@ -13666,8 +13713,8 @@ main > section.card,
 #navLogo.brand-lockup.nav-logo .brand-title-img {
     display: block !important;
     position: fixed !important;
-    left: 97px !important;
-    top: -25px !important;
+    left: 105px !important;
+    top: -30px !important;
     bottom: auto !important;
     width: auto !important;
     height: 196px !important;
@@ -13729,7 +13776,7 @@ main > section.card,
 :root {
     --nook-page-gradient:
         linear-gradient(180deg,
-            #120c08 0%,
+            #070403 0%,
             #1b110b 18%,
             #26170e 36%,
             #352113 55%,
@@ -14125,4 +14172,568 @@ body.focus-mode #writingZoneSection textarea#mainStoryInput {
 
 .compact-inspiration #weeklyPromptText {
     font-size: clamp(1.2rem, 1.7vw, 1.42rem) !important;
+}
+
+/* Writing Desk glass toolbar and mint active states */
+#writingZoneSection.writing-zone {
+    position: relative !important;
+    overflow: hidden !important;
+    background: var(--nook-page-gradient) fixed !important;
+}
+
+#writingZoneSection.writing-zone::before {
+    display: none !important;
+    content: none !important;
+}
+
+#writingZoneSection.writing-zone > * {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+#writingZoneSection #mainStoryInput,
+body.focus-mode #writingZoneSection #mainStoryInput {
+    background:
+        linear-gradient(135deg, rgba(255, 251, 236, 0.98), rgba(232, 213, 171, 0.96)) !important;
+}
+
+#writingZoneSection .typing-toolbar,
+body.focus-mode #writingZoneSection .typing-toolbar {
+    border: 1px solid rgba(207, 235, 194, 0.22) !important;
+    background: rgba(211, 233, 202, 0.1) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 14px 28px rgba(0, 0, 0, 0.12) !important;
+    backdrop-filter: blur(18px) saturate(1.12) !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.12) !important;
+}
+
+#writingZoneSection .typing-control select,
+body.focus-mode #writingZoneSection .typing-control select,
+#writingZoneSection .typing-format-toggles button,
+#writingZoneSection .writing-desk-controls .focus-mini-btn,
+#writingZoneSection .focus-mode-toggle {
+    background: rgba(22, 15, 10, 0.72) !important;
+    border-color: rgba(201, 222, 174, 0.28) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 241, 204, 0.16),
+        0 8px 18px rgba(0, 0, 0, 0.2) !important;
+}
+
+.compact-inspiration .video-toggle-btn[aria-expanded="true"],
+#toggleVideoBtn.video-toggle-btn[aria-expanded="true"] {
+    background: #a9c98f !important;
+    border-color: rgba(220, 240, 190, 0.78) !important;
+    color: #18200f !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 238, 0.36) !important;
+}
+
+#loggedInNav .profile-trigger,
+#navProfileBtn.profile-trigger {
+    width: 62px !important;
+    height: 62px !important;
+    min-width: 62px !important;
+    padding: 0 !important;
+    display: grid !important;
+    place-items: center !important;
+    border-radius: 50% !important;
+    border: 3px solid #a9c98f !important;
+    background: rgba(169, 201, 143, 0.16) !important;
+    box-shadow:
+        0 12px 24px rgba(0, 0, 0, 0.26),
+        inset 0 1px 0 rgba(255, 255, 238, 0.28) !important;
+}
+
+#loggedInNav #navUsername {
+    display: none !important;
+}
+
+#loggedInNav .avatar-small,
+#navProfileBtn .avatar-small {
+    width: 54px !important;
+    height: 54px !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+}
+
+/* Final repair: restore Sound/Light dropdown behavior and compact header sizing. */
+.site-nav,
+#mainNav.site-nav,
+.site-nav.scrolled,
+#mainNav.site-nav.scrolled {
+    padding-top: 8px !important;
+    padding-bottom: 10px !important;
+    min-height: 82px !important;
+}
+
+#navLogo .brand-logo-img,
+#navLogo.brand-lockup.nav-logo .brand-logo-img {
+    width: 108px !important;
+    height: 108px !important;
+    transform: translate(15px, 25px) !important;
+}
+
+#navLogo.brand-lockup.nav-logo .brand-title-img {
+    left: 91px !important;
+    top: -22px !important;
+    height: 176px !important;
+}
+
+#navLoginBtn.btn-secondary {
+    min-height: 46px !important;
+    padding: 0.68rem 1.12rem !important;
+    font-size: 0.95rem !important;
+}
+
+#writingZoneSection.writing-zone {
+    overflow: visible !important;
+}
+
+#writingZoneSection .ambient-menu,
+body:not(.focus-mode) #writingZoneSection .ambient-menu,
+body.focus-mode #writingZoneSection .ambient-menu {
+    position: absolute !important;
+    z-index: 9999 !important;
+}
+
+#writingZoneSection .ambient-menu:not(.hidden),
+body:not(.focus-mode) #writingZoneSection .ambient-menu:not(.hidden),
+body.focus-mode #writingZoneSection .ambient-menu:not(.hidden) {
+    display: grid !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+}
+
+#soundEffectsBtn.has-active-effect,
+#lightingEffectsBtn.has-active-effect,
+#soundEffectsBtn[aria-expanded="true"],
+#lightingEffectsBtn[aria-expanded="true"],
+#soundEffectsBtn[aria-pressed="true"],
+#lightingEffectsBtn[aria-pressed="true"] {
+    background: #a9c98f !important;
+    border-color: rgba(220, 240, 190, 0.78) !important;
+    color: #18200f !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 238, 0.34) !important;
+}
+
+#loggedInNav .profile-trigger,
+#navProfileBtn.profile-trigger {
+    width: 57px !important;
+    height: 57px !important;
+    min-width: 57px !important;
+}
+
+#loggedInNav .avatar-small,
+#navProfileBtn .avatar-small {
+    width: 51px !important;
+    height: 51px !important;
+}
+
+@media (max-width: 760px) {
+    .site-nav,
+    #mainNav.site-nav,
+    .site-nav.scrolled,
+    #mainNav.site-nav.scrolled {
+        min-height: 76px !important;
+        padding-top: 7px !important;
+        padding-bottom: 9px !important;
+    }
+
+    #navLogo .brand-logo-img,
+    #navLogo.brand-lockup.nav-logo .brand-logo-img {
+        width: 88px !important;
+        height: 88px !important;
+        transform: translate(12px, 13px) !important;
+    }
+
+    #navLogo.brand-lockup.nav-logo .brand-title-img {
+        left: 100px !important;
+        top: 9px !important;
+        height: 74px !important;
+    }
+
+    #navLoginBtn.btn-secondary {
+        min-height: 42px !important;
+        padding: 0.58rem 0.9rem !important;
+        font-size: 0.88rem !important;
+    }
+
+    #loggedInNav .profile-trigger,
+    #navProfileBtn.profile-trigger {
+        width: 51px !important;
+        height: 51px !important;
+        min-width: 51px !important;
+    }
+
+    #loggedInNav .avatar-small,
+    #navProfileBtn .avatar-small {
+        width: 45px !important;
+        height: 45px !important;
+    }
+}
+
+/* Unified mint active state for Writing Desk controls. */
+#soundEffectsBtn.has-active-effect,
+#lightingEffectsBtn.has-active-effect,
+#soundEffectsBtn[aria-expanded="true"],
+#lightingEffectsBtn[aria-expanded="true"],
+#soundEffectsBtn[aria-pressed="true"],
+#lightingEffectsBtn[aria-pressed="true"],
+#focusModeToggleBtn[aria-pressed="true"],
+#writingBoldBtn[aria-pressed="true"],
+#writingBoldBtn.active,
+#writingItalicBtn[aria-pressed="true"],
+#writingItalicBtn.active,
+#typingSoundToggleBtn[aria-pressed="true"],
+#typingSoundToggleBtn.active,
+#writingZoneSection .typing-tool-btn[aria-pressed="true"],
+#writingZoneSection .typing-tool-btn.active,
+#writingZoneSection .ambient-menu button[aria-pressed="true"],
+#writingZoneSection .sound-mix-option[aria-pressed="true"],
+#writingZoneSection [data-lighting][aria-pressed="true"] {
+    background: #a9c98f !important;
+    border-color: rgba(220, 240, 190, 0.82) !important;
+    color: #18200f !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 238, 0.34) !important;
+    box-shadow:
+        0 10px 20px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 238, 0.44) !important;
+}
+
+#soundEffectsBtn.has-active-effect *,
+#lightingEffectsBtn.has-active-effect *,
+#soundEffectsBtn[aria-expanded="true"] *,
+#lightingEffectsBtn[aria-expanded="true"] *,
+#soundEffectsBtn[aria-pressed="true"] *,
+#lightingEffectsBtn[aria-pressed="true"] *,
+#focusModeToggleBtn[aria-pressed="true"] *,
+#writingBoldBtn[aria-pressed="true"] *,
+#writingBoldBtn.active *,
+#writingItalicBtn[aria-pressed="true"] *,
+#writingItalicBtn.active *,
+#typingSoundToggleBtn[aria-pressed="true"] *,
+#typingSoundToggleBtn.active *,
+#writingZoneSection .typing-tool-btn[aria-pressed="true"] *,
+#writingZoneSection .typing-tool-btn.active *,
+#writingZoneSection .ambient-menu button[aria-pressed="true"] *,
+#writingZoneSection .sound-mix-option[aria-pressed="true"] *,
+#writingZoneSection [data-lighting][aria-pressed="true"] * {
+    color: #18200f !important;
+}
+
+/* Highest-specificity active controls: beat the dark Writing Desk button skin. */
+#writingZoneSection #soundEffectsBtn.has-active-effect,
+#writingZoneSection #lightingEffectsBtn.has-active-effect,
+#writingZoneSection #soundEffectsBtn[aria-expanded="true"],
+#writingZoneSection #lightingEffectsBtn[aria-expanded="true"],
+#writingZoneSection #soundEffectsBtn[aria-pressed="true"],
+#writingZoneSection #lightingEffectsBtn[aria-pressed="true"],
+#writingZoneSection #focusModeToggleBtn[aria-pressed="true"],
+#writingZoneSection #writingBoldBtn[aria-pressed="true"],
+#writingZoneSection #writingBoldBtn.active,
+#writingZoneSection #writingItalicBtn[aria-pressed="true"],
+#writingZoneSection #writingItalicBtn.active,
+#writingZoneSection #typingSoundToggleBtn[aria-pressed="true"],
+#writingZoneSection #typingSoundToggleBtn.active,
+body #writingZoneSection .ambient-menu button[aria-pressed="true"],
+body #writingZoneSection .sound-mix-option[aria-pressed="true"],
+body #writingZoneSection [data-lighting][aria-pressed="true"] {
+    background: #a9c98f !important;
+    border-color: rgba(220, 240, 190, 0.82) !important;
+    color: #18200f !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 238, 0.34) !important;
+    box-shadow:
+        0 10px 20px rgba(0, 0, 0, 0.18),
+        inset 0 1px 0 rgba(255, 255, 238, 0.44) !important;
+}
+
+#writingZoneSection #soundEffectsBtn.has-active-effect *,
+#writingZoneSection #lightingEffectsBtn.has-active-effect *,
+#writingZoneSection #soundEffectsBtn[aria-expanded="true"] *,
+#writingZoneSection #lightingEffectsBtn[aria-expanded="true"] *,
+#writingZoneSection #soundEffectsBtn[aria-pressed="true"] *,
+#writingZoneSection #lightingEffectsBtn[aria-pressed="true"] *,
+#writingZoneSection #focusModeToggleBtn[aria-pressed="true"] *,
+#writingZoneSection #writingBoldBtn[aria-pressed="true"] *,
+#writingZoneSection #writingBoldBtn.active *,
+#writingZoneSection #writingItalicBtn[aria-pressed="true"] *,
+#writingZoneSection #writingItalicBtn.active *,
+#writingZoneSection #typingSoundToggleBtn[aria-pressed="true"] *,
+#writingZoneSection #typingSoundToggleBtn.active *,
+body #writingZoneSection .ambient-menu button[aria-pressed="true"] *,
+body #writingZoneSection .sound-mix-option[aria-pressed="true"] *,
+body #writingZoneSection [data-lighting][aria-pressed="true"] * {
+    color: #18200f !important;
+}
+
+/* Header profile picture: clean borderless circle. */
+#loggedInNav .profile-trigger,
+#navProfileBtn.profile-trigger {
+    width: 77px !important;
+    height: 77px !important;
+    min-width: 77px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: hidden !important;
+    outline: 0 !important;
+}
+
+#loggedInNav .avatar-small,
+#navProfileBtn .avatar-small {
+    width: 100% !important;
+    height: 100% !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    display: block !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+    background: transparent !important;
+}
+
+#loggedInNav .profile-trigger:hover,
+#navProfileBtn.profile-trigger:hover,
+#loggedInNav .profile-trigger:focus,
+#navProfileBtn.profile-trigger:focus {
+    border: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+}
+
+@media (max-width: 760px) {
+    #loggedInNav .profile-trigger,
+    #navProfileBtn.profile-trigger {
+        width: 69px !important;
+        height: 69px !important;
+        min-width: 69px !important;
+    }
+
+    #loggedInNav .avatar-small,
+    #navProfileBtn .avatar-small {
+        width: 100% !important;
+        height: 100% !important;
+    }
+}
+
+/* Header independence: avatar/logo sizes should never resize the header. */
+#mainNav.site-nav,
+.site-nav {
+    box-sizing: border-box !important;
+    height: 82px !important;
+    min-height: 82px !important;
+    max-height: 82px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    align-items: center !important;
+    overflow: visible !important;
+}
+
+#mainNav .nav-actions,
+.site-nav .nav-actions {
+    align-items: center !important;
+    max-height: 82px !important;
+}
+
+#navProfileBtn.profile-trigger,
+#loggedInNav .profile-trigger {
+    flex: 0 0 auto !important;
+}
+
+@media (max-width: 760px) {
+    #mainNav.site-nav,
+    .site-nav {
+        height: 76px !important;
+        min-height: 76px !important;
+        max-height: 76px !important;
+    }
+
+    #mainNav .nav-actions,
+    .site-nav .nav-actions {
+        max-height: 76px !important;
+    }
+}
+
+/* Avatar picker modal and future prize profile pictures. */
+.avatar-picker-modal {
+    width: min(92vw, 560px) !important;
+    text-align: left !important;
+}
+
+.avatar-picker-modal h2,
+.avatar-picker-modal .modal-intro {
+    text-align: center;
+}
+
+.avatar-picker-modal .avatar-placeholder-grid {
+    grid-template-columns: repeat(auto-fill, 92px);
+    justify-content: center;
+    gap: 0.85rem;
+    margin: 0.75rem 0 1rem;
+}
+
+.avatar-picker-modal .avatar-placeholder-choice {
+    position: relative;
+    width: 92px !important;
+    height: 92px !important;
+    min-width: 92px !important;
+    min-height: 92px !important;
+    max-width: 92px !important;
+    max-height: 92px !important;
+    aspect-ratio: 1 / 1 !important;
+    padding: 4px !important;
+    flex: 0 0 92px !important;
+    display: block !important;
+}
+
+.avatar-picker-modal .avatar-placeholder-choice img {
+    width: 100% !important;
+    height: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    border-radius: 50% !important;
+}
+
+@media (max-width: 520px) {
+    .avatar-picker-modal .avatar-placeholder-grid {
+        grid-template-columns: repeat(auto-fill, 76px);
+        gap: 0.7rem;
+    }
+
+    .avatar-picker-modal .avatar-placeholder-choice {
+        width: 76px !important;
+        height: 76px !important;
+        min-width: 76px !important;
+        min-height: 76px !important;
+        max-width: 76px !important;
+        max-height: 76px !important;
+        flex-basis: 76px !important;
+    }
+}
+
+.avatar-placeholder-choice.is-prize:not(.is-locked)::after {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    border: 2px solid rgba(236, 196, 111, 0.62);
+    pointer-events: none;
+}
+
+.avatar-placeholder-choice.is-locked {
+    cursor: not-allowed;
+    filter: grayscale(1);
+    opacity: 0.58;
+}
+
+.avatar-placeholder-choice.is-locked img {
+    filter: blur(1px) brightness(0.72);
+}
+
+.avatar-lock-label,
+.avatar-prize-label {
+    position: absolute;
+    left: 50%;
+    bottom: 5px;
+    transform: translateX(-50%);
+    max-width: calc(100% - 10px);
+    padding: 0.18rem 0.42rem;
+    border-radius: 999px;
+    background: rgba(18, 12, 8, 0.76);
+    color: #fff4d0;
+    font-size: 0.62rem;
+    font-weight: 800;
+    line-height: 1.05;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.avatar-prize-label {
+    background: rgba(169, 201, 143, 0.92);
+    color: #18200f;
+}
+
+/* Guest pen name: match the Writing Desk writing surface. */
+#writingZoneSection #guestPenName,
+#writingZoneSection .writer-action-line #guestPenName,
+body.focus-mode #writingZoneSection #guestPenName {
+    color: #15100b !important;
+    caret-color: #8f5f34 !important;
+    background:
+        linear-gradient(135deg, rgba(255, 251, 236, 0.98), rgba(232, 213, 171, 0.96)) !important;
+    border: 1px solid rgba(147, 98, 54, 0.38) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        inset 0 -18px 32px rgba(143, 103, 45, 0.08),
+        0 8px 18px rgba(28, 16, 9, 0.12) !important;
+    text-shadow: none !important;
+}
+
+#writingZoneSection #guestPenName::placeholder,
+body.focus-mode #writingZoneSection #guestPenName::placeholder {
+    color: rgba(62, 43, 27, 0.52) !important;
+    font-style: italic !important;
+}
+
+#writingZoneSection #guestPenName:focus,
+body.focus-mode #writingZoneSection #guestPenName:focus {
+    border-color: rgba(147, 98, 54, 0.58) !important;
+    box-shadow:
+        0 0 0 4px rgba(215, 165, 111, 0.18),
+        inset 0 1px 0 rgba(255, 255, 255, 0.72),
+        inset 0 -18px 32px rgba(143, 103, 45, 0.08) !important;
+}
+
+/* Profile modal picture: force every placeholder into the same clean circle. */
+#profileModal .avatar-wrapper {
+    width: 112px !important;
+    height: 112px !important;
+    min-width: 112px !important;
+    flex: 0 0 112px !important;
+    border-radius: 50% !important;
+    overflow: hidden !important;
+    background: transparent !important;
+}
+
+#profileModal #profileAvatar.avatar-large,
+#profileModal .avatar-wrapper #profileAvatar {
+    display: block !important;
+    width: 112px !important;
+    height: 112px !important;
+    min-width: 112px !important;
+    min-height: 112px !important;
+    max-width: 112px !important;
+    max-height: 112px !important;
+    aspect-ratio: 1 / 1 !important;
+    border: 0 !important;
+    border-radius: 50% !important;
+    object-fit: cover !important;
+    object-position: center center !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+#profileModal .avatar-edit-hint {
+    border-radius: 50% !important;
+}
+
+@media (max-width: 640px) {
+    #profileModal .avatar-wrapper,
+    #profileModal #profileAvatar.avatar-large,
+    #profileModal .avatar-wrapper #profileAvatar {
+        width: 100px !important;
+        height: 100px !important;
+        min-width: 100px !important;
+        min-height: 100px !important;
+        max-width: 100px !important;
+        max-height: 100px !important;
+        flex-basis: 100px !important;
+    }
 }
