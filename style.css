@@ -17095,3 +17095,72 @@ body.effects-off .ambient-light-stack {
     0%, 100% { opacity: 0.50; transform: scale(1); }
     50% { opacity: 0.64; transform: scale(1.018); }
 }
+
+/* Final 114: wider mobile sliders for finger control. */
+@media (max-width: 760px) {
+    #writingZoneSection .ambient-menu,
+    body:not(.focus-mode) #writingZoneSection .ambient-menu,
+    body.focus-mode #writingZoneSection .ambient-menu {
+        width: min(96vw, 390px) !important;
+        max-width: calc(100vw - 1rem) !important;
+        right: 0.5rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+
+    .focus-visibility-slider,
+    .candle-brightness-slider {
+        grid-template-columns: auto minmax(210px, 1fr) auto !important;
+        gap: 0.72rem !important;
+        width: 100% !important;
+    }
+
+    .sound-mix-slider-wrap,
+    .custom-avatar-sliders {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+    input[type="range"],
+    .site-volume-slider input[type="range"],
+    .focus-visibility-slider input[type="range"],
+    .candle-brightness-slider input[type="range"],
+    .sound-mix-slider,
+    .custom-avatar-sliders input[type="range"] {
+        height: 1.45rem !important;
+        touch-action: pan-y !important;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track,
+    .sound-mix-slider::-webkit-slider-runnable-track {
+        height: 0.42rem !important;
+    }
+
+    input[type="range"]::-webkit-slider-thumb,
+    .sound-mix-slider::-webkit-slider-thumb {
+        width: 1.14rem !important;
+        height: 1.14rem !important;
+        margin-top: -0.36rem !important;
+    }
+
+    input[type="range"]::-moz-range-track,
+    input[type="range"]::-moz-range-progress,
+    .sound-mix-slider::-moz-range-track,
+    .sound-mix-slider::-moz-range-progress {
+        height: 0.42rem !important;
+    }
+
+    input[type="range"]::-moz-range-thumb,
+    .sound-mix-slider::-moz-range-thumb {
+        width: 1.14rem !important;
+        height: 1.14rem !important;
+    }
+}
+
+@media (max-width: 390px) {
+    .focus-visibility-slider,
+    .candle-brightness-slider {
+        grid-template-columns: auto minmax(170px, 1fr) auto !important;
+        gap: 0.54rem !important;
+    }
+}
