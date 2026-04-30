@@ -495,6 +495,25 @@
                 <div id="avatarPlaceholderGrid" class="avatar-placeholder-grid" aria-label="Choose a profile picture"></div>
             </div>
             <button id="avatarUploadBtn" class="btn-secondary full-width" type="button">Upload Custom Picture</button>
+            <div id="customAvatarTools" class="custom-avatar-tools hidden" aria-label="Adjust uploaded profile picture">
+                <span class="profile-field-label">Center uploaded picture</span>
+                <div class="custom-avatar-adjust-row">
+                    <div class="custom-avatar-preview-shell">
+                        <img id="customAvatarPreview" src="" alt="Uploaded avatar preview">
+                    </div>
+                    <div class="custom-avatar-sliders">
+                        <label for="avatarPositionX">
+                            <span>Left / Right</span>
+                            <input id="avatarPositionX" type="range" min="0" max="100" value="50">
+                        </label>
+                        <label for="avatarPositionY">
+                            <span>Up / Down</span>
+                            <input id="avatarPositionY" type="range" min="0" max="100" value="50">
+                        </label>
+                    </div>
+                </div>
+                <button id="saveAvatarPositionBtn" class="btn-secondary full-width small" type="button">Save Center</button>
+            </div>
         </div>
     </div>
 

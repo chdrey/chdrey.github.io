@@ -9,14 +9,15 @@
         youtubeSrc: 'https://www.youtube.com/embed/XDvLE7TZBmk?start=699&autoplay=0&mute=0&playsinline=1&controls=1&rel=0&enablejsapi=1&origin=' + encodeURIComponent(window.location.origin || window.location.href.split('/').slice(0,3).join('/')),
         draftKey: 'story-nook:draft:v2',
         guestNameKey: 'story-nook:guest-name:v2',
+        avatarBucket: 'avatars',
         placeholderAvatarPath: 'assets/placeholders/',
         placeholderAvatarManifest: 'assets/placeholders/placeholders.json',
         placeholderAvatars: [
-            'ChatGPT Image Apr 29, 2026, 12_06_50 AM.png',
-            'ChatGPT Image Apr 29, 2026, 12_22_16 AM.png',
-            'ChatGPT Image Apr 29, 2026, 12_26_34 AM.png',
-            'subscriber-placeholder-01.png',
-            'subscriber-placeholder-02.png'
+            'placeholder-crow.png',
+            'placeholder-dogo.png',
+            'placeholder-kitty.png',
+            'placeholder-owl.png',
+            'placeholder-squirrel.png'
         ],
         prizeAvatarPath: 'assets/prizes/avatars/',
         prizeAvatarManifest: 'assets/prizes/avatars/prize-avatars.json',
@@ -38,6 +39,14 @@
             { id: 6, name: 'The Trilogy Master', css: 'frame-diamond' }
         ]
     };
+
+    const LEGACY_PLACEHOLDER_AVATARS = [
+        'ChatGPT Image Apr 29, 2026, 12_06_50 AM.png',
+        'ChatGPT Image Apr 29, 2026, 12_22_16 AM.png',
+        'ChatGPT Image Apr 29, 2026, 12_26_34 AM.png',
+        'subscriber-placeholder-01.png',
+        'subscriber-placeholder-02.png'
+    ];
 
     const enableMenuSound = true;
     const enableRibbonMenu = false;
@@ -82,7 +91,8 @@
         avatarRewardState: {
             badges: new Set(),
             stats: { stories: 0, hearts: 0, words: 0 }
-        }
+        },
+        avatarPositionSaveTimer: null
     };
 
     const LIGHTING_CLASSES = [
@@ -318,6 +328,9 @@
         $('#avatarUploadBtn')?.addEventListener('click', () => $('#avatarUploadInput')?.click());
         $('#avatarUploadInput')?.addEventListener('change', uploadAvatar);
         $('#avatarPlaceholderGrid')?.addEventListener('click', handlePlaceholderAvatarClick);
+        $('#avatarPositionX')?.addEventListener('input', handleAvatarPositionInput);
+        $('#avatarPositionY')?.addEventListener('input', handleAvatarPositionInput);
+        $('#saveAvatarPositionBtn')?.addEventListener('click', () => saveAvatarPosition({ notify: true }));
         $('#passportInfoBtn')?.addEventListener('click', () => openModal('passportInfoModal'));
         $('#adminDashboardBtn')?.addEventListener('click', () => {
             openModal('adminModal');
@@ -452,13 +465,14 @@
 
     function updateAvatars(profile) {
         const fallback = getDefaultAvatarUrl(profile?.id || profile?.username || 'Nook');
-        const avatarUrl = profile?.avatar_url || fallback;
+        const avatarUrl = resolveAvatarUrl(profile?.avatar_url, profile?.id || profile?.username || 'Nook');
         const flairClass = profile?.flairs?.css_class || '';
 
         const navAvatar = $('#navAvatar');
         if (navAvatar) {
             navAvatar.src = avatarUrl;
             navAvatar.className = 'avatar-small';
+            applyAvatarPosition(navAvatar, profile);
             if (flairClass) navAvatar.classList.add(flairClass);
         }
 
@@ -466,8 +480,10 @@
         if (profileAvatar && !$('#profileModal')?.classList.contains('admin-view')) {
             profileAvatar.src = avatarUrl;
             profileAvatar.className = 'avatar-large profile-trigger-action';
+            applyAvatarPosition(profileAvatar, profile);
         }
         renderPlaceholderAvatarGrid(profile);
+        syncAvatarPositionControls(profile);
     }
 
     async function loadPlaceholderAvatars() {
@@ -541,6 +557,57 @@
         return !!url && state.placeholderAvatars.some((avatar) => normalizeAssetUrl(avatar) === normalizeAssetUrl(url));
     }
 
+    function isPrizeAvatar(url) {
+        if (!url) return false;
+        const normalized = normalizeAssetUrl(url);
+        return (state.prizeAvatars || []).some((avatar) => normalizeAssetUrl(avatar.src) === normalized);
+    }
+
+    function isLegacyPlaceholderAvatar(url) {
+        if (!url) return false;
+        const normalized = normalizeAssetUrl(url);
+        return LEGACY_PLACEHOLDER_AVATARS.some((file) => normalized === normalizeAssetUrl(`${CONFIG.placeholderAvatarPath}${file}`));
+    }
+
+    function resolveAvatarUrl(url, seed = 'Nook') {
+        if (!url || isLegacyPlaceholderAvatar(url)) return getDefaultAvatarUrl(seed);
+        return url;
+    }
+
+    function isCustomUploadedAvatar(url) {
+        if (!url) return false;
+        return !isPlaceholderAvatar(url) && !isPrizeAvatar(url) && !isLegacyPlaceholderAvatar(url) && !String(url).startsWith('data:image/svg+xml');
+    }
+
+    function clampPercent(value, fallback = 50) {
+        const number = Number(value);
+        if (!Number.isFinite(number)) return fallback;
+        return Math.min(100, Math.max(0, Math.round(number)));
+    }
+
+    function getAvatarPosition(profile) {
+        return {
+            x: clampPercent(profile?.avatar_position_x, 50),
+            y: clampPercent(profile?.avatar_position_y, 50)
+        };
+    }
+
+    function getAvatarObjectPosition(profile) {
+        if (!isCustomUploadedAvatar(profile?.avatar_url)) return 'center center';
+        const position = getAvatarPosition(profile);
+        return `${position.x}% ${position.y}%`;
+    }
+
+    function avatarStyleAttr(profile) {
+        if (!isCustomUploadedAvatar(profile?.avatar_url)) return '';
+        return ` style="object-position: ${escapeAttr(getAvatarObjectPosition(profile))};"`;
+    }
+
+    function applyAvatarPosition(element, profile) {
+        if (!element) return;
+        element.style.objectPosition = getAvatarObjectPosition(profile);
+    }
+
     function normalizeAssetUrl(url) {
         try {
             return new URL(url, window.location.href).href;
@@ -553,30 +620,43 @@
         const grid = $('#avatarPlaceholderGrid');
         if (!grid) return;
         grid.innerHTML = '';
-        const avatars = getAvailableAvatarChoices();
+        const avatars = getAvailableAvatarChoices(profile);
         if (!avatars.length) {
             grid.innerHTML = '<p class="placeholder-avatar-empty">Add images to assets/placeholders and list them in placeholders.json.</p>';
             return;
         }
 
-        const current = normalizeAssetUrl(profile?.avatar_url || getDefaultAvatarUrl(profile?.id || profile?.username || 'Nook'));
+        const current = normalizeAssetUrl(resolveAvatarUrl(profile?.avatar_url, profile?.id || profile?.username || 'Nook'));
         avatars.forEach((avatar, index) => {
             const button = document.createElement('button');
             button.type = 'button';
-            button.className = `avatar-placeholder-choice ${avatar.locked ? 'is-locked' : ''} ${avatar.prize ? 'is-prize' : ''}`;
+            button.className = `avatar-placeholder-choice ${avatar.locked ? 'is-locked' : ''} ${avatar.prize ? 'is-prize' : ''} ${avatar.custom ? 'is-custom-upload' : ''}`;
             button.dataset.avatarSrc = avatar.src;
+            button.dataset.avatarKind = avatar.custom ? 'custom' : avatar.prize ? 'prize' : 'placeholder';
             button.disabled = !!avatar.locked;
             button.setAttribute('aria-label', avatar.locked ? `${avatar.name} locked: ${avatar.reason}` : `Choose ${avatar.name}`);
             button.setAttribute('aria-pressed', String(normalizeAssetUrl(avatar.src) === current));
             button.innerHTML = `
-                <img src="${escapeAttr(avatar.src)}" alt="">
+                <img src="${escapeAttr(avatar.src)}" alt=""${avatar.custom ? avatarStyleAttr(profile) : ''}>
                 ${avatar.locked ? `<span class="avatar-lock-label">${escapeHtml(avatar.reason || 'Locked')}</span>` : ''}
+                ${avatar.custom ? '<span class="avatar-prize-label">Upload</span>' : ''}
                 ${avatar.prize && !avatar.locked ? '<span class="avatar-prize-label">Prize</span>' : ''}`;
             grid.appendChild(button);
         });
+        syncAvatarPositionControls(profile);
     }
 
-    function getAvailableAvatarChoices() {
+    function getAvailableAvatarChoices(profile = state.currentProfile) {
+        const customAvatarUrl = resolveAvatarUrl(profile?.avatar_url, profile?.id || profile?.username || 'Nook');
+        const customAvatars = isCustomUploadedAvatar(customAvatarUrl)
+            ? [{
+                src: customAvatarUrl,
+                name: 'Uploaded picture',
+                locked: false,
+                prize: false,
+                custom: true
+            }]
+            : [];
         const publicAvatars = (state.placeholderAvatars || []).map((src, index) => ({
             src,
             name: `Profile picture ${index + 1}`,
@@ -592,7 +672,7 @@
                 prize: true
             };
         });
-        return [...publicAvatars, ...prizeAvatars];
+        return [...customAvatars, ...publicAvatars, ...prizeAvatars];
     }
 
     function getAvatarUnlockStatus(avatar) {
@@ -627,6 +707,7 @@
         if (!state.currentUser) return openAuth('login');
         await refreshAvatarRewardState();
         renderPlaceholderAvatarGrid(state.currentProfile);
+        syncAvatarPositionControls(state.currentProfile);
         openModal('avatarPickerModal');
     }
 
@@ -656,10 +737,17 @@
         if (button.disabled || button.classList.contains('is-locked')) return;
         const avatarUrl = button.dataset.avatarSrc;
         if (!avatarUrl) return;
+        const isCustom = button.dataset.avatarKind === 'custom';
+        const position = getAvatarPosition(state.currentProfile);
 
         button.classList.add('is-saving');
         try {
-            const { error } = await state.db.from('profiles').update({ avatar_url: avatarUrl }).eq('id', state.currentUser.id);
+            const payload = {
+                avatar_url: avatarUrl,
+                avatar_position_x: isCustom ? position.x : 50,
+                avatar_position_y: isCustom ? position.y : 50
+            };
+            const { error } = await state.db.from('profiles').update(payload).eq('id', state.currentUser.id);
             if (error) throw error;
             state.currentProfile = await getProfileById(state.currentUser.id);
             updateUI();
@@ -671,6 +759,71 @@
             toast(`Could not update profile picture: ${error.message}`, 'error');
         } finally {
             button.classList.remove('is-saving');
+        }
+    }
+
+    function syncAvatarPositionControls(profile = state.currentProfile) {
+        const tools = $('#customAvatarTools');
+        const preview = $('#customAvatarPreview');
+        const sliderX = $('#avatarPositionX');
+        const sliderY = $('#avatarPositionY');
+        if (!tools || !preview || !sliderX || !sliderY) return;
+
+        const avatarUrl = resolveAvatarUrl(profile?.avatar_url, profile?.id || profile?.username || 'Nook');
+        const canAdjust = !!state.currentUser && profile?.id === state.currentUser.id && isCustomUploadedAvatar(avatarUrl);
+        tools.classList.toggle('hidden', !canAdjust);
+        if (!canAdjust) return;
+
+        const position = getAvatarPosition(profile);
+        preview.src = avatarUrl;
+        preview.style.objectPosition = `${position.x}% ${position.y}%`;
+        sliderX.value = String(position.x);
+        sliderY.value = String(position.y);
+    }
+
+    function handleAvatarPositionInput() {
+        if (!state.currentProfile || !isCustomUploadedAvatar(state.currentProfile.avatar_url)) return;
+        const x = clampPercent($('#avatarPositionX')?.value, 50);
+        const y = clampPercent($('#avatarPositionY')?.value, 50);
+        state.currentProfile = {
+            ...state.currentProfile,
+            avatar_position_x: x,
+            avatar_position_y: y
+        };
+
+        ['#navAvatar', '#profileAvatar', '#customAvatarPreview'].forEach((selector) => {
+            applyAvatarPosition($(selector), state.currentProfile);
+        });
+        $$('#avatarPlaceholderGrid .avatar-placeholder-choice.is-custom-upload img').forEach((image) => {
+            applyAvatarPosition(image, state.currentProfile);
+        });
+
+        window.clearTimeout(state.avatarPositionSaveTimer);
+        state.avatarPositionSaveTimer = window.setTimeout(() => saveAvatarPosition({ notify: false }), 650);
+    }
+
+    async function saveAvatarPosition({ notify = false } = {}) {
+        if (!state.db || !state.currentUser || !state.currentProfile) return;
+        if (!isCustomUploadedAvatar(state.currentProfile.avatar_url)) return;
+        const position = getAvatarPosition(state.currentProfile);
+        const button = $('#saveAvatarPositionBtn');
+        if (button) button.textContent = 'Saving...';
+
+        try {
+            const { error } = await state.db
+                .from('profiles')
+                .update({
+                    avatar_position_x: position.x,
+                    avatar_position_y: position.y
+                })
+                .eq('id', state.currentUser.id);
+            if (error) throw error;
+            if (notify) toast('Profile picture center saved.');
+        } catch (error) {
+            console.error('Avatar position save failed:', error);
+            if (notify) toast(`Could not save picture center: ${error.message}`, 'error');
+        } finally {
+            if (button) button.textContent = 'Save Center';
         }
     }
 
@@ -959,7 +1112,7 @@
         if (top) top.innerHTML = '<div class="loading-state">Counting hearts...</div>';
 
         try {
-            const storySelect = '*, profiles!stories_user_id_fkey(id, username, avatar_url, selected_flair_id), comments(count)';
+            const storySelect = '*, profiles!stories_user_id_fkey(id, username, avatar_url, avatar_position_x, avatar_position_y, selected_flair_id), comments(count)';
 
             const [{ data: topStories, error: topError }, { data: feedStories, error: feedError }] = await Promise.all([
                 state.db
@@ -1209,7 +1362,7 @@
         if (!state.db) return toast('Reading stories needs Supabase to be connected.', 'error');
         const { data: story, error } = await state.db
             .from('stories')
-            .select('*, profiles!stories_user_id_fkey(id, username, avatar_url)')
+            .select('*, profiles!stories_user_id_fkey(id, username, avatar_url, avatar_position_x, avatar_position_y)')
             .eq('id', storyId)
             .maybeSingle();
         if (error || !story) return toast('Could not open that story.', 'error');
@@ -1241,7 +1394,7 @@
         list.innerHTML = '<div class="loading-state">Listening for whispers...</div>';
         const { data: comments, error } = await state.db
             .from('comments')
-            .select('*, profiles!comments_user_id_fkey(id, username, avatar_url)')
+            .select('*, profiles!comments_user_id_fkey(id, username, avatar_url, avatar_position_x, avatar_position_y)')
             .eq('story_id', storyId)
             .is('deleted_at', null)
             .order('created_at', { ascending: true });
@@ -1260,10 +1413,10 @@
 
     function commentHTML(comment) {
         const author = comment.profiles?.username || comment.guest_name || 'Guest';
-        const avatar = comment.profiles?.avatar_url || getDefaultAvatarUrl(comment.profiles?.id || author);
+        const avatar = resolveAvatarUrl(comment.profiles?.avatar_url, comment.profiles?.id || author);
         return `
             <div class="comment-item" data-comment-id="${comment.id}">
-                <img src="${escapeAttr(avatar)}" class="feed-avatar-img" alt="">
+                <img src="${escapeAttr(avatar)}" class="feed-avatar-img" alt=""${avatarStyleAttr(comment.profiles)}>
                 <div class="comment-copy">
                     <strong>@${escapeHtml(author)}</strong>
                     <p>${escapeHtml(comment.content || '')}</p>
@@ -1427,7 +1580,11 @@
         const { data: targetUser, error } = await state.db.from('profiles').select('*').eq('id', userId).maybeSingle();
         if (error || !targetUser) return toast('User data missing.', 'error');
         setProfileDetails(targetUser, { readOnly: true });
-        $('#profileAvatar').src = targetUser.avatar_url || getDefaultAvatarUrl(targetUser.id || targetUser.username);
+        const targetAvatar = $('#profileAvatar');
+        if (targetAvatar) {
+            targetAvatar.src = resolveAvatarUrl(targetUser.avatar_url, targetUser.id || targetUser.username);
+            applyAvatarPosition(targetAvatar, targetUser);
+        }
         renderPlaceholderAvatarGrid(targetUser);
         await loadProfileStatsForUser(userId);
         await loadPassportForUser(userId);
@@ -1444,7 +1601,11 @@
 
         if (!state.currentUser || !state.currentProfile) return;
         setProfileDetails(state.currentProfile);
-        $('#profileAvatar').src = state.currentProfile.avatar_url || getDefaultAvatarUrl(state.currentProfile.id || state.currentProfile.username);
+        const profileAvatar = $('#profileAvatar');
+        if (profileAvatar) {
+            profileAvatar.src = resolveAvatarUrl(state.currentProfile.avatar_url, state.currentProfile.id || state.currentProfile.username);
+            applyAvatarPosition(profileAvatar, state.currentProfile);
+        }
         renderPlaceholderAvatarGrid(state.currentProfile);
         loadProfileStatsForUser(state.currentUser.id);
         loadPassportForUser(state.currentUser.id);
@@ -1614,17 +1775,27 @@
         const fileName = `${state.currentUser.id}/${Date.now()}.${extension}`;
 
         try {
-            const { error: uploadError } = await state.db.storage.from('avatars').upload(fileName, file, { cacheControl: '3600', upsert: true });
+            const { error: uploadError } = await state.db.storage.from(CONFIG.avatarBucket).upload(fileName, file, { cacheControl: '3600', upsert: true });
             if (uploadError) throw uploadError;
-            const { data: { publicUrl } } = state.db.storage.from('avatars').getPublicUrl(fileName);
-            const { error: dbError } = await state.db.from('profiles').update({ avatar_url: publicUrl }).eq('id', state.currentUser.id);
+            const { data: { publicUrl } } = state.db.storage.from(CONFIG.avatarBucket).getPublicUrl(fileName);
+            const { error: dbError } = await state.db
+                .from('profiles')
+                .update({
+                    avatar_url: publicUrl,
+                    avatar_position_x: 50,
+                    avatar_position_y: 50
+                })
+                .eq('id', state.currentUser.id);
             if (dbError) throw dbError;
             state.currentProfile = await getProfileById(state.currentUser.id);
             updateUI();
-            toast('Avatar updated.');
+            await fetchStories();
+            renderPlaceholderAvatarGrid(state.currentProfile);
+            syncAvatarPositionControls(state.currentProfile);
+            toast('Uploaded picture added. Use the sliders to center it.');
         } catch (error) {
             console.error('Avatar upload failed:', error);
-            toast('Upload failed. Make sure the avatars bucket exists and allows uploads.', 'error');
+            toast('Upload failed. Make sure the avatars bucket exists and allows uploads.', 'error', 7000);
         } finally {
             if (overlay) overlay.textContent = '📷';
             event.target.value = '';
@@ -3287,8 +3458,8 @@
     }
 
     function getAvatarHTML(story, authorName) {
-        const avatar = story?.profiles?.avatar_url || getDefaultAvatarUrl(story?.profiles?.id || story?.user_id || authorName);
-        if (avatar) return `<img src="${escapeAttr(avatar)}" class="feed-avatar-img" alt="${escapeAttr(authorName)} avatar">`;
+        const avatar = resolveAvatarUrl(story?.profiles?.avatar_url, story?.profiles?.id || story?.user_id || authorName);
+        if (avatar) return `<img src="${escapeAttr(avatar)}" class="feed-avatar-img" alt="${escapeAttr(authorName)} avatar"${avatarStyleAttr(story?.profiles)}>`;
         return `<div class="feed-avatar-placeholder" aria-hidden="true">${escapeHtml(authorName.charAt(0).toUpperCase() || 'A')}</div>`;
     }
 
@@ -3309,7 +3480,7 @@
 
         const { data: stories, error } = await state.db
             .from('stories')
-            .select('*, profiles!stories_user_id_fkey(id, username, avatar_url), comments(count)')
+            .select('*, profiles!stories_user_id_fkey(id, username, avatar_url, avatar_position_x, avatar_position_y), comments(count)')
             .is('deleted_at', null)
             .order('votes', { ascending: false })
             .order('created_at', { ascending: false })

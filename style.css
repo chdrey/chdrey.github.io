@@ -16771,6 +16771,94 @@ body.focus-mode #writingZoneSection .writer-action-line {
     }
 }
 
+/* Avatar upload picker: uploaded pictures sit with placeholders, then can be centered. */
+.avatar-picker-modal .avatar-placeholder-choice.is-custom-upload {
+    border-color: rgba(125, 151, 101, 0.78) !important;
+    box-shadow:
+        0 0 0 3px rgba(125, 151, 101, 0.14),
+        0 12px 24px rgba(18, 12, 8, 0.2) !important;
+}
+
+.custom-avatar-tools {
+    margin-top: 0.95rem;
+    padding: 0.9rem;
+    border: 1px solid rgba(125, 151, 101, 0.28);
+    border-radius: 8px;
+    background:
+        linear-gradient(135deg, rgba(255, 251, 236, 0.9), rgba(224, 232, 205, 0.78));
+}
+
+.custom-avatar-adjust-row {
+    display: grid;
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 0.9rem;
+    align-items: center;
+    margin: 0.65rem 0 0.85rem;
+}
+
+.custom-avatar-preview-shell {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #c9dcb5;
+    border: 2px solid rgba(125, 151, 101, 0.72);
+}
+
+.custom-avatar-preview-shell img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+}
+
+.custom-avatar-sliders {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.custom-avatar-sliders label {
+    display: grid;
+    gap: 0.25rem;
+    color: #24170f;
+    font-weight: 800;
+    font-size: 0.76rem;
+}
+
+.custom-avatar-sliders input[type="range"] {
+    width: 100%;
+    accent-color: #7d9765;
+}
+
+@media (max-width: 520px) {
+    .custom-avatar-adjust-row {
+        grid-template-columns: 1fr;
+        justify-items: center;
+    }
+
+    .custom-avatar-sliders {
+        width: 100%;
+    }
+}
+
+/* Final main-page lift: move every main card and its contents 5px closer to the header. */
+:root {
+    --nook-card-top-gap: 118px;
+}
+
+@media (max-width: 760px) {
+    :root {
+        --nook-card-top-gap: 107px;
+    }
+}
+
+@media (max-width: 430px) {
+    :root {
+        --nook-card-top-gap: 115px;
+    }
+}
+
 @keyframes featherInvitePulseCurrent {
     0%,
     100% {

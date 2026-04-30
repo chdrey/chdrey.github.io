@@ -19,6 +19,8 @@ create table if not exists public.profiles (
     id uuid primary key references auth.users(id) on delete cascade,
     username text unique not null,
     avatar_url text,
+    avatar_position_x integer not null default 50 check (avatar_position_x between 0 and 100),
+    avatar_position_y integer not null default 50 check (avatar_position_y between 0 and 100),
     bio text,
     selected_flair_id bigint,
     display_title text,
@@ -28,6 +30,8 @@ create table if not exists public.profiles (
     updated_at timestamptz not null default now()
 );
 alter table public.profiles add column if not exists avatar_url text;
+alter table public.profiles add column if not exists avatar_position_x integer not null default 50;
+alter table public.profiles add column if not exists avatar_position_y integer not null default 50;
 alter table public.profiles add column if not exists bio text;
 alter table public.profiles add column if not exists selected_flair_id bigint;
 alter table public.profiles add column if not exists display_title text;
@@ -35,6 +39,10 @@ alter table public.profiles add column if not exists points_total integer not nu
 alter table public.profiles add column if not exists level integer not null default 1;
 alter table public.profiles add column if not exists created_at timestamptz not null default now();
 alter table public.profiles add column if not exists updated_at timestamptz not null default now();
+alter table public.profiles drop constraint if exists profiles_avatar_position_x_range;
+alter table public.profiles add constraint profiles_avatar_position_x_range check (avatar_position_x between 0 and 100);
+alter table public.profiles drop constraint if exists profiles_avatar_position_y_range;
+alter table public.profiles add constraint profiles_avatar_position_y_range check (avatar_position_y between 0 and 100);
 
 create or replace function story_nook_private.is_nook_admin()
 returns boolean language sql stable security definer set search_path = public as $$
