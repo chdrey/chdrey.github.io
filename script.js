@@ -970,6 +970,18 @@
         return message;
     }
 
+    function friendlyDbError(error) {
+        const message = error?.message || error?.error_description || String(error || 'Unknown database error.');
+        if (/bucket not found|not found/i.test(message)) return 'The avatars storage bucket was not found. Run the avatar uploads SQL in Supabase.';
+        if (/row-level security|violates row-level security|permission denied|not authorized|unauthorized/i.test(message)) {
+            return 'Supabase blocked this with permissions/RLS. Check the avatars bucket upload policy.';
+        }
+        if (/avatar_position/i.test(message)) {
+            return 'The avatar centering columns are missing. Run Supabase/supabase_avatar_uploads_update.sql.';
+        }
+        return message;
+    }
+
     function setAuthError(message) {
         setText('#authError', message || '');
     }
@@ -1776,7 +1788,7 @@
 
         try {
             const { error: uploadError } = await state.db.storage.from(CONFIG.avatarBucket).upload(fileName, file, { cacheControl: '3600', upsert: true });
-            if (uploadError) throw uploadError;
+            if (uploadError) throw new Error(`Storage upload failed: ${friendlyDbError(uploadError)}`);
             const { data: { publicUrl } } = state.db.storage.from(CONFIG.avatarBucket).getPublicUrl(fileName);
             const { error: dbError } = await state.db
                 .from('profiles')
@@ -1786,7 +1798,21 @@
                     avatar_position_y: 50
                 })
                 .eq('id', state.currentUser.id);
-            if (dbError) throw dbError;
+            if (dbError && /avatar_position/i.test(dbError.message || '')) {
+                const { error: fallbackError } = await state.db
+                    .from('profiles')
+                    .update({ avatar_url: publicUrl })
+                    .eq('id', state.currentUser.id);
+                if (fallbackError) throw new Error(`Profile update failed: ${friendlyDbError(fallbackError)}`);
+                state.currentProfile = await getProfileById(state.currentUser.id);
+                updateUI();
+                await fetchStories();
+                renderPlaceholderAvatarGrid(state.currentProfile);
+                syncAvatarPositionControls(state.currentProfile);
+                toast('Uploaded picture added. Run Supabase/supabase_avatar_uploads_update.sql so centering sliders can save.', 'error', 9000);
+                return;
+            }
+            if (dbError) throw new Error(`Profile update failed: ${friendlyDbError(dbError)}`);
             state.currentProfile = await getProfileById(state.currentUser.id);
             updateUI();
             await fetchStories();
@@ -1795,7 +1821,7 @@
             toast('Uploaded picture added. Use the sliders to center it.');
         } catch (error) {
             console.error('Avatar upload failed:', error);
-            toast('Upload failed. Make sure the avatars bucket exists and allows uploads.', 'error', 7000);
+            toast(error.message || 'Avatar upload failed. Check Supabase storage and profile permissions.', 'error', 9000);
         } finally {
             if (overlay) overlay.textContent = '📷';
             event.target.value = '';
