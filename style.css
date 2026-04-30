@@ -13982,13 +13982,13 @@ footer,
     display: block !important;
     position: absolute !important;
     top: -45% !important;
-    left: -80% !important;
+    left: -80%;
     width: 46% !important;
     height: 190% !important;
     border-radius: 999px !important;
     background: linear-gradient(90deg, transparent, rgba(255, 244, 207, 0.64), transparent) !important;
-    transform: rotate(26deg) !important;
-    opacity: 0 !important;
+    transform: rotate(26deg);
+    opacity: 0;
     pointer-events: none !important;
     animation: featherMarbleShine 6.8s ease-in-out infinite !important;
 }
@@ -14964,13 +14964,13 @@ footer,
     display: block !important;
     position: absolute !important;
     top: -45% !important;
-    left: -80% !important;
+    left: -80%;
     width: 46% !important;
     height: 190% !important;
     border-radius: 999px !important;
     background: linear-gradient(90deg, transparent, rgba(255, 244, 207, 0.64), transparent) !important;
-    transform: rotate(26deg) !important;
-    opacity: 0 !important;
+    transform: rotate(26deg);
+    opacity: 0;
     pointer-events: none !important;
     animation: featherMarbleShine 6.8s ease-in-out infinite !important;
 }
@@ -16399,7 +16399,7 @@ body.focus-mode #writingZoneSection #guestPenName:focus {
     display: block !important;
     position: absolute !important;
     top: 18% !important;
-    left: -34% !important;
+    left: -34%;
     z-index: 1 !important;
     width: 1.05rem !important;
     height: 1.05rem !important;
@@ -16411,9 +16411,9 @@ body.focus-mode #writingZoneSection #guestPenName:focus {
             rgba(255, 207, 96, 0.34) 54%,
             transparent 74%) !important;
     filter: blur(0.2px) drop-shadow(0 0 8px rgba(255, 221, 132, 0.68)) !important;
-    transform: scale(0.72) !important;
+    transform: scale(0.72);
     mix-blend-mode: screen !important;
-    opacity: 0 !important;
+    opacity: 0;
     pointer-events: none !important;
     animation: featherButtonShine 22s linear infinite !important;
 }
@@ -16492,6 +16492,7 @@ body.candle-lit .site-footer {
 #loggedInNav .profile-trigger,
 #navProfileBtn.profile-trigger {
     box-sizing: border-box !important;
+    transform: translateX(2px) !important;
     width: var(--nook-profile-button-size) !important;
     height: var(--nook-profile-button-size) !important;
     min-width: var(--nook-profile-button-size) !important;
@@ -16499,13 +16500,21 @@ body.candle-lit .site-footer {
     max-width: var(--nook-profile-button-size) !important;
     max-height: var(--nook-profile-button-size) !important;
     padding: 0 !important;
-    border: var(--nook-profile-edge-size) solid #c9a274 !important;
+    border: 0 !important;
     border-radius: 50% !important;
     background: transparent !important;
     box-shadow: none !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     display: grid !important;
     place-items: center !important;
+    position: relative !important;
+    aspect-ratio: 1 / 1 !important;
+}
+
+#loggedInNav .profile-trigger::before,
+#navProfileBtn.profile-trigger::before {
+    content: none !important;
+    display: none !important;
 }
 
 #loggedInNav .profile-trigger::after,
@@ -16520,7 +16529,7 @@ body.candle-lit .site-footer {
 #loggedInNav .profile-trigger:focus,
 #navProfileBtn.profile-trigger:focus {
     padding: 0 !important;
-    border: var(--nook-profile-edge-size) solid #c9a274 !important;
+    border: 0 !important;
     background: transparent !important;
     box-shadow: none !important;
     outline: 0 !important;
@@ -16530,7 +16539,16 @@ body.candle-lit .site-footer {
 #navProfileBtn .avatar-small {
     width: var(--nook-profile-photo-size) !important;
     height: var(--nook-profile-photo-size) !important;
-    border: 0 !important;
+    min-width: var(--nook-profile-photo-size) !important;
+    min-height: var(--nook-profile-photo-size) !important;
+    max-width: var(--nook-profile-photo-size) !important;
+    max-height: var(--nook-profile-photo-size) !important;
+    display: block !important;
+    flex: 0 0 var(--nook-profile-photo-size) !important;
+    position: relative !important;
+    z-index: 1 !important;
+    box-sizing: border-box !important;
+    border: 2px solid #c9a274 !important;
     border-radius: 50% !important;
     box-shadow: none !important;
     object-fit: cover !important;
@@ -16568,5 +16586,208 @@ body.focus-mode #writingZoneSection .writer-action-line {
 
     .compact-inspiration[aria-labelledby="weeklyPromptTitle"] {
         padding-bottom: max(0px, calc(1rem - var(--nook-weekly-bottom-contract))) !important;
+    }
+}
+
+/* Final Weekly Inspiration quill polish: lighter glassy button and visible shine. */
+.compact-inspiration .prompt-write-btn.feather-prompt-btn,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn {
+    overflow: hidden !important;
+    isolation: isolate !important;
+    border-color: rgba(241, 196, 112, 0.82) !important;
+    background:
+        radial-gradient(circle at 32% 23%, rgba(255, 244, 196, 0.56), transparent 24%),
+        radial-gradient(circle at 58% 70%, rgba(186, 119, 52, 0.58), transparent 36%),
+        linear-gradient(145deg, #7a4b24 0%, #4c3019 48%, #2b1c12 100%) !important;
+    box-shadow:
+        0 12px 22px rgba(0, 0, 0, 0.25),
+        inset 0 1px 0 rgba(255, 241, 201, 0.38),
+        inset 0 0 0 1px rgba(255, 230, 160, 0.22),
+        inset 0 -12px 22px rgba(0, 0, 0, 0.24),
+        0 0 20px rgba(216, 166, 86, 0.16) !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn::before,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 5px !important;
+    border-radius: inherit !important;
+    background:
+        radial-gradient(circle at 35% 25%, rgba(255, 251, 220, 0.44), transparent 24%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.25), transparent 38%, rgba(255, 214, 127, 0.11) 70%, transparent) !important;
+    opacity: 0.74 !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn::after,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    top: -48% !important;
+    left: -86%;
+    z-index: 1 !important;
+    width: 72% !important;
+    height: 210% !important;
+    border-radius: 999px !important;
+    background:
+        linear-gradient(90deg,
+            transparent 0%,
+            rgba(255, 255, 245, 0.06) 18%,
+            rgba(255, 250, 218, 0.92) 47%,
+            rgba(255, 222, 136, 0.42) 66%,
+            transparent 100%) !important;
+    filter: blur(0.45px) drop-shadow(0 0 12px rgba(255, 222, 134, 0.84)) !important;
+    transform: rotate(24deg);
+    mix-blend-mode: lighten !important;
+    opacity: 0;
+    pointer-events: none !important;
+    animation: featherGlassSweep 6.8s ease-in-out infinite !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn span:first-child,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn span:first-child {
+    z-index: 2 !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn span:first-child::before,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn span:first-child::before {
+    filter:
+        drop-shadow(0 1px 2px rgba(0, 0, 0, 0.34))
+        drop-shadow(0 0 7px rgba(255, 214, 128, 0.36)) !important;
+}
+
+@keyframes featherGlassSweep {
+    0%,
+    72%,
+    100% {
+        left: -86%;
+        opacity: 0;
+        transform: rotate(24deg);
+    }
+
+    7% {
+        left: -52%;
+        opacity: 0.95;
+        transform: rotate(24deg);
+    }
+
+    13% {
+        left: 28%;
+        opacity: 1;
+        transform: rotate(24deg);
+    }
+
+    20% {
+        left: 118%;
+        opacity: 0;
+        transform: rotate(24deg);
+    }
+}
+
+/* Stop the Writing Desk from animating its box color/position on refresh. */
+#writingZoneSection.writing-desk-invite,
+.writing-desk-invite {
+    animation: none !important;
+    transform: none !important;
+}
+
+/* Final feather shine reset: keep the current button look, restore the proven sweep logic. */
+.compact-inspiration .prompt-write-btn.feather-prompt-btn,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn {
+    position: relative !important;
+    overflow: hidden !important;
+    isolation: isolate !important;
+    animation: featherInvitePulseCurrent 5.4s ease-in-out infinite !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn::before,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn::before {
+    content: "" !important;
+    position: absolute !important;
+    inset: 5px !important;
+    border-radius: inherit !important;
+    background:
+        radial-gradient(circle at 32% 22%, rgba(255, 255, 255, 0.28), transparent 34%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 42%) !important;
+    opacity: 0.7 !important;
+    pointer-events: none !important;
+    z-index: 0 !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn::after,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn::after {
+    content: "" !important;
+    display: block !important;
+    position: absolute !important;
+    top: -45% !important;
+    left: -85%;
+    width: 58% !important;
+    height: 190% !important;
+    transform: rotate(28deg);
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.18),
+        rgba(255, 255, 235, 0.92),
+        rgba(255, 224, 144, 0.26),
+        transparent
+    ) !important;
+    opacity: 0;
+    pointer-events: none !important;
+    z-index: 1 !important;
+    mix-blend-mode: normal !important;
+    filter: drop-shadow(0 0 7px rgba(255, 230, 150, 0.46)) !important;
+    animation: featherGlassShine 5.4s ease-in-out infinite !important;
+}
+
+.compact-inspiration .prompt-write-btn.feather-prompt-btn span,
+#copyPromptBtn.prompt-write-btn.feather-prompt-btn span {
+    position: relative !important;
+    z-index: 2 !important;
+}
+
+@keyframes featherGlassShine {
+    0%,
+    58% {
+        left: -85%;
+        opacity: 0;
+    }
+
+    66% {
+        opacity: 0.82;
+    }
+
+    78% {
+        left: 128%;
+        opacity: 0;
+    }
+
+    100% {
+        left: 128%;
+        opacity: 0;
+    }
+}
+
+@keyframes featherInvitePulseCurrent {
+    0%,
+    100% {
+        box-shadow:
+            0 12px 22px rgba(0, 0, 0, 0.25),
+            inset 0 1px 0 rgba(255, 241, 201, 0.38),
+            inset 0 0 0 1px rgba(255, 230, 160, 0.22),
+            inset 0 -12px 22px rgba(0, 0, 0, 0.24),
+            0 0 20px rgba(216, 166, 86, 0.16);
+    }
+
+    50% {
+        box-shadow:
+            0 13px 24px rgba(0, 0, 0, 0.27),
+            inset 0 1px 0 rgba(255, 241, 201, 0.42),
+            inset 0 0 0 1px rgba(255, 230, 160, 0.25),
+            inset 0 -12px 22px rgba(0, 0, 0, 0.22),
+            0 0 27px rgba(216, 166, 86, 0.22);
     }
 }

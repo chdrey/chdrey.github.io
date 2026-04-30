@@ -117,7 +117,6 @@
     function boot() {
         document.body.classList.remove('focus-mode', 'candle-lit', 'candle-brightness-active', 'quiet-room', 'effects-off', ...LIGHTING_CLASSES);
         wireStaticEvents();
-        inviteWritingDeskOnLoad();
         restoreDraft();
         restoreWritingStyle();
         restoreTypingSoundToggle();
@@ -139,12 +138,7 @@
     }
 
     function inviteWritingDeskOnLoad() {
-        const desk = $('#writingZoneSection');
-        if (!desk) return;
-        requestAnimationFrame(() => {
-            desk.classList.add('writing-desk-invite');
-            window.setTimeout(() => desk.classList.remove('writing-desk-invite'), 2400);
-        });
+        // Kept as a no-op so older references do not reintroduce the load-time desk motion.
     }
 
     function initializeSupabase() {
