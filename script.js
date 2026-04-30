@@ -83,7 +83,7 @@
             effectsEnabled: true,
             audioMuted: false,
             audioVolume: 0.5,
-            activeLighting: null
+            activeLighting: new Set()
         },
         writingTap: {
             startX: 0,
@@ -2777,7 +2777,7 @@
 
     function updateAmbientTriggerStates() {
         const soundActive = state.ambient.activeSounds.size > 0;
-        const lightActive = !!state.ambient.activeLighting || document.body.classList.contains('candle-lit') || document.body.classList.contains('candle-brightness-active');
+        const lightActive = state.ambient.activeLighting.size > 0 || document.body.classList.contains('candle-lit') || document.body.classList.contains('candle-brightness-active');
 
         $('#soundEffectsBtn')?.classList.toggle('has-active-effect', soundActive);
         $('#soundEffectsBtn')?.setAttribute('aria-pressed', String(soundActive));
@@ -2853,17 +2853,18 @@
 
         const lighting = button.dataset.lighting;
         const activeClass = `light-${lighting}`;
-        const isAlreadyActive = state.ambient.activeLighting === activeClass;
+        const isAlreadyActive = state.ambient.activeLighting.has(activeClass);
 
-        // One lower lighting effect at a time. Candle stays independent and
-        // can remain layered with the selected lighting effect.
-        clearLightingEffect();
-
-        if (!isAlreadyActive) {
+        if (isAlreadyActive) {
+            document.body.classList.remove(activeClass);
+            state.ambient.activeLighting.delete(activeClass);
+            button.setAttribute('aria-pressed', 'false');
+        } else {
             document.body.classList.add(activeClass);
-            state.ambient.activeLighting = activeClass;
+            state.ambient.activeLighting.add(activeClass);
             button.setAttribute('aria-pressed', 'true');
         }
+        updateAmbientLightStack();
         updateAmbientTriggerStates();
     }
 
@@ -2872,15 +2873,30 @@
         const activeClass = `light-${defaultLighting}`;
         clearLightingEffect();
         document.body.classList.add(activeClass);
-        state.ambient.activeLighting = activeClass;
+        state.ambient.activeLighting.add(activeClass);
         $(`[data-lighting="${defaultLighting}"]`)?.setAttribute('aria-pressed', 'true');
+        updateAmbientLightStack();
     }
 
     function clearLightingEffect() {
         LIGHTING_CLASSES.forEach((className) => document.body.classList.remove(className));
-        state.ambient.activeLighting = null;
+        state.ambient.activeLighting.clear();
         $$('[data-lighting]').forEach((button) => button.setAttribute('aria-pressed', 'false'));
+        updateAmbientLightStack();
         updateAmbientTriggerStates();
+    }
+
+    function updateAmbientLightStack() {
+        const stack = $('#ambientLightStack');
+        if (!stack) return;
+        stack.innerHTML = '';
+        const active = LIGHTING_CLASSES.filter((className) => state.ambient.activeLighting.has(className));
+        document.body.classList.toggle('ambient-lighting-active', active.length > 0);
+        active.forEach((className) => {
+            const layer = document.createElement('span');
+            layer.className = `ambient-light-layer ambient-${className.replace(/^light-/, '')}`;
+            stack.appendChild(layer);
+        });
     }
 
 
