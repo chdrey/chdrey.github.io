@@ -11,6 +11,7 @@
         draftKey: 'story-nook:draft:v2',
         guestNameKey: 'story-nook:guest-name:v2',
         rememberAuthKey: 'story-nook:remember-auth',
+        rememberedEmailKey: 'story-nook:remembered-email',
         avatarBucket: 'avatars',
         placeholderAvatarPath: 'assets/placeholders/',
         placeholderAvatarManifest: 'assets/placeholders/placeholders.json',
@@ -188,11 +189,29 @@
     function syncRememberMePreference() {
         const remember = $('#rememberMeInput')?.checked !== false;
         localStorage.setItem(CONFIG.rememberAuthKey, remember ? 'true' : 'false');
+        const email = $('#emailInput')?.value.trim();
+        if (remember && email) localStorage.setItem(CONFIG.rememberedEmailKey, email);
+        if (!remember) localStorage.removeItem(CONFIG.rememberedEmailKey);
     }
 
     function restoreRememberMeControl() {
         const input = $('#rememberMeInput');
         if (input) input.checked = shouldRememberAuth();
+    }
+
+    function restoreRememberedEmail() {
+        const input = $('#emailInput');
+        if (!input) return;
+        const rememberedEmail = shouldRememberAuth() ? localStorage.getItem(CONFIG.rememberedEmailKey) : '';
+        if (rememberedEmail && !input.value) input.value = rememberedEmail;
+    }
+
+    function saveRememberedEmail(email) {
+        if (shouldRememberAuth()) {
+            localStorage.setItem(CONFIG.rememberedEmailKey, email);
+        } else {
+            localStorage.removeItem(CONFIG.rememberedEmailKey);
+        }
     }
 
     function getSupabaseAuthStorage() {
@@ -953,6 +972,7 @@
         setAuthMode(mode);
         setButtonLoading('#authActionBtn', false);
         restoreRememberMeControl();
+        restoreRememberedEmail();
         openModal('authModal');
         window.setTimeout(() => $('#emailInput')?.focus(), 50);
     }
@@ -961,6 +981,7 @@
         closeModal('authModal');
         $('#authForm')?.reset();
         restoreRememberMeControl();
+        restoreRememberedEmail();
         setAuthMode('login');
         setButtonLoading('#authActionBtn', false);
     }
@@ -996,6 +1017,7 @@
         setAuthError('');
         if (!email || !password) return setAuthError('Email and password are required.');
         if (state.isSignUp && username.length < 3) return setAuthError('Pen Name must be at least 3 characters.');
+        saveRememberedEmail(email);
 
         setButtonLoading('#authActionBtn', true, state.isSignUp ? 'Creating...' : 'Logging in...');
         try {
