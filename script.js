@@ -2556,8 +2556,8 @@
 
     function getFocusVisibilityLevel() {
         const slider = $('#focusVisibilitySlider');
-        if (!slider) return 0.88;
-        return Math.max(48, Math.min(96, Number(slider.value) || 88)) / 100;
+        if (!slider) return 0.72;
+        return Math.max(48, Math.min(96, Number(slider.value) || 72)) / 100;
     }
 
     function getFocusInkFactor() {

@@ -17258,3 +17258,21 @@ body.light-fireplace-glow .page-glow {
     48% { opacity: 0.28; transform: scale(0.96); }
     73% { opacity: 0.54; transform: scale(1.02) translateX(0.4%); }
 }
+
+/* Final 116: focus desk midpoint, live focus font size, mobile publish nudge. */
+body.focus-mode #writingZoneSection #mainStoryInput,
+body.focus-mode #writingZoneSection textarea#mainStoryInput,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput,
+body.focus-mode.candle-brightness-active #writingZoneSection textarea#mainStoryInput {
+    font-size: var(--writing-user-font-size) !important;
+}
+
+@media (max-width: 640px) {
+    body:not(.focus-mode) #writingZoneSection #publishBtn {
+        transform: translateY(-2px) !important;
+    }
+
+    body.focus-mode #writingZoneSection #publishBtn {
+        transform: translateY(-3px) !important;
+    }
+}
