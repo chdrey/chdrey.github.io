@@ -1,13 +1,5 @@
--- Story Nook avatar uploads update
--- Run this in Supabase Dashboard -> SQL Editor if avatar uploads or centering controls fail.
-
-alter table public.profiles add column if not exists avatar_position_x integer not null default 50;
-alter table public.profiles add column if not exists avatar_position_y integer not null default 50;
-
-alter table public.profiles drop constraint if exists profiles_avatar_position_x_range;
-alter table public.profiles add constraint profiles_avatar_position_x_range check (avatar_position_x between 0 and 100);
-alter table public.profiles drop constraint if exists profiles_avatar_position_y_range;
-alter table public.profiles add constraint profiles_avatar_position_y_range check (avatar_position_y between 0 and 100);
+-- Story Nook avatar storage policy fix
+-- Run this in Supabase Dashboard -> SQL Editor if custom avatar uploads fail with RLS.
 
 insert into storage.buckets (id, name, public)
 values ('avatars', 'avatars', true)

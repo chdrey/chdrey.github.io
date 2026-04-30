@@ -6,8 +6,7 @@ grant usage on schema story_nook_private to anon, authenticated;
 
 create or replace function story_nook_private.is_nook_admin()
 returns boolean language sql stable security definer set search_path = public as $$
-    select coalesce(auth.jwt() ->> 'email', '') = 'chdrey@gmail.com'
-        or exists (select 1 from public.profiles p where p.id = auth.uid() and p.username = 'PenPaleto');
+    select lower(coalesce(auth.jwt() ->> 'email', '')) = 'chdrey@gmail.com';
 $$;
 grant execute on function story_nook_private.is_nook_admin() to anon, authenticated;
 

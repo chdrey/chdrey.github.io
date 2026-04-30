@@ -24,8 +24,8 @@
         <div class="nav-actions">
             <div id="loggedOutNav" class="nav-group">
                 <div class="quote-of-day" aria-label="Quote of the day">
-                    <p>“Usually I compose only with great difficulty and endless rewriting,”</p>
-                    <cite>— J.R.R. Tolkien</cite>
+                    <p id="headerQuoteText">“It's the job that never gets started that takes longest to finish.”</p>
+                    <cite id="headerQuoteAuthor">— J.R.R. Tolkien</cite>
                 </div>
                 <button id="navLoginBtn" class="btn-secondary">Log In</button>
             </div>
@@ -539,11 +539,35 @@
             <h2 id="adminTitle" class="admin-title">👑 Control Panel</h2>
             <div class="admin-tabs">
                 <button class="tab-btn active" type="button" data-admin-tab="users">Users & Badges</button>
+                <button class="tab-btn" type="button" data-admin-tab="content">Site Content</button>
                 <button class="tab-btn" type="button" data-admin-tab="contest">Manual Awards</button>
             </div>
             <div id="adminTabUsers" class="admin-tab-content">
                 <input type="search" id="adminUserSearch" placeholder="Search user by name...">
                 <div id="adminUserList" class="admin-user-list"></div>
+            </div>
+            <div id="adminTabContent" class="admin-tab-content hidden">
+                <div class="admin-settings-panel">
+                    <section class="admin-settings-section">
+                        <h3>Header Quote</h3>
+                        <div class="admin-settings-grid">
+                            <label for="adminQuoteInput">Quote</label>
+                            <textarea id="adminQuoteInput" rows="3" maxlength="180" placeholder="It's the job that never gets started that takes longest to finish."></textarea>
+                            <label for="adminQuoteAuthorInput">Author</label>
+                            <input type="text" id="adminQuoteAuthorInput" maxlength="80" placeholder="J.R.R. Tolkien">
+                        </div>
+                    </section>
+                    <section class="admin-settings-section">
+                        <h3>Weekly Inspiration</h3>
+                        <div class="admin-settings-grid">
+                            <label for="adminPromptInput">Prompt</label>
+                            <textarea id="adminPromptInput" rows="5" maxlength="700" placeholder="Write the weekly inspiration prompt..."></textarea>
+                            <label for="adminVideoInput">YouTube link</label>
+                            <input type="url" id="adminVideoInput" placeholder="https://www.youtube.com/watch?v=...">
+                        </div>
+                    </section>
+                    <button id="saveSiteSettingsBtn" class="btn-primary full-width" type="button">Save Site Content</button>
+                </div>
             </div>
             <div id="adminTabContest" class="admin-tab-content hidden">
                 <h3>🏆 Manage Badges</h3>

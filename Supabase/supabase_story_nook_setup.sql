@@ -46,8 +46,7 @@ alter table public.profiles add constraint profiles_avatar_position_y_range chec
 
 create or replace function story_nook_private.is_nook_admin()
 returns boolean language sql stable security definer set search_path = public as $$
-    select coalesce(auth.jwt() ->> 'email', '') = 'chdrey@gmail.com'
-        or exists (select 1 from public.profiles p where p.id = auth.uid() and p.username = 'PenPaleto');
+    select lower(coalesce(auth.jwt() ->> 'email', '')) = 'chdrey@gmail.com';
 $$;
 grant execute on function story_nook_private.is_nook_admin() to anon, authenticated;
 
@@ -602,8 +601,11 @@ on conflict (id) do update set public = true;
 
 drop policy if exists avatars_read_public on storage.objects;
 drop policy if exists avatars_upload_own on storage.objects;
-create policy avatars_upload_own on storage.objects for insert with check (bucket_id = 'avatars' and auth.uid()::text = (storage.foldername(name))[1]);
+drop policy if exists avatars_upload_authenticated on storage.objects;
+create policy avatars_upload_own on storage.objects for insert to authenticated with check (bucket_id = 'avatars' and auth.uid() is not null and name like auth.uid()::text || '/%');
 drop policy if exists avatars_update_own on storage.objects;
-create policy avatars_update_own on storage.objects for update using (bucket_id = 'avatars' and auth.uid()::text = (storage.foldername(name))[1]) with check (bucket_id = 'avatars' and auth.uid()::text = (storage.foldername(name))[1]);
+drop policy if exists avatars_update_authenticated on storage.objects;
+create policy avatars_update_own on storage.objects for update to authenticated using (bucket_id = 'avatars' and auth.uid() is not null and name like auth.uid()::text || '/%') with check (bucket_id = 'avatars' and auth.uid() is not null and name like auth.uid()::text || '/%');
 drop policy if exists avatars_delete_own on storage.objects;
-create policy avatars_delete_own on storage.objects for delete using (bucket_id = 'avatars' and auth.uid()::text = (storage.foldername(name))[1]);
+drop policy if exists avatars_delete_authenticated on storage.objects;
+create policy avatars_delete_own on storage.objects for delete to authenticated using (bucket_id = 'avatars' and auth.uid() is not null and name like auth.uid()::text || '/%');

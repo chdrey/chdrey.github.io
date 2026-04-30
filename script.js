@@ -3,10 +3,11 @@
 
     const CONFIG = {
         adminEmail: 'chdrey@gmail.com',
-        adminUsername: 'PenPaleto',
         supabaseUrl: 'https://pflgpjywwovlrvtpwgfi.supabase.co',
         supabaseKey: 'sb_publishable_yij9AdnvenadfIts9zvj_A_FPNUAVf2',
         youtubeSrc: 'https://www.youtube.com/embed/XDvLE7TZBmk?start=699&autoplay=0&mute=0&playsinline=1&controls=1&rel=0&enablejsapi=1&origin=' + encodeURIComponent(window.location.origin || window.location.href.split('/').slice(0,3).join('/')),
+        headerQuote: "It's the job that never gets started that takes longest to finish.",
+        headerQuoteAuthor: 'J.R.R. Tolkien',
         draftKey: 'story-nook:draft:v2',
         guestNameKey: 'story-nook:guest-name:v2',
         avatarBucket: 'avatars',
@@ -64,6 +65,8 @@
         editingStoryId: null,
         currentPrompt: '',
         currentVideoUrl: '',
+        currentQuote: '',
+        currentQuoteAuthor: '',
         isSignUp: false,
         feedLimit: 30,
         feedStories: [],
@@ -135,6 +138,7 @@
         updateWritingMoodState();
         updateCharCounter();
         setWeeklyPrompt(CONFIG.prompts[0]);
+        setHeaderQuote(CONFIG.headerQuote, CONFIG.headerQuoteAuthor);
         loadYouTubePlayer();
         playBackgroundVideo();
         updateFocusMuteButton();
@@ -334,10 +338,12 @@
         $('#passportInfoBtn')?.addEventListener('click', () => openModal('passportInfoModal'));
         $('#adminDashboardBtn')?.addEventListener('click', () => {
             openModal('adminModal');
+            populateSiteSettingsForm();
             loadAllUsers();
         });
         $('#adminUserSearch')?.addEventListener('input', debounce(loadAllUsers, 250));
         $('#adminModal')?.addEventListener('click', handleAdminClick);
+        $('#saveSiteSettingsBtn')?.addEventListener('click', saveSiteSettings);
 
         $('#submitFeedbackBtn')?.addEventListener('click', submitFeedback);
 
@@ -426,8 +432,7 @@
 
     function checkAdminStatus() {
         const email = state.currentUser?.email?.toLowerCase() || '';
-        const username = state.currentProfile?.username || '';
-        return email === CONFIG.adminEmail.toLowerCase() || username === CONFIG.adminUsername;
+        return email === CONFIG.adminEmail.toLowerCase();
     }
 
     function updateUI() {
@@ -1787,7 +1792,7 @@
         const fileName = `${state.currentUser.id}/${Date.now()}.${extension}`;
 
         try {
-            const { error: uploadError } = await state.db.storage.from(CONFIG.avatarBucket).upload(fileName, file, { cacheControl: '3600', upsert: true });
+            const { error: uploadError } = await state.db.storage.from(CONFIG.avatarBucket).upload(fileName, file, { cacheControl: '3600', upsert: false });
             if (uploadError) throw new Error(`Storage upload failed: ${friendlyDbError(uploadError)}`);
             const { data: { publicUrl } } = state.db.storage.from(CONFIG.avatarBucket).getPublicUrl(fileName);
             const { error: dbError } = await state.db
@@ -1998,11 +2003,17 @@
     async function loadSiteSettings() {
         if (!state.db) return;
         try {
-            const { data, error } = await state.db.from('site_settings').select('key,value').in('key', ['weekly_prompt', 'youtube_url']);
+            const { data, error } = await state.db
+                .from('site_settings')
+                .select('key,value')
+                .in('key', ['weekly_prompt', 'youtube_url', 'header_quote', 'header_quote_author']);
             if (error || !Array.isArray(data)) return;
             const settings = Object.fromEntries(data.map((row) => [row.key, row.value]));
             if (settings.weekly_prompt) setWeeklyPrompt(settings.weekly_prompt);
             if (settings.youtube_url) loadYouTubePlayer(toYouTubeEmbedUrl(settings.youtube_url));
+            if (settings.header_quote || settings.header_quote_author) {
+                setHeaderQuote(settings.header_quote || CONFIG.headerQuote, settings.header_quote_author || CONFIG.headerQuoteAuthor);
+            }
         } catch (error) {
             // Optional table: ignore when it has not been created yet.
             console.info('Site settings table is optional and not currently available.');
@@ -2010,29 +2021,41 @@
     }
 
     function populateSiteSettingsForm() {
+        const quoteInput = $('#adminQuoteInput');
+        const quoteAuthorInput = $('#adminQuoteAuthorInput');
         const promptInput = $('#adminPromptInput');
         const videoInput = $('#adminVideoInput');
+        if (quoteInput) quoteInput.value = state.currentQuote || CONFIG.headerQuote;
+        if (quoteAuthorInput) quoteAuthorInput.value = state.currentQuoteAuthor || CONFIG.headerQuoteAuthor;
         if (promptInput) promptInput.value = state.currentPrompt || CONFIG.prompts[0];
         if (videoInput) videoInput.value = state.currentVideoUrl || CONFIG.youtubeSrc;
     }
 
     async function saveSiteSettings() {
         if (!state.db || !state.isAdmin) return toast('Only the admin account can save site settings.', 'error');
+        const quote = cleanQuoteInput($('#adminQuoteInput')?.value || CONFIG.headerQuote);
+        const quoteAuthor = cleanQuoteAuthor($('#adminQuoteAuthorInput')?.value || CONFIG.headerQuoteAuthor);
         const prompt = $('#adminPromptInput')?.value.trim();
         const videoUrl = $('#adminVideoInput')?.value.trim();
+        if (!quote) return toast('Add a header quote before saving.', 'error');
+        if (!quoteAuthor) return toast('Add a quote author before saving.', 'error');
         if (!prompt) return toast('Add a prompt before saving.', 'error');
 
         const rows = [
-            { key: 'weekly_prompt', value: prompt },
-            { key: 'youtube_url', value: videoUrl || CONFIG.youtubeSrc }
+            { key: 'header_quote', value: quote, updated_by: state.currentUser.id },
+            { key: 'header_quote_author', value: quoteAuthor, updated_by: state.currentUser.id },
+            { key: 'weekly_prompt', value: prompt, updated_by: state.currentUser.id },
+            { key: 'youtube_url', value: videoUrl || CONFIG.youtubeSrc, updated_by: state.currentUser.id }
         ];
 
         setButtonLoading('#saveSiteSettingsBtn', true, 'Saving...');
         try {
             const { error } = await state.db.from('site_settings').upsert(rows, { onConflict: 'key' });
             if (error) return toast(`Could not save settings: ${friendlyDbError(error)}`, 'error', 8000);
+            setHeaderQuote(quote, quoteAuthor);
             setWeeklyPrompt(prompt);
             loadYouTubePlayer(toYouTubeEmbedUrl(videoUrl || CONFIG.youtubeSrc));
+            populateSiteSettingsForm();
             toast('Site settings saved.');
         } catch (error) {
             console.error('Settings save failed:', error);
@@ -2081,6 +2104,21 @@
         state.currentPrompt = prompt || '';
         setText('#weeklyPromptText', state.currentPrompt);
         syncPromptPlaceholder();
+    }
+
+    function setHeaderQuote(quote, author) {
+        state.currentQuote = cleanQuoteInput(quote || CONFIG.headerQuote);
+        state.currentQuoteAuthor = cleanQuoteAuthor(author || CONFIG.headerQuoteAuthor);
+        setText('#headerQuoteText', `“${state.currentQuote}”`);
+        setText('#headerQuoteAuthor', `— ${state.currentQuoteAuthor}`);
+    }
+
+    function cleanQuoteInput(value) {
+        return String(value || '').trim().replace(/^[“”"']+|[“”"']+$/g, '').trim();
+    }
+
+    function cleanQuoteAuthor(value) {
+        return String(value || '').trim().replace(/^[-—\s]+/, '').trim();
     }
 
 

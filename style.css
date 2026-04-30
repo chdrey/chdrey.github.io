@@ -753,7 +753,7 @@ h1, h2 { font-weight: 800; }
 
 /* Admin */
 .admin-title { text-align: center; margin-bottom: 1rem; color: #88402d !important; }
-.admin-tabs { display: flex; gap: 0.6rem; border-bottom: 1px solid rgba(139,94,60,0.2); padding-bottom: 0.75rem; margin-bottom: 1rem; }
+.admin-tabs { display: flex; flex-wrap: wrap; gap: 0.6rem; border-bottom: 1px solid rgba(139,94,60,0.2); padding-bottom: 0.75rem; margin-bottom: 1rem; }
 .tab-btn { padding: 0.6rem 0.8rem; border-radius: 999px; background: transparent; color: #6a533d; font-weight: 900; }
 .tab-btn.active { color: #1d130d; background: rgba(156,175,136,0.32); }
 .admin-user-list { display: grid; gap: 0.75rem; margin-top: 0.9rem; max-height: 450px; overflow-y: auto; }
@@ -762,6 +762,27 @@ h1, h2 { font-weight: 800; }
 .admin-badge-controls { display: flex; gap: 0.55rem; flex-wrap: wrap; padding-top: 0.75rem; margin-top: 0.75rem; border-top: 1px dashed rgba(139,94,60,0.18); }
 .admin-badge-btn { width: 38px; height: 38px; border-width: 3px; opacity: 0.36; }
 .admin-badge-btn.owned { opacity: 1; outline: 3px solid rgba(32,55,42,0.38); }
+.admin-settings-panel { display: grid; gap: 1rem; }
+.admin-settings-section {
+    padding: 1rem;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.50);
+    border: 1px solid rgba(139,94,60,0.18);
+}
+.admin-settings-section h3 { margin: 0 0 0.8rem; color: #3a2418; }
+.admin-settings-grid { display: grid; gap: 0.55rem; }
+.admin-settings-grid label {
+    color: #5f4a37;
+    font-size: 0.78rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+.admin-settings-grid textarea,
+.admin-settings-grid input {
+    width: 100%;
+    resize: vertical;
+}
 .winner-input-group { padding: 0.9rem; margin-bottom: 0.85rem; border-radius: 16px; background: rgba(255,255,255,0.48); }
 .winner-input-group label { display: block; font-weight: 900; margin-bottom: 0.55rem; }
 .winner-input-group div { display: flex; gap: 0.55rem; }
