@@ -587,7 +587,22 @@ h1, h2 { font-weight: 800; }
 }
 .auth-tab.active { background: var(--accent); color: #20150f; }
 .auth-form-container { display: grid; gap: 0.78rem; }
-.auth-helper-row { display: flex; justify-content: space-between; gap: 0.8rem; margin-top: 1rem; font-size: 0.9rem; }
+.auth-helper-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.8rem; margin-top: 1rem; font-size: 0.9rem; }
+.remember-me-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-weight: 800;
+    white-space: nowrap;
+}
+.remember-me-toggle input {
+    width: 0.95rem;
+    height: 0.95rem;
+    accent-color: #9caf88;
+    cursor: pointer;
+}
 .error-text { min-height: 1.2rem; color: #ffb1a1; font-weight: 800; }
 .modal-intro { color: var(--text-muted); line-height: 1.5; margin-bottom: 1rem; }
 

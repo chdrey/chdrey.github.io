@@ -10,6 +10,7 @@
         headerQuoteAuthor: 'J.R.R. Tolkien',
         draftKey: 'story-nook:draft:v2',
         guestNameKey: 'story-nook:guest-name:v2',
+        rememberAuthKey: 'story-nook:remember-auth',
         avatarBucket: 'avatars',
         placeholderAvatarPath: 'assets/placeholders/',
         placeholderAvatarManifest: 'assets/placeholders/placeholders.json',
@@ -67,6 +68,7 @@
         currentVideoUrl: '',
         currentQuote: '',
         currentQuoteAuthor: '',
+        authSubmitting: false,
         isSignUp: false,
         feedLimit: 30,
         feedStories: [],
@@ -133,6 +135,7 @@
         restoreDraft();
         restoreWritingStyle();
         restoreTypingSoundToggle();
+        restoreRememberMeControl();
         loadPlaceholderAvatars();
         loadPrizeAvatars();
         updateWritingMoodState();
@@ -161,7 +164,13 @@
                 setOfflineMode('Supabase did not load. The page still works visually, but login and publishing need the Supabase CDN.');
                 return;
             }
-            state.db = window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey);
+            state.db = window.supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey, {
+                auth: {
+                    persistSession: true,
+                    autoRefreshToken: true,
+                    storage: getSupabaseAuthStorage()
+                }
+            });
             initApp().catch((error) => {
                 console.error('App init failed:', error);
                 setOfflineMode('Could not connect to the story database. Check your Supabase project settings and RLS rules.');
@@ -172,11 +181,46 @@
         }
     }
 
+    function shouldRememberAuth() {
+        return localStorage.getItem(CONFIG.rememberAuthKey) !== 'false';
+    }
+
+    function syncRememberMePreference() {
+        const remember = $('#rememberMeInput')?.checked !== false;
+        localStorage.setItem(CONFIG.rememberAuthKey, remember ? 'true' : 'false');
+    }
+
+    function restoreRememberMeControl() {
+        const input = $('#rememberMeInput');
+        if (input) input.checked = shouldRememberAuth();
+    }
+
+    function getSupabaseAuthStorage() {
+        return {
+            getItem(key) {
+                return localStorage.getItem(key) || sessionStorage.getItem(key);
+            },
+            setItem(key, value) {
+                const remember = shouldRememberAuth();
+                const primary = remember ? localStorage : sessionStorage;
+                const secondary = remember ? sessionStorage : localStorage;
+                primary.setItem(key, value);
+                secondary.removeItem(key);
+            },
+            removeItem(key) {
+                localStorage.removeItem(key);
+                sessionStorage.removeItem(key);
+            }
+        };
+    }
+
     async function initApp() {
         const { data: { session } } = await state.db.auth.getSession();
         await handleUserSession(session, { skipFetch: true });
-        state.db.auth.onAuthStateChange(async (_event, session) => {
-            await handleUserSession(session);
+        state.db.auth.onAuthStateChange((_event, session) => {
+            window.setTimeout(() => {
+                handleUserSession(session).catch((error) => console.error('Auth state refresh failed:', error));
+            }, 0);
         });
         await loadSiteSettings();
         await fetchStories();
@@ -234,8 +278,13 @@
         $$('[data-close]').forEach((button) => button.addEventListener('click', () => closeModal(button.dataset.close)));
 
         $$('.modal').forEach((modal) => {
+            modal.addEventListener('pointerdown', (event) => {
+                modal.dataset.pointerStartedOnBackdrop = String(event.target === modal);
+            });
             modal.addEventListener('click', (event) => {
-                if (event.target === modal) closeModal(modal.id);
+                const startedOnBackdrop = modal.dataset.pointerStartedOnBackdrop === 'true';
+                delete modal.dataset.pointerStartedOnBackdrop;
+                if (event.target === modal && startedOnBackdrop) closeModal(modal.id);
             });
         });
 
@@ -250,6 +299,7 @@
         $('#signupTab')?.addEventListener('click', () => setAuthMode('signup'));
         $('#authSwitchBtn')?.addEventListener('click', () => setAuthMode(state.isSignUp ? 'login' : 'signup'));
         $('#authForm')?.addEventListener('submit', handleAuthSubmit);
+        $('#rememberMeInput')?.addEventListener('change', syncRememberMePreference);
         $('#forgotPasswordBtn')?.addEventListener('click', sendPasswordReset);
         $('#logoutBtn')?.addEventListener('click', logout);
         $('#changePasswordBtn')?.addEventListener('click', changePassword);
@@ -857,6 +907,10 @@
         const modal = document.getElementById(id);
         if (!modal) return;
         modal.classList.add('hidden');
+        if (id === 'authModal') {
+            state.authSubmitting = false;
+            setButtonLoading('#authActionBtn', false);
+        }
         if (id === 'profileModal') {
             window.setTimeout(resetProfileModalToMyView, 200);
         }
@@ -897,13 +951,43 @@
 
     function openAuth(mode = 'login') {
         setAuthMode(mode);
+        setButtonLoading('#authActionBtn', false);
+        restoreRememberMeControl();
         openModal('authModal');
         window.setTimeout(() => $('#emailInput')?.focus(), 50);
+    }
+
+    function closeAuthAfterSuccess() {
+        closeModal('authModal');
+        $('#authForm')?.reset();
+        restoreRememberMeControl();
+        setAuthMode('login');
+        setButtonLoading('#authActionBtn', false);
+    }
+
+    function queueSessionRefresh(session) {
+        window.setTimeout(() => {
+            handleUserSession(session).catch((error) => {
+                console.error('Post-login session refresh failed:', error);
+                toast('You are logged in, but profile details took too long to refresh. Try one refresh if the header does not update.', 'error', 8000);
+            });
+        }, 0);
+    }
+
+    function withTimeout(promise, timeoutMs, message) {
+        let timeoutId;
+        const timeout = new Promise((_, reject) => {
+            timeoutId = window.setTimeout(() => reject(new Error(message)), timeoutMs);
+        });
+        return Promise.race([promise, timeout]).finally(() => window.clearTimeout(timeoutId));
     }
 
     async function handleAuthSubmit(event) {
         event.preventDefault();
         if (!state.db) return setAuthError('Supabase is not available yet.');
+        if (state.authSubmitting) return;
+        state.authSubmitting = true;
+        syncRememberMePreference();
 
         const email = $('#emailInput')?.value.trim();
         const password = $('#passwordInput')?.value;
@@ -919,34 +1003,37 @@
                 const { data: existing } = await state.db.from('profiles').select('id').eq('username', username).maybeSingle();
                 if (existing) throw new Error('This Pen Name is already taken. Try a small twist.');
 
-                const { data, error } = await state.db.auth.signUp({
+                const { data, error } = await withTimeout(state.db.auth.signUp({
                     email,
                     password,
                     options: { data: { username } }
-                });
+                }), 20000, 'Account creation is taking too long. If the account appears after refresh, try logging in.');
                 if (error) throw error;
 
                 if (data.session) {
-                    await handleUserSession(data.session);
-                    closeModal('authModal');
+                    closeAuthAfterSuccess();
+                    queueSessionRefresh(data.session);
                     toast(`Welcome to the Nook, ${username}.`);
                 } else {
-                    closeModal('authModal');
+                    closeAuthAfterSuccess();
                     toast('Account created. Check your email to confirm your login.');
                 }
             } else {
-                const { data, error } = await state.db.auth.signInWithPassword({ email, password });
+                const { data, error } = await withTimeout(
+                    state.db.auth.signInWithPassword({ email, password }),
+                    20000,
+                    'Login is taking too long. If it works after refresh, your session saved but the page refresh got stuck.'
+                );
                 if (error) throw error;
-                await handleUserSession(data.session);
-                closeModal('authModal');
+                closeAuthAfterSuccess();
+                queueSessionRefresh(data.session);
                 toast('You are logged in. Your writing chair is warm.');
             }
-            $('#authForm')?.reset();
-            setAuthMode('login');
         } catch (error) {
             console.error('Auth error:', error);
             setAuthError(friendlyAuthError(error));
         } finally {
+            state.authSubmitting = false;
             setButtonLoading('#authActionBtn', false);
         }
     }
@@ -993,14 +1080,24 @@
 
     async function logout() {
         if (!state.db) return;
-        await state.db.auth.signOut();
-        state.currentUser = null;
-        state.currentProfile = null;
-        state.isAdmin = false;
-        updateUI();
         closeModal('profileModal');
-        toast('Logged out. See you by the fire soon.');
-        await fetchStories();
+        closeModal('adminModal');
+        closeModal('avatarPickerModal');
+        setButtonLoading('#logoutBtn', true, 'Logging out...');
+        try {
+            await state.db.auth.signOut();
+            state.currentUser = null;
+            state.currentProfile = null;
+            state.isAdmin = false;
+            updateUI();
+            toast('Logged out. See you by the fire soon.');
+            await fetchStories();
+        } catch (error) {
+            console.error('Logout failed:', error);
+            toast(`Logout failed: ${friendlyAuthError(error)}`, 'error');
+        } finally {
+            setButtonLoading('#logoutBtn', false);
+        }
     }
 
     function setProfileDetails(profile = {}, options = {}) {
@@ -3671,7 +3768,7 @@
         const button = $(selector);
         if (!button) return;
         if (isLoading) {
-            button.dataset.originalText = button.textContent;
+            if (!button.dataset.originalText) button.dataset.originalText = button.textContent;
             button.textContent = loadingLabel;
             button.disabled = true;
         } else {
