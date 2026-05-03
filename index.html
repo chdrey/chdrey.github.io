@@ -230,7 +230,7 @@
                 <button type="button" data-lighting="moonlit-desk" aria-pressed="false">Moonlit desk</button>
             </div>
             <div class="story-input-wrap">
-                <textarea id="mainStoryInput" maxlength="2000" placeholder="A knight stands at a distance, gazing toward the entrance of a citadel he has finally returned to. Something has happened before this moment—something the reader does not yet know. Write the story of what led him here, what he has lost or gained, and why he hesitates before entering."></textarea>
+                <textarea id="mainStoryInput" maxlength="5000" placeholder="A knight stands at a distance, gazing toward the entrance of a citadel he has finally returned to. Something has happened before this moment—something the reader does not yet know. Write the story of what led him here, what he has lost or gained, and why he hesitates before entering."></textarea>
                 <button id="eraseStoryBtn" class="textarea-eraser" type="button" aria-label="Clear writing area" title="Clear writing area">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M4.2 15.9 13.7 6.4a2 2 0 0 1 2.8 0l3.1 3.1a2 2 0 0 1 0 2.8l-7.2 7.2H6.7L4.2 17a.8.8 0 0 1 0-1.1Z"></path>
@@ -272,15 +272,15 @@
             <div class="writer-tools">
                 <div class="char-meter" aria-label="Story character count">
                     <div class="char-track"><span id="charBar"></span></div>
-                    <span><strong id="charCount">0</strong>/2000</span>
+                    <span><strong id="charCount">0</strong>/5000</span>
                 </div>
+                <button id="publishBtn" class="btn-primary" type="button">Publish Story</button>
             </div>
 
             <div class="action-bar writer-action-line">
                 <div class="writing-actions-left">
                     <input type="text" id="guestPenName" placeholder="Pen Name (Guest)" maxlength="32" autocomplete="nickname">
                 </div>
-                <button id="publishBtn" class="btn-primary" type="button">Publish Story</button>
             </div>
         </section>
 
@@ -619,7 +619,7 @@
                     <h2 id="editStoryTitle">Edit story</h2>
                 </div>
             </div>
-            <textarea id="editStoryInput" class="edit-story-input" maxlength="2000" placeholder="Revise your story..."></textarea>
+            <textarea id="editStoryInput" class="edit-story-input" maxlength="5000" placeholder="Revise your story..."></textarea>
             <div class="action-bar writer-action-line">
                 <button class="btn-secondary" type="button" data-close="editStoryModal">Cancel</button>
                 <button id="saveStoryEditBtn" class="btn-primary" type="button">Save Changes</button>

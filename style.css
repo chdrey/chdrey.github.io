@@ -18201,3 +18201,163 @@ body.focus-mode #videoDropdown.image-inspiration-popover.open {
         padding: calc(0.85rem + 15px) 0.85rem 0.85rem !important;
     }
 }
+
+
+/* =========================================================
+   Final 70: 5,000 character limit + publish beside word meter
+   ========================================================= */
+
+/* Old standalone inspiration strip is archived, so the Writing Desk can sit
+   close under the fixed site header. */
+body:not(.focus-mode) main {
+    padding-top: 86px !important;
+}
+
+/* Keep the desktop card size, but give the actual writing area more room. */
+body:not(.focus-mode) #writingZoneSection .story-input-wrap textarea,
+body:not(.focus-mode) #mainStoryInput {
+    min-height: 430px !important;
+}
+
+/* Publish now lives beside the character meter. Remove the thin divider from
+   the old action line and keep the pen-name row below. */
+#writingZoneSection .writer-tools {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 0.85rem !important;
+    flex-wrap: nowrap !important;
+    margin-top: 1rem !important;
+    padding-top: 0 !important;
+    border-top: 0 !important;
+    overflow: visible !important;
+}
+
+#writingZoneSection .char-meter {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 0.72rem !important;
+}
+
+#writingZoneSection .char-track {
+    width: min(360px, 42vw) !important;
+    flex: 0 1 360px !important;
+}
+
+#writingZoneSection .writer-tools #publishBtn {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    max-width: none !important;
+    white-space: nowrap !important;
+}
+
+#writingZoneSection .writer-action-line {
+    border-top: 0 !important;
+    padding: 0 !important;
+    margin: 0.85rem 0 0 !important;
+    display: flex !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+}
+
+#writingZoneSection .writing-actions-left {
+    width: auto !important;
+    max-width: 260px !important;
+}
+
+#writingZoneSection #guestPenName {
+    max-width: 220px !important;
+}
+
+/* Focus mode keeps the same relationship: writing area first, then meter + publish. */
+body.focus-mode #writingZoneSection .writer-tools {
+    margin-top: 1rem !important;
+}
+
+body.focus-mode #writingZoneSection .writer-action-line {
+    border-top: 0 !important;
+}
+
+@media (max-width: 760px) {
+    body:not(.focus-mode) main {
+        padding-top: 78px !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection .story-input-wrap textarea,
+    body:not(.focus-mode) #mainStoryInput {
+        min-height: 360px !important;
+    }
+
+    #writingZoneSection .writer-tools {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+        width: 100% !important;
+        margin-top: 0.82rem !important;
+    }
+
+    #writingZoneSection .char-meter {
+        width: auto !important;
+        min-width: 0 !important;
+        gap: 0.42rem !important;
+        justify-content: flex-start !important;
+        font-size: 0.82rem !important;
+        white-space: nowrap !important;
+    }
+
+    #writingZoneSection .char-track {
+        width: min(34vw, 145px) !important;
+        flex: 0 1 min(34vw, 145px) !important;
+    }
+
+    #writingZoneSection .writer-tools #publishBtn {
+        width: auto !important;
+        min-width: 5.85rem !important;
+        height: 2.68rem !important;
+        padding: 0.62rem 0.74rem !important;
+        font-size: 0.84rem !important;
+        line-height: 1 !important;
+        white-space: nowrap !important;
+    }
+
+    #writingZoneSection .writer-action-line {
+        display: block !important;
+        margin-top: 0.68rem !important;
+        padding: 0 !important;
+        border-top: 0 !important;
+    }
+
+    #writingZoneSection .writing-actions-left {
+        max-width: none !important;
+        width: 100% !important;
+    }
+
+    #writingZoneSection #guestPenName {
+        max-width: none !important;
+        width: 100% !important;
+        height: 2.6rem !important;
+    }
+
+    body.focus-mode #writingZoneSection .writer-tools {
+        margin-top: 0.78rem !important;
+    }
+}
+
+@media (max-width: 380px) {
+    #writingZoneSection .char-track {
+        width: min(28vw, 110px) !important;
+        flex-basis: min(28vw, 110px) !important;
+    }
+
+    #writingZoneSection .writer-tools #publishBtn {
+        min-width: 5.15rem !important;
+        padding-left: 0.54rem !important;
+        padding-right: 0.54rem !important;
+        font-size: 0.78rem !important;
+    }
+}

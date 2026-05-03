@@ -2130,7 +2130,7 @@
         const value = $('#mainStoryInput')?.value || '';
         const count = value.length;
         setText('#charCount', String(count));
-        const percent = Math.min(100, (count / 2000) * 100);
+        const percent = Math.min(100, (count / 5000) * 100);
         const bar = $('#charBar');
         if (bar) bar.style.width = `${percent}%`;
     }
