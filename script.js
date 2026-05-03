@@ -13,6 +13,8 @@
         rememberAuthKey: 'story-nook:remember-auth',
         rememberedEmailKey: 'story-nook:remembered-email',
         avatarBucket: 'avatars',
+        inspirationImageBucket: 'inspiration-images',
+        defaultInspirationImageUrl: '',
         placeholderAvatarPath: 'assets/placeholders/',
         placeholderAvatarManifest: 'assets/placeholders/placeholders.json',
         placeholderAvatars: [
@@ -67,6 +69,7 @@
         editingStoryId: null,
         currentPrompt: '',
         currentVideoUrl: '',
+        currentInspirationImageUrl: '',
         currentQuote: '',
         currentQuoteAuthor: '',
         authSubmitting: false,
@@ -132,6 +135,7 @@
 
     function boot() {
         document.body.classList.remove('focus-mode', 'candle-lit', 'candle-brightness-active', 'quiet-room', 'effects-off', ...LIGHTING_CLASSES);
+        relocateImageInspirationPopover();
         wireStaticEvents();
         restoreDraft();
         restoreWritingStyle();
@@ -142,6 +146,7 @@
         updateWritingMoodState();
         updateCharCounter();
         setWeeklyPrompt(CONFIG.prompts[0]);
+        setWeeklyInspirationImage(CONFIG.defaultInspirationImageUrl);
         setHeaderQuote(CONFIG.headerQuote, CONFIG.headerQuoteAuthor);
         loadYouTubePlayer();
         playBackgroundVideo();
@@ -153,6 +158,13 @@
         updateAmbientTriggerStates();
         primeYouTubeAudio();
         initializeSupabase();
+    }
+
+
+    function relocateImageInspirationPopover() {
+        const dropdown = $('#videoDropdown');
+        if (!dropdown || dropdown.parentElement === document.body) return;
+        document.body.appendChild(dropdown);
     }
 
     function inviteWritingDeskOnLoad() {
@@ -345,6 +357,9 @@
         $('#confirmEraseStoryBtn')?.addEventListener('click', eraseStoryDraft);
         $('#copyPromptBtn')?.addEventListener('click', startWritingFromPrompt);
         $('#toggleVideoBtn')?.addEventListener('click', toggleWeeklyVideo);
+        $('#imageInspirationCloseBtn')?.addEventListener('click', closeImageInspiration);
+        $('#videoDropdown')?.addEventListener('click', handleImageInspirationBackdropClick);
+        $('#adminInspirationImageInput')?.addEventListener('change', previewAdminInspirationImageFile);
         $('#candleBrightnessSlider')?.addEventListener('input', updateCandleBrightness);
         $('#candleBrightnessSlider')?.addEventListener('change', updateCandleBrightness);
         $('#exitFocusBtn')?.addEventListener('click', (event) => {
@@ -1968,10 +1983,11 @@
     function getPromptPlaceholder() {
         const prompt = (state.currentPrompt || $('#weeklyPromptText')?.textContent || CONFIG.prompts?.[0] || '').trim();
         const defaultPlaceholder = 'Begin writing your story here...';
-        if (document.body.classList.contains('focus-mode')) {
-            return prompt || defaultPlaceholder;
-        }
-        return defaultPlaceholder;
+
+        // The weekly inspiration now lives inside the Writing Desk itself.
+        // It appears as the placeholder on both the main page and Focus Mode,
+        // then naturally disappears as soon as the writer starts typing.
+        return prompt || defaultPlaceholder;
     }
 
     function syncPromptPlaceholder() {
@@ -2125,11 +2141,13 @@
             const { data, error } = await state.db
                 .from('site_settings')
                 .select('key,value')
-                .in('key', ['weekly_prompt', 'youtube_url', 'header_quote', 'header_quote_author']);
+                .in('key', ['weekly_prompt', 'youtube_url', 'weekly_inspiration_image_url', 'header_quote', 'header_quote_author']);
             if (error || !Array.isArray(data)) return;
             const settings = Object.fromEntries(data.map((row) => [row.key, row.value]));
             if (settings.weekly_prompt) setWeeklyPrompt(settings.weekly_prompt);
-            if (settings.youtube_url) loadYouTubePlayer(toYouTubeEmbedUrl(settings.youtube_url));
+            if (settings.weekly_inspiration_image_url) setWeeklyInspirationImage(settings.weekly_inspiration_image_url);
+            // YouTube link is preserved in admin settings for later, but no longer drives the main inspiration button.
+            if (settings.youtube_url) state.currentVideoUrl = settings.youtube_url;
             if (settings.header_quote || settings.header_quote_author) {
                 setHeaderQuote(settings.header_quote || CONFIG.headerQuote, settings.header_quote_author || CONFIG.headerQuoteAuthor);
             }
@@ -2148,6 +2166,7 @@
         if (quoteAuthorInput) quoteAuthorInput.value = state.currentQuoteAuthor || CONFIG.headerQuoteAuthor;
         if (promptInput) promptInput.value = state.currentPrompt || CONFIG.prompts[0];
         if (videoInput) videoInput.value = state.currentVideoUrl || CONFIG.youtubeSrc;
+        updateAdminInspirationImagePreview(state.currentInspirationImageUrl);
     }
 
     async function saveSiteSettings() {
@@ -2160,20 +2179,23 @@
         if (!quoteAuthor) return toast('Add a quote author before saving.', 'error');
         if (!prompt) return toast('Add a prompt before saving.', 'error');
 
-        const rows = [
-            { key: 'header_quote', value: quote, updated_by: state.currentUser.id },
-            { key: 'header_quote_author', value: quoteAuthor, updated_by: state.currentUser.id },
-            { key: 'weekly_prompt', value: prompt, updated_by: state.currentUser.id },
-            { key: 'youtube_url', value: videoUrl || CONFIG.youtubeSrc, updated_by: state.currentUser.id }
-        ];
-
         setButtonLoading('#saveSiteSettingsBtn', true, 'Saving...');
         try {
+            const imageUrl = await uploadWeeklyInspirationImageIfNeeded();
+            const rows = [
+                { key: 'header_quote', value: quote, updated_by: state.currentUser.id },
+                { key: 'header_quote_author', value: quoteAuthor, updated_by: state.currentUser.id },
+                { key: 'weekly_prompt', value: prompt, updated_by: state.currentUser.id },
+                { key: 'youtube_url', value: videoUrl || CONFIG.youtubeSrc, updated_by: state.currentUser.id },
+                { key: 'weekly_inspiration_image_url', value: imageUrl || state.currentInspirationImageUrl || '', updated_by: state.currentUser.id }
+            ];
+
             const { error } = await state.db.from('site_settings').upsert(rows, { onConflict: 'key' });
             if (error) return toast(`Could not save settings: ${friendlyDbError(error)}`, 'error', 8000);
             setHeaderQuote(quote, quoteAuthor);
             setWeeklyPrompt(prompt);
-            loadYouTubePlayer(toYouTubeEmbedUrl(videoUrl || CONFIG.youtubeSrc));
+            state.currentVideoUrl = videoUrl || CONFIG.youtubeSrc;
+            if (imageUrl || state.currentInspirationImageUrl) setWeeklyInspirationImage(imageUrl || state.currentInspirationImageUrl);
             populateSiteSettingsForm();
             toast('Site settings saved.');
         } catch (error) {
@@ -2182,6 +2204,76 @@
         } finally {
             setButtonLoading('#saveSiteSettingsBtn', false);
         }
+    }
+
+
+    function previewAdminInspirationImageFile() {
+        const file = $('#adminInspirationImageInput')?.files?.[0];
+        if (!file) {
+            updateAdminInspirationImagePreview(state.currentInspirationImageUrl);
+            return;
+        }
+        if (!file.type.startsWith('image/')) {
+            updateAdminInspirationImagePreview(state.currentInspirationImageUrl);
+            return toast('Please choose an image file.', 'error');
+        }
+
+        const previewUrl = URL.createObjectURL(file);
+        updateAdminInspirationImagePreview(previewUrl, { temporary: true });
+    }
+
+    function updateAdminInspirationImagePreview(url = '', options = {}) {
+        const preview = $('#adminInspirationImagePreview');
+        if (!preview) return;
+
+        const cleanUrl = String(url || '').trim();
+        if (!cleanUrl) {
+            preview.innerHTML = '<span>No image selected yet.</span>';
+            return;
+        }
+
+        preview.innerHTML = `
+            <img src="${escapeAttr(cleanUrl)}" alt="Current weekly inspiration preview">
+            <span>${options.temporary ? 'Preview selected image. Click Save Site Content to publish it.' : 'Current image inspiration.'}</span>
+        `;
+    }
+
+    async function uploadWeeklyInspirationImageIfNeeded() {
+        const input = $('#adminInspirationImageInput');
+        const file = input?.files?.[0];
+        if (!file) return state.currentInspirationImageUrl || '';
+
+        if (!state.db || !state.currentUser) throw new Error('You must be logged in as admin to upload an image.');
+        if (!file.type.startsWith('image/')) throw new Error('Please choose an image file.');
+        if (file.size > 5_000_000) throw new Error('Image is too large. Please use an image under 5MB.');
+
+        const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+        const safeExtension = extension.replace(/[^a-z0-9]/g, '') || 'jpg';
+        const fileName = `weekly/${Date.now()}-${state.currentUser.id}.${safeExtension}`;
+
+        const { error: uploadError } = await state.db.storage
+            .from(CONFIG.inspirationImageBucket)
+            .upload(fileName, file, { cacheControl: '3600', upsert: true });
+
+        if (uploadError) {
+            throw new Error(`Image upload failed: ${friendlyDbError(uploadError)}. Make sure the Supabase Storage bucket "${CONFIG.inspirationImageBucket}" exists and has the right policies.`);
+        }
+
+        const { data: { publicUrl } } = state.db.storage
+            .from(CONFIG.inspirationImageBucket)
+            .getPublicUrl(fileName);
+
+        input.value = '';
+        setWeeklyInspirationImage(publicUrl);
+        return publicUrl;
+    }
+
+    function escapeAttr(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
     }
 
     function toYouTubeEmbedUrl(url) {
@@ -2220,8 +2312,9 @@
     }
 
     function setWeeklyPrompt(prompt) {
-        state.currentPrompt = prompt || '';
+        state.currentPrompt = (prompt || CONFIG.prompts?.[0] || '').trim();
         setText('#weeklyPromptText', state.currentPrompt);
+        setText('#weeklyInspirationPopupText', state.currentPrompt);
         syncPromptPlaceholder();
     }
 
@@ -2247,18 +2340,60 @@
         if (!button || !dropdown) return;
 
         const opening = !dropdown.classList.contains('open');
+        setImageInspirationOpen(opening);
+    }
+
+    function setImageInspirationOpen(opening) {
+        const button = $('#toggleVideoBtn');
+        const dropdown = $('#videoDropdown');
+        if (!button || !dropdown) return;
+
         dropdown.classList.toggle('open', opening);
         dropdown.setAttribute('aria-hidden', String(!opening));
         button.setAttribute('aria-expanded', String(opening));
-        setText('.video-toggle-text', opening ? 'Hide video inspiration' : 'Tap for video inspiration');
+        button.setAttribute('aria-label', opening ? 'Close inspiration' : 'Open inspiration');
+        button.setAttribute('title', 'Inspiration');
+        document.body.classList.toggle('image-inspiration-open', opening);
+        setText('.video-toggle-text', 'Inspiration');
+    }
 
-        if (opening && !$('#youtubePlayer')?.src) loadYouTubePlayer();
+    function closeImageInspiration(event) {
+        event?.preventDefault();
+        event?.stopPropagation();
+        setImageInspirationOpen(false);
+    }
+
+    function handleImageInspirationBackdropClick(event) {
+        event?.preventDefault();
+        event?.stopPropagation();
+        const panel = event.target.closest('.image-inspiration-panel');
+        if (!panel) setImageInspirationOpen(false);
+    }
+
+    function setWeeklyInspirationImage(url = '') {
+        const cleanUrl = String(url || '').trim();
+        state.currentInspirationImageUrl = cleanUrl;
+
+        const img = $('#weeklyInspirationImage');
+        const fallback = $('#weeklyInspirationImageFallback');
+        const panel = $('.image-inspiration-panel');
+
+        if (img) {
+            img.src = cleanUrl || '';
+            img.classList.toggle('hidden', !cleanUrl);
+        }
+        if (fallback) fallback.classList.toggle('hidden', !!cleanUrl);
+        if (panel) {
+            panel.style.setProperty('--weekly-inspiration-image', cleanUrl ? `url("${cleanUrl.replace(/"/g, '\\"')}")` : 'none');
+            panel.classList.toggle('has-image', !!cleanUrl);
+        }
+
+        updateAdminInspirationImagePreview(cleanUrl);
     }
 
     function loadYouTubePlayer(src = CONFIG.youtubeSrc) {
-        const player = $('#youtubePlayer');
-        if (!player) return;
-        if (player.src !== src) player.src = src;
+        // Archived for later: the YouTube link remains in admin settings,
+        // but the inspiration button now opens the weekly image instead.
         state.currentVideoUrl = src;
     }
 

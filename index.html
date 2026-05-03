@@ -85,25 +85,19 @@
     <div class="overlay" aria-hidden="true"></div>
 
     <main>
-        <section class="hero card compact-inspiration" aria-labelledby="weeklyPromptTitle">
-            <div class="section-heading weekly-prompt-heading">
+        <section class="image-inspiration-standalone video-inspiration-strip archived-weekly-inspiration-ui" aria-hidden="true" aria-labelledby="weeklyPromptTitle">
+            <!-- Archived for later:
+                 Weekly Inspiration title/text box and feather CTA are kept in the DOM
+                 so they can be restored later. They are visually hidden in CSS.
+                 The active weekly inspiration now appears as the Writing Desk placeholder. -->
+            <div class="section-heading weekly-prompt-heading archived-weekly-inspiration-ui" aria-hidden="true">
                 <h2 id="weeklyPromptTitle" class="eyebrow section-label-title">Weekly Inspiration</h2>
             </div>
-            <div class="prompt-strip">
+            <div class="prompt-strip archived-weekly-inspiration-ui" aria-hidden="true">
                 <p id="weeklyPromptText">A knight stands at a distance, gazing toward the entrance of a citadel he has finally returned to. Something has happened before this moment—something the reader does not yet know. Write the story of what led him here, what he has lost or gained, and why he hesitates before entering.</p>
-                <button id="copyPromptBtn" class="btn-primary prompt-write-btn feather-prompt-btn" type="button" aria-label="Start writing from this inspiration" title="Start writing from this inspiration"><span aria-hidden="true">🪶</span></button>
+                <button id="copyPromptBtn" class="btn-primary prompt-write-btn feather-prompt-btn" type="button" aria-label="Start writing from this inspiration" title="Start writing from this inspiration" tabindex="-1"><span aria-hidden="true">🪶</span></button>
             </div>
 
-            <div class="video-toggle-wrapper">
-                <button id="toggleVideoBtn" class="video-toggle-btn" type="button" aria-expanded="false" aria-controls="videoDropdown">
-                    <span class="video-toggle-text">Tap for video inspiration</span>
-                </button>
-                <div id="videoDropdown" class="video-dropdown" aria-hidden="true">
-                    <div class="video-wrapper">
-                        <iframe id="youtubePlayer" src="" title="Inspiration video" frameborder="0" allow="autoplay; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                    </div>
-                </div>
-            </div>
         </section>
 
         <section id="writingZoneSection" class="writing-zone card" aria-labelledby="writeTitle">
@@ -114,6 +108,22 @@
                     <h2 id="writeTitle" class="sr-only">Writing Desk</h2>
                 </div>
                 <div class="writing-desk-controls focus-ambient-controls" aria-label="Focus room controls">
+                    <div class="video-toggle-wrapper image-inspiration-wrapper">
+                        <button id="toggleVideoBtn" class="focus-mode-toggle inspiration-icon-toggle image-inspiration-toggle" type="button" aria-expanded="false" aria-controls="videoDropdown" aria-label="Open inspiration" title="Inspiration">
+                            <span class="inspiration-toggle-icon" aria-hidden="true">✦</span>
+                            <span class="sr-only video-toggle-text">Inspiration</span>
+                        </button>
+                        <div id="videoDropdown" class="video-dropdown image-inspiration-popover" aria-hidden="true">
+                            <div class="image-inspiration-panel" role="dialog" aria-modal="true" aria-label="Weekly image inspiration">
+                                <button id="imageInspirationCloseBtn" class="image-inspiration-close focus-close" type="button" aria-label="Collapse image inspiration">×</button>
+                                <div class="image-inspiration-frame">
+                                    <p id="weeklyInspirationPopupText" class="image-inspiration-popup-text"></p>
+                                    <img id="weeklyInspirationImage" src="" alt="Weekly inspiration image">
+                                    <p id="weeklyInspirationImageFallback" class="image-inspiration-fallback">No image inspiration has been set yet.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <button id="soundEffectsBtn" class="focus-mini-btn focus-icon-btn" type="button" aria-expanded="false" aria-controls="soundEffectsMenu">
                         <span aria-hidden="true">≋</span>
                         <span>Sound</span>
@@ -220,7 +230,7 @@
                 <button type="button" data-lighting="moonlit-desk" aria-pressed="false">Moonlit desk</button>
             </div>
             <div class="story-input-wrap">
-                <textarea id="mainStoryInput" maxlength="2000" placeholder="Begin writing your story here..."></textarea>
+                <textarea id="mainStoryInput" maxlength="2000" placeholder="A knight stands at a distance, gazing toward the entrance of a citadel he has finally returned to. Something has happened before this moment—something the reader does not yet know. Write the story of what led him here, what he has lost or gained, and why he hesitates before entering."></textarea>
                 <button id="eraseStoryBtn" class="textarea-eraser" type="button" aria-label="Clear writing area" title="Clear writing area">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M4.2 15.9 13.7 6.4a2 2 0 0 1 2.8 0l3.1 3.1a2 2 0 0 1 0 2.8l-7.2 7.2H6.7L4.2 17a.8.8 0 0 1 0-1.1Z"></path>
@@ -569,6 +579,18 @@
                             <textarea id="adminPromptInput" rows="5" maxlength="700" placeholder="Write the weekly inspiration prompt..."></textarea>
                             <label for="adminVideoInput">YouTube link</label>
                             <input type="url" id="adminVideoInput" placeholder="https://www.youtube.com/watch?v=...">
+                            <p class="admin-muted-note">Archived for later: this link is saved, but the main inspiration button now opens an image.</p>
+                        </div>
+                    </section>
+                    <section class="admin-settings-section">
+                        <h3>Weekly Inspiration Image</h3>
+                        <div class="admin-settings-grid">
+                            <label for="adminInspirationImageInput">Upload image</label>
+                            <input type="file" id="adminInspirationImageInput" accept="image/*">
+                            <p class="admin-muted-note">This image appears inside the Image Inspiration popup. Use a wide cinematic image when possible.</p>
+                            <div id="adminInspirationImagePreview" class="admin-image-preview" aria-live="polite">
+                                <span>No image selected yet.</span>
+                            </div>
                         </div>
                     </section>
                     <button id="saveSiteSettingsBtn" class="btn-primary full-width" type="button">Save Site Content</button>

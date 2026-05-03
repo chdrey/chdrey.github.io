@@ -17276,3 +17276,928 @@ body.focus-mode.candle-brightness-active #writingZoneSection textarea#mainStoryI
         transform: translateY(-3px) !important;
     }
 }
+
+
+/* =========================================================
+   Prompt-in-Writing-Desk update
+   ========================================================= */
+
+/*
+   Archived for later:
+   The old Weekly Inspiration title/text box and feather CTA are intentionally
+   preserved in index.html but hidden. The video inspiration button remains
+   between the header and Writing Desk.
+*/
+.video-inspiration-strip {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 0 1.05rem 0 !important;
+}
+
+.video-inspiration-strip .archived-weekly-inspiration-ui,
+.video-inspiration-strip .weekly-prompt-heading,
+.video-inspiration-strip .prompt-strip,
+.video-inspiration-strip .prompt-write-btn,
+.video-inspiration-strip .feather-prompt-btn {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+.video-inspiration-strip .video-toggle-wrapper {
+    margin: 0 auto !important;
+    width: min(100%, 520px) !important;
+}
+
+.video-inspiration-strip .video-dropdown.open {
+    margin-top: 0.85rem !important;
+}
+
+/* Weekly Inspiration now appears as the Writing Desk placeholder.
+   Keep main-page and Focus Mode placeholder text equally legible. */
+#writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode #writingZoneSection #mainStoryInput::placeholder {
+    color: rgba(246, 234, 212, 0.68) !important;
+    opacity: 1 !important;
+    font-family: var(--font-body) !important;
+    font-style: italic !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.005em !important;
+}
+
+/* Candle/light mode needs a darker but still readable placeholder. */
+body.candle-brightness-active #writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput::placeholder {
+    color: rgba(39, 31, 24, 0.58) !important;
+    opacity: 1 !important;
+    font-family: var(--font-body) !important;
+    font-style: italic !important;
+    font-weight: 500 !important;
+}
+
+/* Small spacing cleanup now that the Weekly Inspiration card is hidden. */
+@media (max-width: 760px) {
+    .video-inspiration-strip {
+        margin-bottom: 0.85rem !important;
+    }
+
+    .video-inspiration-strip .video-toggle-wrapper {
+        width: min(100%, 440px) !important;
+    }
+}
+
+
+/* =========================================================
+   Image Inspiration popup update
+   ========================================================= */
+
+/*
+   The previous Weekly Inspiration box and feather button stay archived in HTML.
+   The visible inspiration trigger is now a free-floating Image Inspiration
+   button aligned to the same main-column edges as the Writing Desk and other cards.
+*/
+.video-inspiration-strip {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 0 1rem 0 !important;
+}
+
+.video-inspiration-strip .archived-weekly-inspiration-ui,
+.video-inspiration-strip .weekly-prompt-heading,
+.video-inspiration-strip .prompt-strip,
+.video-inspiration-strip .prompt-write-btn,
+.video-inspiration-strip .feather-prompt-btn {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+.video-inspiration-strip .image-inspiration-wrapper,
+.video-inspiration-strip .video-toggle-wrapper {
+    width: 100% !important;
+    margin: 0 !important;
+}
+
+#toggleVideoBtn.image-inspiration-toggle,
+.video-inspiration-strip .video-toggle-btn {
+    width: 100% !important;
+    min-height: 2.75rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 999px !important;
+    letter-spacing: 0.04em !important;
+    text-transform: uppercase !important;
+}
+
+/* Big image popup. The blurred outside background is created with backdrop-filter,
+   while the image panel itself uses the selected image as a blurred backing layer. */
+.image-inspiration-popover {
+    display: none;
+}
+
+.image-inspiration-popover.open {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 31000 !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: clamp(1rem, 4vw, 3rem) !important;
+    background: rgba(8, 5, 3, 0.56) !important;
+    backdrop-filter: blur(10px) saturate(0.9) !important;
+}
+
+.image-inspiration-panel {
+    --weekly-inspiration-image: none;
+    position: relative;
+    width: min(1040px, 94vw);
+    height: min(76vh, 760px);
+    min-height: 420px;
+    border-radius: 30px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 241, 212, 0.16);
+    background:
+        radial-gradient(circle at 16% 8%, rgba(215, 165, 111, 0.18), transparent 26rem),
+        rgba(15, 10, 7, 0.92);
+    box-shadow:
+        0 32px 90px rgba(0, 0, 0, 0.58),
+        inset 0 1px 0 rgba(255, 241, 212, 0.12);
+}
+
+.image-inspiration-panel.has-image::before {
+    content: "";
+    position: absolute;
+    inset: -36px;
+    background-image: var(--weekly-inspiration-image);
+    background-size: cover;
+    background-position: center;
+    filter: blur(30px) saturate(1.08) brightness(0.70);
+    opacity: 0.84;
+    transform: scale(1.08);
+}
+
+.image-inspiration-panel::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at center, transparent 34%, rgba(8,5,3,0.38) 100%),
+        linear-gradient(180deg, rgba(255,241,212,0.06), rgba(0,0,0,0.22));
+}
+
+.image-inspiration-close {
+    position: absolute !important;
+    top: 1rem !important;
+    right: 1rem !important;
+    z-index: 5 !important;
+}
+
+.image-inspiration-frame {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    padding: clamp(1rem, 3vw, 2rem);
+}
+
+#weeklyInspirationImage {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    border-radius: 22px;
+    box-shadow:
+        0 24px 70px rgba(0, 0, 0, 0.46),
+        0 0 0 1px rgba(255, 241, 212, 0.12);
+}
+
+.image-inspiration-fallback {
+    width: min(520px, 92%);
+    padding: 2rem;
+    border-radius: 22px;
+    color: rgba(246, 234, 212, 0.78);
+    text-align: center;
+    font-family: var(--font-body);
+    font-size: 1.25rem;
+    background: rgba(18, 12, 8, 0.72);
+    border: 1px dashed rgba(255, 241, 212, 0.18);
+}
+
+.admin-muted-note {
+    color: rgba(92, 74, 55, 0.72);
+    font-size: 0.85rem;
+    line-height: 1.35;
+    margin-top: -0.15rem;
+}
+
+.admin-image-preview {
+    min-height: 120px;
+    display: grid;
+    place-items: center;
+    gap: 0.55rem;
+    padding: 0.85rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.40);
+    border: 1px dashed rgba(139, 94, 60, 0.24);
+    color: rgba(70, 51, 35, 0.78);
+    text-align: center;
+}
+
+.admin-image-preview img {
+    max-width: 100%;
+    max-height: 180px;
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(40, 25, 15, 0.20);
+}
+
+@media (max-width: 760px) {
+    .image-inspiration-popover.open {
+        padding: 0.85rem !important;
+    }
+
+    .image-inspiration-panel {
+        width: 96vw;
+        height: min(72vh, 640px);
+        min-height: 340px;
+        border-radius: 24px;
+    }
+
+    .image-inspiration-close {
+        top: 0.72rem !important;
+        right: 0.72rem !important;
+    }
+
+    .image-inspiration-frame {
+        padding: 0.85rem;
+    }
+
+    #toggleVideoBtn.image-inspiration-toggle,
+    .video-inspiration-strip .video-toggle-btn {
+        min-height: 2.55rem !important;
+    }
+}
+
+
+/* =========================================================
+   Free-floating Image Inspiration button
+   ========================================================= */
+
+/*
+   The image inspiration trigger no longer sits inside a visible card/window.
+   The section remains in the document flow only as a thin, transparent holder
+   so the button can float between the header and Writing Desk over the normal
+   website background.
+*/
+.image-inspiration-standalone,
+.video-inspiration-strip,
+section.image-inspiration-standalone.video-inspiration-strip,
+section.hero.card.compact-inspiration.video-inspiration-strip {
+    display: block !important;
+    width: 100% !important;
+    background: transparent !important;
+    background-image: none !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    outline: 0 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 0 1.05rem 0 !important;
+    border-radius: 0 !important;
+}
+
+/* Hide the archived Weekly Inspiration title/text/feather pieces without
+   removing them from the codebase. */
+.image-inspiration-standalone .archived-weekly-inspiration-ui,
+.image-inspiration-standalone .weekly-prompt-heading,
+.image-inspiration-standalone .prompt-strip,
+.image-inspiration-standalone .prompt-write-btn,
+.image-inspiration-standalone .feather-prompt-btn,
+.video-inspiration-strip .archived-weekly-inspiration-ui,
+.video-inspiration-strip .weekly-prompt-heading,
+.video-inspiration-strip .prompt-strip,
+.video-inspiration-strip .prompt-write-btn,
+.video-inspiration-strip .feather-prompt-btn {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
+
+/* The button holder itself is also transparent: no box, no window, no panel. */
+.image-inspiration-standalone .image-inspiration-wrapper,
+.image-inspiration-standalone .video-toggle-wrapper,
+.video-inspiration-strip .image-inspiration-wrapper,
+.video-inspiration-strip .video-toggle-wrapper {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Keep the button aligned to the same main-column edges as the Writing Desk,
+   but visually floating over the page background. */
+#toggleVideoBtn.image-inspiration-toggle,
+.image-inspiration-standalone .video-toggle-btn,
+.video-inspiration-strip .video-toggle-btn {
+    width: 100% !important;
+    min-height: 2.75rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 999px !important;
+}
+
+/* Remove any leftover card-like child decoration from earlier versions. */
+.image-inspiration-standalone::before,
+.image-inspiration-standalone::after,
+.video-inspiration-strip::before,
+.video-inspiration-strip::after {
+    content: none !important;
+    display: none !important;
+}
+
+@media (max-width: 760px) {
+    .image-inspiration-standalone,
+    .video-inspiration-strip,
+    section.image-inspiration-standalone.video-inspiration-strip {
+        margin-bottom: 0.85rem !important;
+    }
+
+    #toggleVideoBtn.image-inspiration-toggle,
+    .image-inspiration-standalone .video-toggle-btn,
+    .video-inspiration-strip .video-toggle-btn {
+        min-height: 2.55rem !important;
+    }
+}
+
+
+/* =========================================================
+   Image Inspiration button width refinement
+   ========================================================= */
+
+/* Keep the current button style, but make it shorter on the sides and centered. */
+#toggleVideoBtn.image-inspiration-toggle,
+.image-inspiration-standalone .video-toggle-btn,
+.video-inspiration-strip .video-toggle-btn {
+    width: min(400px, 100%) !important;
+    max-width: 400px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* The transparent holder still spans the main column so everything stays aligned. */
+.image-inspiration-standalone .image-inspiration-wrapper,
+.image-inspiration-standalone .video-toggle-wrapper,
+.video-inspiration-strip .image-inspiration-wrapper,
+.video-inspiration-strip .video-toggle-wrapper {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+}
+
+@media (max-width: 480px) {
+    #toggleVideoBtn.image-inspiration-toggle,
+    .image-inspiration-standalone .video-toggle-btn,
+    .video-inspiration-strip .video-toggle-btn {
+        width: min(92vw, 400px) !important;
+    }
+}
+
+
+/* =========================================================
+   Image Inspiration 300px button + 20px rhythm + clean popup
+   ========================================================= */
+
+/* Main page vertical rhythm: keep major sections about 20px apart. */
+main > section,
+main > .card,
+main > .image-inspiration-standalone,
+main > .video-inspiration-strip {
+    margin-top: 0 !important;
+    margin-bottom: 20px !important;
+}
+
+main > section:last-of-type,
+main > .card:last-of-type {
+    margin-bottom: 20px !important;
+}
+
+/* Footer sits 20px below the last main page box. */
+main + footer,
+.site-footer,
+footer {
+    margin-top: 20px !important;
+}
+
+/* Image Inspiration button: 300px wide, centered, same visual style. */
+#toggleVideoBtn.image-inspiration-toggle,
+.image-inspiration-standalone .video-toggle-btn,
+.video-inspiration-strip .video-toggle-btn {
+    width: min(300px, 100%) !important;
+    max-width: 300px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Keep the button holder transparent and centered. */
+.image-inspiration-standalone,
+.video-inspiration-strip,
+section.image-inspiration-standalone.video-inspiration-strip {
+    margin-top: 0 !important;
+    margin-bottom: 20px !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* The button is 20px from the Writing Desk below because the section keeps
+   exactly 20px bottom spacing. */
+.image-inspiration-standalone .image-inspiration-wrapper,
+.image-inspiration-standalone .video-toggle-wrapper,
+.video-inspiration-strip .image-inspiration-wrapper,
+.video-inspiration-strip .video-toggle-wrapper {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* In Focus Mode, keep the inspiration button 20px from the top of the desk. */
+body.focus-mode .image-inspiration-standalone,
+body.focus-mode .video-inspiration-strip {
+    margin-bottom: 20px !important;
+}
+
+body.focus-mode #writingZoneSection {
+    margin-top: 20px !important;
+}
+
+/* Clean image popup: no outside/card box around the image.
+   The blurred backdrop covers the full viewport, including the very top. */
+.image-inspiration-popover.open {
+    position: fixed !important;
+    inset: 0 !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    z-index: 31000 !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: clamp(1rem, 4vw, 3rem) !important;
+    background: rgba(8, 5, 3, 0.58) !important;
+    backdrop-filter: blur(14px) saturate(0.92) brightness(0.78) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(0.92) brightness(0.78) !important;
+}
+
+/* Remove the visible outer panel/window. */
+.image-inspiration-panel {
+    position: relative !important;
+    width: min(1040px, 94vw) !important;
+    height: min(78vh, 760px) !important;
+    min-height: 420px !important;
+    display: grid !important;
+    place-items: center !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+}
+
+.image-inspiration-panel::before,
+.image-inspiration-panel::after {
+    content: none !important;
+    display: none !important;
+}
+
+/* The image itself floats over the blurred website background. */
+.image-inspiration-frame {
+    position: relative !important;
+    z-index: 2 !important;
+    display: grid !important;
+    place-items: center !important;
+    width: 100% !important;
+    height: 100% !important;
+    padding: 0 !important;
+}
+
+#weeklyInspirationImage {
+    display: block !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    border-radius: 22px !important;
+    box-shadow:
+        0 26px 80px rgba(0, 0, 0, 0.55),
+        0 0 0 1px rgba(255, 241, 212, 0.16) !important;
+}
+
+/* X button floats near the image, like focus mode, without needing a panel. */
+.image-inspiration-close {
+    position: fixed !important;
+    top: clamp(1rem, 3vw, 2rem) !important;
+    right: clamp(1rem, 3vw, 2rem) !important;
+    z-index: 5 !important;
+}
+
+/* Fallback also floats without an outside box. */
+.image-inspiration-fallback {
+    width: min(520px, 92vw) !important;
+    padding: 2rem !important;
+    border-radius: 22px !important;
+    color: rgba(246, 234, 212, 0.82) !important;
+    text-align: center !important;
+    font-family: var(--font-body) !important;
+    font-size: 1.25rem !important;
+    background: rgba(18, 12, 8, 0.58) !important;
+    border: 1px dashed rgba(255, 241, 212, 0.22) !important;
+    backdrop-filter: blur(6px) !important;
+}
+
+@media (max-width: 760px) {
+    main > section,
+    main > .card,
+    main > .image-inspiration-standalone,
+    main > .video-inspiration-strip {
+        margin-bottom: 20px !important;
+    }
+
+    #toggleVideoBtn.image-inspiration-toggle,
+    .image-inspiration-standalone .video-toggle-btn,
+    .video-inspiration-strip .video-toggle-btn {
+        width: min(300px, 92vw) !important;
+        max-width: 300px !important;
+    }
+
+    .image-inspiration-popover.open {
+        padding: 0.85rem !important;
+        min-height: 100dvh !important;
+        height: 100dvh !important;
+    }
+
+    .image-inspiration-panel {
+        width: 96vw !important;
+        height: min(74vh, 640px) !important;
+        min-height: 320px !important;
+    }
+
+    #weeklyInspirationImage {
+        border-radius: 18px !important;
+    }
+}
+
+
+/* =========================================================
+   Final Inspiration refinements: 200px button, focus opacity,
+   popup prompt text, and extended blur coverage
+   ========================================================= */
+#toggleVideoBtn.image-inspiration-toggle,
+.image-inspiration-standalone .video-toggle-btn,
+.video-inspiration-strip .video-toggle-btn {
+    width: min(200px, 100%) !important;
+    max-width: 200px !important;
+}
+
+body.focus-mode #toggleVideoBtn.image-inspiration-toggle,
+body.focus-mode .image-inspiration-standalone .video-toggle-btn,
+body.focus-mode .video-inspiration-strip .video-toggle-btn {
+    opacity: 0.72 !important;
+}
+
+body.focus-mode #toggleVideoBtn.image-inspiration-toggle:hover,
+body.focus-mode #toggleVideoBtn.image-inspiration-toggle:focus-visible {
+    opacity: 0.92 !important;
+}
+
+.image-inspiration-popover.open {
+    top: -15px !important;
+    bottom: 0 !important;
+    height: calc(100vh + 15px) !important;
+    min-height: calc(100vh + 15px) !important;
+    padding-top: calc(clamp(1rem, 4vw, 3rem) + 15px) !important;
+}
+
+.image-inspiration-frame {
+    grid-template-rows: auto minmax(0, 1fr) !important;
+    gap: clamp(0.75rem, 2vw, 1.2rem) !important;
+}
+
+.image-inspiration-popup-text {
+    width: min(860px, 92vw) !important;
+    margin: 0 auto !important;
+    padding: clamp(0.65rem, 1.6vw, 0.95rem) clamp(0.9rem, 2.4vw, 1.35rem) !important;
+    border-radius: 18px !important;
+    color: rgba(246, 234, 212, 0.90) !important;
+    font-family: var(--font-body) !important;
+    font-size: clamp(1.05rem, 2vw, 1.35rem) !important;
+    line-height: 1.45 !important;
+    text-align: center !important;
+    background:
+        linear-gradient(rgba(255, 245, 223, 0.08), rgba(255, 245, 223, 0.04)),
+        rgba(18, 12, 8, 0.34) !important;
+    border: 1px solid rgba(255, 241, 212, 0.13) !important;
+    box-shadow: 0 18px 46px rgba(0, 0, 0, 0.22) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+}
+
+#weeklyInspirationImage {
+    min-height: 0 !important;
+}
+
+@media (max-width: 760px) {
+    #toggleVideoBtn.image-inspiration-toggle,
+    .image-inspiration-standalone .video-toggle-btn,
+    .video-inspiration-strip .video-toggle-btn {
+        width: min(200px, 92vw) !important;
+        max-width: 200px !important;
+    }
+
+    .image-inspiration-popover.open {
+        top: -15px !important;
+        height: calc(100dvh + 15px) !important;
+        min-height: calc(100dvh + 15px) !important;
+        padding-top: calc(0.85rem + 15px) !important;
+    }
+
+    .image-inspiration-popup-text {
+        width: min(92vw, 860px) !important;
+        font-size: 1rem !important;
+        line-height: 1.38 !important;
+    }
+}
+
+/* =========================================================
+   Header inspiration icon placement + removed old gap
+   ========================================================= */
+.image-inspiration-standalone.archived-weekly-inspiration-ui,
+section.image-inspiration-standalone.video-inspiration-strip.archived-weekly-inspiration-ui {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 0 !important;
+}
+
+/* With the old standalone button gone, keep the desk close to the fixed header. */
+main {
+    padding-top: 106px !important;
+}
+
+#writingZoneSection.writing-zone {
+    margin-top: 0 !important;
+}
+
+/* The inspiration popup trigger now lives inside the Writing Desk header,
+   immediately to the left of Sound and Light, without shifting those controls. */
+#writingZoneSection .image-inspiration-wrapper,
+#writingZoneSection .video-toggle-wrapper.image-inspiration-wrapper {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    flex: 0 0 auto !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+#toggleVideoBtn.inspiration-icon-toggle,
+#writingZoneSection #toggleVideoBtn.image-inspiration-toggle {
+    width: 2.75rem !important;
+    max-width: 2.75rem !important;
+    min-width: 2.75rem !important;
+    height: 2.75rem !important;
+    min-height: 2.75rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex: 0 0 2.75rem !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    border-radius: 999px !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+
+#toggleVideoBtn.inspiration-icon-toggle .inspiration-toggle-icon {
+    display: inline-block !important;
+    font-size: 1.08rem !important;
+    line-height: 1 !important;
+    transform: translateY(-0.02rem) !important;
+}
+
+body.focus-mode #toggleVideoBtn.inspiration-icon-toggle,
+body.focus-mode #writingZoneSection #toggleVideoBtn.image-inspiration-toggle {
+    opacity: 0.72 !important;
+}
+
+body.focus-mode #toggleVideoBtn.inspiration-icon-toggle:hover,
+body.focus-mode #toggleVideoBtn.inspiration-icon-toggle:focus-visible,
+body.focus-mode #toggleVideoBtn.inspiration-icon-toggle[aria-expanded="true"] {
+    opacity: 0.92 !important;
+}
+
+/* The fixed popup should never take the page out of focus mode; JS also stops
+   backdrop clicks from bubbling into the desk/focus handlers. */
+#videoDropdown.image-inspiration-popover.open {
+    top: -15px !important;
+    height: calc(100vh + 15px) !important;
+    min-height: calc(100vh + 15px) !important;
+}
+
+@media (max-width: 760px) {
+    main {
+        padding-top: 96px !important;
+    }
+
+    #toggleVideoBtn.inspiration-icon-toggle,
+    #writingZoneSection #toggleVideoBtn.image-inspiration-toggle {
+        width: var(--nook-mobile-control-height) !important;
+        max-width: var(--nook-mobile-control-height) !important;
+        min-width: var(--nook-mobile-control-height) !important;
+        height: var(--nook-mobile-control-height) !important;
+        min-height: var(--nook-mobile-control-height) !important;
+        flex-basis: var(--nook-mobile-control-height) !important;
+    }
+
+    #videoDropdown.image-inspiration-popover.open {
+        top: -15px !important;
+        height: calc(100dvh + 15px) !important;
+        min-height: calc(100dvh + 15px) !important;
+    }
+}
+
+/* =========================================================
+   Header inspiration icon placement + removed old gap
+   ========================================================= */
+.image-inspiration-standalone.archived-weekly-inspiration-ui,
+section.image-inspiration-standalone.video-inspiration-strip.archived-weekly-inspiration-ui {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 0 !important;
+}
+
+/* With the old standalone button gone, keep the desk close to the fixed header. */
+main {
+    padding-top: 106px !important;
+}
+
+#writingZoneSection.writing-zone {
+    margin-top: 0 !important;
+}
+
+/* The inspiration popup trigger now lives inside the Writing Desk header,
+   immediately to the left of Sound and Light, without shifting those controls. */
+#writingZoneSection .image-inspiration-wrapper,
+#writingZoneSection .video-toggle-wrapper.image-inspiration-wrapper {
+    width: auto !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    flex: 0 0 auto !important;
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+#toggleVideoBtn.inspiration-icon-toggle,
+#writingZoneSection #toggleVideoBtn.image-inspiration-toggle {
+    width: 2.75rem !important;
+    max-width: 2.75rem !important;
+    min-width: 2.75rem !important;
+    height: 2.75rem !important;
+    min-height: 2.75rem !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex: 0 0 2.75rem !important;
+    display: inline-grid !important;
+    place-items: center !important;
+    border-radius: 999px !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+
+#toggleVideoBtn.inspiration-icon-toggle .inspiration-toggle-icon {
+    display: inline-block !important;
+    font-size: 1.08rem !important;
+    line-height: 1 !important;
+    transform: translateY(-0.02rem) !important;
+}
+
+body.focus-mode #toggleVideoBtn.inspiration-icon-toggle,
+body.focus-mode #writingZoneSection #toggleVideoBtn.image-inspiration-toggle {
+    opacity: 0.72 !important;
+}
+
+body.focus-mode #toggleVideoBtn.inspiration-icon-toggle:hover,
+body.focus-mode #toggleVideoBtn.inspiration-icon-toggle:focus-visible,
+body.focus-mode #toggleVideoBtn.inspiration-icon-toggle[aria-expanded="true"] {
+    opacity: 0.92 !important;
+}
+
+/* The fixed popup should never take the page out of focus mode; JS also stops
+   backdrop clicks from bubbling into the desk/focus handlers. */
+#videoDropdown.image-inspiration-popover.open {
+    top: -15px !important;
+    height: calc(100vh + 15px) !important;
+    min-height: calc(100vh + 15px) !important;
+}
+
+@media (max-width: 760px) {
+    main {
+        padding-top: 96px !important;
+    }
+
+    #toggleVideoBtn.inspiration-icon-toggle,
+    #writingZoneSection #toggleVideoBtn.image-inspiration-toggle {
+        width: var(--nook-mobile-control-height) !important;
+        max-width: var(--nook-mobile-control-height) !important;
+        min-width: var(--nook-mobile-control-height) !important;
+        height: var(--nook-mobile-control-height) !important;
+        min-height: var(--nook-mobile-control-height) !important;
+        flex-basis: var(--nook-mobile-control-height) !important;
+    }
+
+    #videoDropdown.image-inspiration-popover.open {
+        top: -15px !important;
+        height: calc(100dvh + 15px) !important;
+        min-height: calc(100dvh + 15px) !important;
+    }
+}
+
+
+/* =========================================================
+   Inspiration popup behavior restore: header button, same overlay
+   ========================================================= */
+#videoDropdown.image-inspiration-popover {
+    display: none !important;
+    grid-template-rows: none !important;
+    margin: 0 !important;
+    opacity: 0 !important;
+    transform: none !important;
+    transition: opacity 0.22s ease !important;
+    overflow: visible !important;
+}
+
+#videoDropdown.image-inspiration-popover.open {
+    position: fixed !important;
+    inset: -15px 0 0 0 !important;
+    width: 100vw !important;
+    height: calc(100vh + 15px) !important;
+    min-height: calc(100vh + 15px) !important;
+    z-index: 31000 !important;
+    display: grid !important;
+    place-items: center !important;
+    padding: calc(clamp(1rem, 4vw, 3rem) + 15px) clamp(1rem, 4vw, 3rem) clamp(1rem, 4vw, 3rem) !important;
+    margin: 0 !important;
+    opacity: 1 !important;
+    transform: none !important;
+    overflow: auto !important;
+    background: rgba(8, 5, 3, 0.58) !important;
+    backdrop-filter: blur(14px) saturate(0.92) brightness(0.78) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(0.92) brightness(0.78) !important;
+}
+
+#videoDropdown.image-inspiration-popover.open .image-inspiration-panel {
+    justify-self: center !important;
+    align-self: center !important;
+    margin: 0 auto !important;
+}
+
+body.focus-mode #videoDropdown.image-inspiration-popover.open {
+    position: fixed !important;
+}
+
+@media (max-width: 760px) {
+    #videoDropdown.image-inspiration-popover.open {
+        inset: -15px 0 0 0 !important;
+        height: calc(100dvh + 15px) !important;
+        min-height: calc(100dvh + 15px) !important;
+        padding: calc(0.85rem + 15px) 0.85rem 0.85rem !important;
+    }
+}
