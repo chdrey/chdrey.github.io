@@ -18361,3 +18361,181 @@ body.focus-mode #writingZoneSection .writer-action-line {
         font-size: 0.78rem !important;
     }
 }
+
+/* =========================================================
+   Final 71: 20px header/section/footer rhythm + shorter desk bottom
+   ========================================================= */
+
+/* Main page: place the Writing Desk 20px below the fixed header area,
+   and remove the extra bottom padding so the footer can sit 20px below
+   the final content box instead of floating far away. */
+body:not(.focus-mode) main {
+    padding-top: 104px !important;
+    padding-bottom: 0 !important;
+    min-height: auto !important;
+}
+
+/* Keep every major main-page box separated by exactly 20px. */
+body:not(.focus-mode) main > section,
+body:not(.focus-mode) main > .card,
+body:not(.focus-mode) main > .leaderboard,
+body:not(.focus-mode) main > .feed,
+body:not(.focus-mode) main > .writing-zone {
+    margin-top: 0 !important;
+    margin-bottom: 20px !important;
+}
+
+/* The archived inspiration holder should not create a ghost gap. */
+body:not(.focus-mode) main > .image-inspiration-standalone.archived-weekly-inspiration-ui,
+body:not(.focus-mode) main > section.image-inspiration-standalone.video-inspiration-strip.archived-weekly-inspiration-ui {
+    display: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: 0 !important;
+}
+
+/* Cut roughly 15px from only the bottom of the Writing Desk card. */
+body:not(.focus-mode) #writingZoneSection.writing-zone {
+    padding-bottom: max(0.65rem, calc(clamp(1rem, 3.4vw, 2rem) - 15px)) !important;
+}
+
+/* Keep the final box-to-footer spacing at 20px. */
+body:not(.focus-mode) main + footer,
+body:not(.focus-mode) .site-footer,
+body:not(.focus-mode) footer.site-footer,
+body:not(.focus-mode) footer {
+    margin-top: 20px !important;
+}
+
+@media (max-width: 760px) {
+    body:not(.focus-mode) main {
+        padding-top: 96px !important;
+        padding-bottom: 0 !important;
+        min-height: auto !important;
+    }
+
+    body:not(.focus-mode) #writingZoneSection.writing-zone {
+        padding-bottom: max(0.55rem, calc(1rem - 15px)) !important;
+    }
+}
+
+/* =========================================================
+   Final 72: raise Writing Desk bottom edge by 15px
+   ========================================================= */
+
+/* This keeps the header, writing area, meter, publish button, and pen-name row
+   in the same place, but pulls only the bottom edge of the Writing Desk card up. */
+#writingZoneSection.writing-zone,
+body:not(.focus-mode) #writingZoneSection.writing-zone,
+body.focus-mode #writingZoneSection.writing-zone {
+    padding-bottom: max(0px, calc(clamp(1rem, 3.4vw, 2rem) - 30px)) !important;
+}
+
+#writingZoneSection .writer-action-line,
+body.focus-mode #writingZoneSection .writer-action-line {
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+@media (max-width: 760px) {
+    #writingZoneSection.writing-zone,
+    body:not(.focus-mode) #writingZoneSection.writing-zone,
+    body.focus-mode #writingZoneSection.writing-zone {
+        padding-bottom: 0 !important;
+    }
+}
+
+/* =========================================================
+   Final 73: add 3px between writing area and font/size controls
+   ========================================================= */
+#writingZoneSection .typing-toolbar,
+body.focus-mode #writingZoneSection .typing-toolbar {
+    margin-top: calc(0.72rem + 3px) !important;
+}
+
+/* =========================================================
+   Final 74: tighten Focus Mode toolbar gap by 12px
+   ========================================================= */
+body.focus-mode #writingZoneSection .typing-toolbar {
+    margin-top: 3px !important;
+}
+
+/* =========================================================
+   Final 134: main writing paper matches Focus Mode + darker prompt
+   =========================================================
+   Keep the main-page writing area visually synced with Focus Mode: same
+   warm paper surface, same readable ink, same light/glow treatment. Also
+   darken the weekly inspiration placeholder text in both modes.
+*/
+#writingZoneSection #mainStoryInput,
+body:not(.focus-mode) #writingZoneSection #mainStoryInput,
+body.focus-mode #writingZoneSection #mainStoryInput,
+body.candle-brightness-active #writingZoneSection #mainStoryInput,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput {
+    color: #15100b !important;
+    caret-color: #8f5f34 !important;
+    background-color: rgba(232, 213, 171, var(--nook-writing-paper-alpha, 1)) !important;
+    background:
+        radial-gradient(circle at 12% 8%,
+            rgba(255, 252, 239, var(--nook-writing-highlight-alpha, 0.92)) 0,
+            rgba(255, 252, 239, calc(var(--nook-writing-highlight-alpha, 0.92) * 0.64)) 10rem,
+            rgba(255, 252, 239, 0) 24rem),
+        linear-gradient(135deg,
+            rgba(255, 251, 236, var(--nook-writing-paper-alpha, 1)) 0%,
+            rgba(232, 213, 171, calc(var(--nook-writing-paper-alpha, 1) * 0.96)) 100%) !important;
+    border-color: rgba(116, 78, 44, var(--nook-writing-border-alpha, 0.34)) !important;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, calc(var(--nook-writing-highlight-alpha, 0.92) * 0.72)),
+        inset 0 -24px 44px rgba(143, 103, 45, 0.12),
+        inset 0 0 44px rgba(116, 78, 44, calc(var(--nook-writing-glow-alpha, 0.38) * 0.28)),
+        0 16px 34px rgba(0, 0, 0, var(--nook-writing-shadow-alpha, 0.18)) !important;
+    text-shadow: none !important;
+}
+
+#writingZoneSection #mainStoryInput::placeholder,
+body:not(.focus-mode) #writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode #writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode #writingZoneSection textarea#mainStoryInput::placeholder,
+body.candle-brightness-active #writingZoneSection #mainStoryInput::placeholder,
+body.focus-mode.candle-brightness-active #writingZoneSection #mainStoryInput::placeholder {
+    color: rgba(48, 34, 22, 0.72) !important;
+    opacity: 1 !important;
+    text-shadow: 0 1px 0 rgba(255, 255, 248, 0.28) !important;
+    font-family: var(--font-body) !important;
+    font-style: italic !important;
+    font-weight: 600 !important;
+}
+
+#writingZoneSection #mainStoryInput:focus::placeholder,
+body.focus-mode #writingZoneSection #mainStoryInput:focus::placeholder {
+    color: rgba(48, 34, 22, 0.46) !important;
+    opacity: 0.62 !important;
+}
+
+/* =========================================================
+   Final 135: mobile Focus Mode bottom edge correction
+   =========================================================
+   On phones, the Focus Mode Writing Desk was being held tall by older
+   min-height rules. This lets the card shrink to its content and keeps
+   the bottom edge 15px below the publish row. If the guest pen-name input
+   is hidden for logged-in writers, its empty row is removed too.
+*/
+@media (max-width: 760px) {
+    body.focus-mode #writingZoneSection.writing-zone,
+    body.focus-mode #writingZoneSection {
+        min-height: 0 !important;
+        height: auto !important;
+        padding-bottom: 15px !important;
+    }
+
+    body.focus-mode #writingZoneSection .writer-tools {
+        margin-bottom: 0 !important;
+    }
+
+    body.focus-mode #writingZoneSection .writer-action-line:has(#guestPenName.hidden) {
+        display: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        height: 0 !important;
+    }
+}
