@@ -17277,7 +17277,6 @@ body.focus-mode.candle-brightness-active #writingZoneSection textarea#mainStoryI
     }
 }
 
-
 /* =========================================================
    Prompt-in-Writing-Desk update
    ========================================================= */
@@ -18532,10 +18531,54 @@ body.focus-mode #writingZoneSection #mainStoryInput:focus::placeholder {
         margin-bottom: 0 !important;
     }
 
-    body.focus-mode #writingZoneSection .writer-action-line:has(#guestPenName.hidden) {
+    body.focus-mode #writingZoneSection .writer-action-line:has(#guestPenName.hidden) .writing-actions-left {
         display: none !important;
         margin: 0 !important;
         padding: 0 !important;
-        height: 0 !important;
+        width: 0 !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+    }
+}
+
+/* Final 117: place guest pen name between counter and publish. */
+#writingZoneSection .writer-action-line {
+    justify-content: flex-start !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.75rem !important;
+}
+
+#writingZoneSection .writer-action-line > .char-meter {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 156px !important;
+}
+
+#writingZoneSection .writer-action-line > .writing-actions-left {
+    flex: 0 1 auto !important;
+    overflow: visible !important;
+}
+
+#writingZoneSection .writer-action-line #guestPenName {
+    width: clamp(150px, 18vw, 220px) !important;
+}
+
+#writingZoneSection .writer-action-line > #publishBtn {
+    margin-left: auto !important;
+}
+
+@media (max-width: 640px) {
+    #writingZoneSection .writer-action-line {
+        gap: 0.55rem !important;
+        overflow-x: auto !important;
+    }
+
+    #writingZoneSection .writer-action-line > .char-meter {
+        min-width: 136px !important;
+    }
+
+    #writingZoneSection .writer-action-line #guestPenName {
+        min-width: 142px !important;
     }
 }
